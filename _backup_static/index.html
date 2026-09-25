@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CVViews | Analyze Your CV with AI</title>
+  <meta name="description"
+    content="CVViews uses artificial intelligence to analyze, improve, and optimize your resume. Get instant feedback and stand out in the job market.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <nav>
+    <div class="nav-inner">
+      <a href="#" class="logo" aria-label="CVViews">
+        <div class="logo-icon">
+          <svg viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1.5" y="1.5" width="29" height="37" rx="3" stroke="#1a6fd4" stroke-width="2.5" />
+            <line x1="7" y1="11" x2="25" y2="11" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+            <line x1="7" y1="17" x2="20" y2="17" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+            <line x1="7" y1="23" x2="23" y2="23" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+            <line x1="7" y1="29" x2="17" y2="29" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>
+        <span class="logo-text">CV<span>VIEWS</span></span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#chat">Chat</a></li>
+        <li>
+          <div class="nav-auth-group">
+            <a href="#" class="nav-cta">Login</a>
+            <a href="#" class="nav-signup">Sign Up</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-badge">✦ AI-Powered CV Analysis</div>
+    <h1>Your <span class="grad">perfect resume</span><br>starts here</h1>
+    <p>CVViews uses advanced AI to analyze, score, and improve your CV in seconds. Stand out from the competition and
+      land the interview you deserve.</p>
+    <div class="hero-actions">
+      <button id="btnAnalyze" class="btn-primary">✦ Analyze CV Now</button>
+      <button id="btnFeatures" class="btn-secondary">View Features →</button>
+    </div>
+  </section>
+
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num">98<span>%</span></div>
+      <div class="stat-label">Satisfaction Rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">50<span>k+</span></div>
+      <div class="stat-label">CVs Analyzed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3<span>x</span></div>
+      <div class="stat-label">More Interviews</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">&lt;30<span>s</span></div>
+      <div class="stat-label">Full Analysis</div>
+    </div>
+  </div>
+
+  <section class="chat-section" id="chat">
+    <div class="chat-section-label">
+      <h2>💬 Chat with our AI Assistant</h2>
+      <p>Ask questions about your CV, request suggestions, or analyze your application.</p>
+    </div>
+    <div class="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">🤖</div>
+        <div class="chat-header-info">
+          <h3>CVViews AI</h3>
+          <span>Online now</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg ai">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">Hello! 👋 I'm the CVViews AI assistant. I'm here to help you build an amazing
+            resume.<br><br>You can send your CV for analysis, ask for improvement suggestions, or get any questions
+            about your application answered!</div>
+        </div>
+        <div class="msg user">
+          <div class="msg-avatar">👤</div>
+          <div class="msg-bubble">What are the most common CV mistakes?</div>
+        </div>
+        <div class="msg ai">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">Great question! The most common mistakes are:<br><br><strong>1. 📝 Spelling
+              errors</strong> – Proofreading is essential.<br><strong>2. 📋 Lack of quantified results</strong>
+            – Use numbers and metrics.<br><strong>3. 🎨 Confusing design</strong> – Keep it clear and
+            organized.<br><strong>4. 📧 Unprofessional email</strong> – Use your real name.<br><strong>5. 📏
+              CV too long</strong> – Maximum 2 pages!<br><br>Would you like me to analyze your CV now? 😊</div>
+        </div>
+      </div>
+      <div class="suggestions">
+        <button class="suggestion-chip">📄 Analyze my CV</button>
+        <button class="suggestion-chip">💡 LinkedIn tips</button>
+        <button class="suggestion-chip">🎯 Tailor for a job</button>
+        <button class="suggestion-chip">✍️ Write a cover letter</button>
+      </div>
+      <div class="chat-input-area">
+        <textarea id="chatInput" class="chat-input" placeholder="Type your message..." rows="1"></textarea>
+        <button id="sendBtn" class="send-btn" aria-label="Send message">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <h2>Everything you need to stand out</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Smart Analysis</h3>
+        <p>Our AI analyzes every section of your CV and provides detailed, actionable feedback.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Results</h3>
+        <p>Get a full score and improvement suggestions in under 30 seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Job Matching</h3>
+        <p>Compare your CV against job descriptions and find out how to increase compatibility.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3>Multilingual Support</h3>
+        <p>Analyze and improve your CV in English, Portuguese, Spanish, and 15+ more languages.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a href="#" class="logo" aria-label="CVViews">
+          <div class="logo-icon">
+            <svg viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1.5" y="1.5" width="29" height="37" rx="3" stroke="#1a6fd4" stroke-width="2.5" />
+              <line x1="7" y1="11" x2="25" y2="11" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+              <line x1="7" y1="17" x2="20" y2="17" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+              <line x1="7" y1="23" x2="23" y2="23" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+              <line x1="7" y1="29" x2="17" y2="29" stroke="#1a6fd4" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </div>
+          <span class="logo-text">CV<span>VIEWS</span></span>
+        </a>
+        <p>We transform ordinary resumes into powerful tools that open doors and create opportunities.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
+          <a href="#" class="social-btn" aria-label="Twitter">𝕏</a>
+          <a href="#" class="social-btn" aria-label="Instagram">IG</a>
+          <a href="#" class="social-btn" aria-label="Facebook">fb</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#">Features</a></li>
+          <li><a href="#">Pricing</a></li>
+          <li><a href="#">CV Examples</a></li>
+          <li><a href="#">Templates</a></li>
+          <li><a href="#">What's New</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Partners</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Tutorials</a></li>
+          <li><a href="#">API</a></li>
+          <li><a href="#">Status</a></li>
+          <li><a href="#">Community</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 CVViews. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">Cookies</a>
+        <a href="#">GDPR</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,388 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CVViews – Resume Diagnostics & Interview Practice</title>
+  <meta name="description"
+    content="CVViews analyzes, scores, and optimizes your resume. Get actionable feedback and practice realistic interview questions.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Manrope:wght@400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- Nav -->
+  <nav id="mainNav">
+    <div class="nav-inner">
+      <a href="#" class="logo" aria-label="CVViews">
+        <div class="logo-icon">
+          <!-- New logo: rounded square with 3 document lines -->
+          <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="26" height="26" rx="7" stroke="#0a0a0a" stroke-width="2"/>
+            <rect x="4.5" y="4.5" width="19" height="19" rx="4.5" stroke="#0a0a0a" stroke-width="1"/>
+            <rect x="7.5" y="9.5" width="13" height="2.5" rx="1.25" fill="#0a0a0a"/>
+            <rect x="7.5" y="13.5" width="10" height="2.5" rx="1.25" fill="#0a0a0a"/>
+            <rect x="7.5" y="17.5" width="11.5" height="2.5" rx="1.25" fill="#0a0a0a"/>
+          </svg>
+        </div>
+        <span class="logo-text">CVVIEWS</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#how">How it Works</a></li>
+        <li><a href="#chat">Practice Chat</a></li>
+        <li><a href="#features">Features</a></li>
+        <li>
+          <div class="nav-auth-group">
+            <a href="#" class="nav-signup">Login</a>
+            <a href="#" class="nav-cta">Get Started</a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+
+    <!-- Floating feature cards -->
+    <div class="hero-float-cards" aria-hidden="true">
+      <!-- Top left -->
+      <div class="hero-float-card">
+        <div class="float-card-icon">📊</div>
+        <div class="float-card-info">
+          <span class="float-card-label">ATS Score</span>
+          <span class="float-card-value">94 / 100</span>
+        </div>
+      </div>
+      <!-- Top right -->
+      <div class="hero-float-card">
+        <div class="float-card-icon">🔍</div>
+        <div class="float-card-info">
+          <span class="float-card-label">Keyword Match</span>
+          <span class="float-card-value">87% density</span>
+        </div>
+      </div>
+      <!-- Middle left -->
+      <div class="hero-float-card">
+        <div class="float-card-icon">✍️</div>
+        <div class="float-card-info">
+          <span class="float-card-label">Bullet Rewrite</span>
+          <span class="float-card-value">+3.2× impact</span>
+        </div>
+      </div>
+      <!-- Middle right -->
+      <div class="hero-float-card">
+        <div class="float-card-icon">🎯</div>
+        <div class="float-card-info">
+          <span class="float-card-label">Job Match</span>
+          <span class="float-card-value">Senior Engineer</span>
+        </div>
+      </div>
+      <!-- Bottom left -->
+      <div class="hero-float-card">
+        <div class="float-card-icon">🎙️</div>
+        <div class="float-card-info">
+          <span class="float-card-label">Interview Prep</span>
+          <span class="float-card-value">12 questions</span>
+        </div>
+      </div>
+      <!-- Bottom right -->
+      <div class="hero-float-card">
+        <div class="float-card-icon">⚡</div>
+        <div class="float-card-info">
+          <span class="float-card-label">Analysis Time</span>
+          <span class="float-card-value">&lt; 15 seconds</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG connector lines -->
+    <svg class="hero-connectors" id="heroConnectors" aria-hidden="true"></svg>
+
+    <!-- Hero content -->
+    <div class="hero-content">
+      <!-- Center logo mark -->
+      <div class="hero-logo-mark">
+        <svg viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1.5" y="1.5" width="39" height="39" rx="10.5" stroke="#0a0a0a" stroke-width="3"/>
+          <rect x="6" y="6" width="30" height="30" rx="7" stroke="#0a0a0a" stroke-width="1.5"/>
+          <rect x="11" y="14" width="20" height="3.5" rx="1.75" fill="#0a0a0a"/>
+          <rect x="11" y="20" width="15" height="3.5" rx="1.75" fill="#0a0a0a"/>
+          <rect x="11" y="26" width="17.5" height="3.5" rx="1.75" fill="#0a0a0a"/>
+        </svg>
+      </div>
+
+      <h1>The <em class="hero-highlight">AI Resume Analyst</em><br>built for top candidates</h1>
+      <p>CVViews analyzes, scores, and optimizes your resume against ATS benchmarks — then prepares you for the interview. All in under 15 seconds.</p>
+
+      <!-- Trust row -->
+      <div class="hero-trust">
+        <div class="hero-avatars">
+          <div class="hero-avatar">JK</div>
+          <div class="hero-avatar">MC</div>
+          <div class="hero-avatar">AR</div>
+          <div class="hero-avatar">TP</div>
+          <div class="hero-avatar">SL</div>
+        </div>
+        <span class="hero-trust-text"><strong>50,000+</strong> resumes audited</span>
+      </div>
+
+      <div class="hero-actions">
+        <button id="btnAnalyze" class="btn-primary">
+          Analyze My Resume Free
+        </button>
+        <span class="hero-cta-note">No credit card required</span>
+      </div>
+    </div>
+
+    <!-- Platform icons -->
+    <div class="hero-platforms" aria-hidden="true">
+      <div class="platform-icon">📄</div>
+      <div class="platform-icon">💼</div>
+      <div class="platform-icon mid">🎯</div>
+      <div class="platform-icon">📊</div>
+      <div class="platform-icon">🤖</div>
+    </div>
+
+  </section>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat">
+      <div class="stat-num">98<span>%</span></div>
+      <div class="stat-label">ATS Accuracy Rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">50<span>k+</span></div>
+      <div class="stat-label">Resumes Audited</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3.2<span>x</span></div>
+      <div class="stat-label">More Callback Rates</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">&lt;15<span>s</span></div>
+      <div class="stat-label">Full Diagnostic</div>
+    </div>
+  </div>
+
+  <!-- About -->
+  <section class="about-section reveal" id="about">
+    <div class="about-card">
+      <div class="about-grid">
+        <div class="about-text">
+          <div class="section-overline">About CVViews</div>
+          <h2>Designed to help qualified candidates pass ATS filters and master interviews.</h2>
+          <p>Over 75% of qualified applicants are filtered out before a recruiter reads their resume due to formatting quirks, lack of quantified impact metrics, or missing domain keywords.</p>
+          <p>CVViews provides systematic resume audits, precise structural diagnostics, and an interactive practice assistant designed to turn candidate qualifications into compelling career stories.</p>
+        </div>
+        <div class="about-stats">
+          <div class="about-stat-card">
+            <div class="about-stat-icon">🎯</div>
+            <div class="about-stat-info">
+              <strong>98%</strong>
+              <span>ATS Pass Rate</span>
+            </div>
+          </div>
+          <div class="about-stat-card">
+            <div class="about-stat-icon">⚡</div>
+            <div class="about-stat-info">
+              <strong>15s</strong>
+              <span>Average Analysis Time</span>
+            </div>
+          </div>
+          <div class="about-stat-card">
+            <div class="about-stat-icon">📈</div>
+            <div class="about-stat-info">
+              <strong>3.2x</strong>
+              <span>Higher Callback Rate</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-section reveal" id="how">
+    <div class="section-overline">How It Works</div>
+    <h2>From upload to interview-ready<br>in three steps</h2>
+    <p>Our AI engine parses, scores, and optimizes your resume in seconds — then prepares you for the interview.</p>
+    <div class="how-steps">
+      <div class="how-step reveal reveal-delay-1">
+        <div class="how-step-num">01</div>
+        <h3>Upload Your Resume</h3>
+        <p>Drag and drop your PDF or DOCX. Our parser extracts every section with high fidelity, no reformatting required.</p>
+      </div>
+      <div class="how-step reveal reveal-delay-2">
+        <div class="how-step-num">02</div>
+        <h3>Get Your Audit Report</h3>
+        <p>Receive a detailed score across ATS compatibility, impact metrics, keyword density, and structural clarity.</p>
+      </div>
+      <div class="how-step reveal reveal-delay-3">
+        <div class="how-step-num">03</div>
+        <h3>Practice & Optimize</h3>
+        <p>Use the interactive assistant to rewrite bullet points, simulate interviews, and track improvement over time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chat -->
+  <section class="chat-section reveal" id="chat">
+    <div class="chat-section-label">
+      <div class="section-overline" style="justify-content:center;">Interactive Practice</div>
+      <h2>Interactive Practice Session</h2>
+      <p>Ask questions about your resume, request section rewrites, or practice interview questions.</p>
+    </div>
+    <div class="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">CV</div>
+        <div class="chat-header-info">
+          <h3>CVViews Assistant</h3>
+          <span>Ready to assist</span>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg ai">
+          <div class="msg-avatar">CV</div>
+          <div class="msg-bubble">Welcome to CVViews. You can upload your resume for a diagnostic audit, request bullet point rewrites, or practice tailored interview questions based on your experience.</div>
+        </div>
+        <div class="msg user">
+          <div class="msg-avatar">U</div>
+          <div class="msg-bubble">What are the most common reasons resumes get rejected?</div>
+        </div>
+        <div class="msg ai">
+          <div class="msg-avatar">CV</div>
+          <div class="msg-bubble">The four most frequent rejection triggers are:<br><br><strong>1. Lack of measurable outcomes</strong> – Describing tasks instead of business impact.<br><strong>2. Incompatible ATS formatting</strong> – Complex tables and multi-column designs.<br><strong>3. Missing core competencies</strong> – Leaving out essential industry keywords.<br><strong>4. Unclear scope</strong> – Vague ownership and generic responsibilities.</div>
+        </div>
+      </div>
+      <div class="suggestions">
+        <button class="suggestion-chip">Audit my resume summary</button>
+        <button class="suggestion-chip">Suggest stronger action verbs</button>
+        <button class="suggestion-chip">Check keyword density</button>
+        <button class="suggestion-chip">Generate interview questions</button>
+      </div>
+      <div class="chat-input-area">
+        <textarea id="chatInput" class="chat-input" placeholder="Type your question or response..." rows="1"></textarea>
+        <button id="sendBtn" class="send-btn" aria-label="Send message">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features reveal" id="features">
+    <div class="section-overline" style="justify-content:center;">Core Features</div>
+    <h2>Everything you need to advance</h2>
+    <p>A full suite of career tools to transform your resume from average to exceptional.</p>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <h3>Structural Audit</h3>
+        <p>Analyze every section of your resume with detailed, actionable feedback and a precision score breakdown.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Rapid Analysis</h3>
+        <p>Receive comprehensive scoring and metric recommendations in under 15 seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>ATS Optimization</h3>
+        <p>Align your resume with applicant tracking standards and inject high-value industry keywords.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎙️</div>
+        <h3>Interview Simulation</h3>
+        <p>Practice realistic behavioral and technical interview questions tailored specifically to your profile.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section reveal">
+    <div class="cta-card">
+      <h2>Ready to land your<br><span class="grad">dream job?</span></h2>
+      <p>Join over 50,000 professionals who have transformed their career prospects with CVViews.</p>
+      <div class="cta-actions">
+        <button class="btn-primary" onclick="document.getElementById('chat').scrollIntoView({behavior:'smooth'})">
+          Start Free Analysis
+        </button>
+        <button class="btn-secondary" id="btnFeatures">Explore Features →</button>
+      </div>
+      <p class="cta-note">No credit card required · Free forever plan available</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a href="#" class="logo" aria-label="CVViews">
+          <div class="logo-icon">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="1" width="26" height="26" rx="7" stroke="#0a0a0a" stroke-width="2"/>
+              <rect x="4.5" y="4.5" width="19" height="19" rx="4.5" stroke="#0a0a0a" stroke-width="1"/>
+              <rect x="7.5" y="9.5" width="13" height="2.5" rx="1.25" fill="#0a0a0a"/>
+              <rect x="7.5" y="13.5" width="10" height="2.5" rx="1.25" fill="#0a0a0a"/>
+              <rect x="7.5" y="17.5" width="11.5" height="2.5" rx="1.25" fill="#0a0a0a"/>
+            </svg>
+          </div>
+          <span class="logo-text">CVVIEWS</span>
+        </a>
+        <p>We transform ordinary resumes into high-impact career assets that open doors to top opportunities.</p>
+        <div class="social-links">
+          <a href="#" class="social-btn" aria-label="LinkedIn">in</a>
+          <a href="#" class="social-btn" aria-label="Twitter">𝕏</a>
+          <a href="#" class="social-btn" aria-label="GitHub">GH</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#chat">Practice Chat</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <ul>
+          <li><a href="#about">About Us</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 CVViews. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookies</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
