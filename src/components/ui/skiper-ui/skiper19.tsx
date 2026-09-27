@@ -16,11 +16,11 @@ const Skiper19 = () => {
     >
       <div className="mt-42 relative flex w-fit flex-col items-center justify-center gap-5 text-center">
         <h1 className="font-jakarta-sans relative z-10 text-7xl font-medium tracking-[-0.08em] lg:text-9xl">
-          The Stroke <br /> That follows the <br />
+          O traço <br /> que acompanha o <br />
           Scroll Progress
         </h1>
         <p className="font-jakarta-sans relative z-10 max-w-2xl text-xl font-medium text-[#1F3A4B]">
-          Scroll down to see the effect
+          Desça para ver o efeito
         </p>
 
         <LinePath
@@ -40,15 +40,15 @@ const Skiper19 = () => {
               and online
             </p>
             <p className="w-fit text-right text-sm lg:text-left">
-              sep 1, 2025 <br /> the Moosa pind
+              1 set. 2025 <br /> Moosa Pind
             </p>
           </div>
           <div className="flex w-full flex-wrap items-center justify-between gap-12 uppercase lg:w-fit lg:justify-center">
             <p className="w-fit text-sm">
-              onilne <br /> free
+              online <br /> gratuito
             </p>
             <p className="w-fit text-right text-sm lg:text-left">
-              in person tickets <br /> $600
+              bilhetes presenciais <br /> 600 $
             </p>
           </div>
         </div>

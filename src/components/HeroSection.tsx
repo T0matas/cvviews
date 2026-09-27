@@ -100,7 +100,7 @@ const TECH_ITEMS = [
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden min-h-[75vh] flex items-center justify-center px-6 pt-14 pb-20 lg:pt-20 lg:pb-24">
+    <section className="home-hero-enter relative overflow-hidden min-h-0 sm:min-h-[60vh] flex items-center justify-center px-4 sm:px-6 pt-8 pb-10 sm:pt-14 sm:pb-20 lg:pt-20 lg:pb-24">
       <div className="hero-portugal-glow" aria-hidden="true" />
 
       <div className="max-w-4xl mx-auto w-full flex flex-col items-center text-center relative z-10">
@@ -108,36 +108,35 @@ export function HeroSection() {
         {/* Main Title */}
         <h1 className="font-hero-title text-5xl sm:text-6xl lg:text-[76px] font-black tracking-[-0.035em] leading-[1.08] text-gray-950 mb-6 select-none">
           <span className="block mb-2 text-gray-950">
-            Job hunting?
+            Analise o seu CV com IA
           </span>
 
           <span className="relative inline-flex items-baseline justify-center flex-wrap gap-x-3">
-            <span className="text-gray-950 font-black">Let</span>
+            <span className="font-serif-italic font-normal text-gray-900">Consiga</span>
 
             <span className="font-serif-italic font-normal text-[58px] sm:text-[72px] lg:text-[88px] tracking-normal text-gray-900 inline-flex">
-              AI handle
+              mais entrevistas
             </span>
 
-            <span className="text-gray-950 font-black">it.</span>
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-base sm:text-lg lg:text-xl text-gray-600 leading-relaxed max-w-2xl mb-9 font-normal mx-auto">
-          Build an ATS-optimized resume in seconds, pinpoint formatting and keyword gaps, and ace your interviews with realistic simulations â€” all on autopilot.
+          Carregue o seu CV para descobrir a pontuação ATS, corrigir falhas de formatação e receber sugestões práticas para se destacar nas candidaturas.
         </p>
 
         {/* CTA Button */}
-        <div className="flex items-center justify-center mb-14 sm:mb-16">
-          <button
-            onClick={() => document.getElementById("upload-cv")?.scrollIntoView({ behavior: "smooth" })}
-            className="liquid-glass-button inline-flex items-center gap-3 pl-8 pr-3 py-3 rounded-full text-white font-bold text-base hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group"
+        <div className="flex items-center justify-center mb-8 sm:mb-16">
+          <a
+            href="#upload-cv"
+            className="liquid-glass-button inline-flex items-center gap-3 pl-8 pr-3 py-3 rounded-full text-white font-bold text-base hover:-translate-y-0.5 active:translate-y-0 transition-all cursor-pointer group focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-gray-950"
           >
-            <span>Get Started</span>
+            <span>Analisar o meu CV</span>
             <div className="liquid-glass-icon w-8 h-8 rounded-full flex items-center justify-center transition-colors">
               <ArrowUpRight className="w-4 h-4 stroke-[2.8] text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
-          </button>
+          </a>
         </div>
 
       </div>

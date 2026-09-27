@@ -2,10 +2,13 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Mail, Lock, CheckCircle2, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
+import { setStoredUser } from "@/lib/userSession";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,20 +19,21 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setTimeout(() => {
+      setStoredUser({ name: email.split("@")[0] || "Utilizador", email });
       setIsLoading(false);
-      setLoginSuccess(true);
+      router.push("/");
     }, 600);
   };
 
   return (
-    <main className="auth-page-enter min-h-screen bg-[#f4efe6] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans selection:bg-gray-200">
+    <main className="auth-page-enter portugal-atmosphere min-h-screen bg-[#f4efe6] flex items-center justify-center p-4 sm:p-6 lg:p-8 font-sans selection:bg-gray-200">
       {/* Full-Page Centered CVViews Split Container */}
       <div
-        className="auth-card-enter w-full max-w-4xl bg-[#fffdf8] rounded-3xl border border-black/[0.1] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[580px]"
+        className="auth-card-enter w-full max-w-4xl bg-[#fcf8ef] rounded-3xl border border-black/[0.1] shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 min-h-[580px]"
       >
         
         {/* LEFT COLUMN: Black Branding Panel (Tailored to CVViews Site) */}
-        <div className="md:col-span-5 bg-[#0a0a0a] text-white p-8 sm:p-10 flex flex-col justify-between">
+        <div className="auth-panel-enter md:col-span-5 bg-[#0a0a0a] text-white p-8 sm:p-10 flex flex-col justify-between">
           
           {/* Top Brand Logo */}
           <Link href="/" className="inline-flex items-center gap-2.5 group w-fit" aria-label="CVViews Home">
@@ -44,44 +48,47 @@ export default function LoginPage() {
 
           {/* Middle Headline */}
           <div className="my-auto py-10">
-            <h2 className="text-2xl sm:text-3xl font-black font-hero-title text-white leading-snug mb-3">
-              Turn your resume into an unstoppable opportunity.
+            <h2 className="text-2xl sm:text-3xl font-black font-hero-title text-white leading-[1.08] mb-3">
+              <span className="block">Transforme o seu CV</span>
+              <span className="font-serif-italic text-3xl sm:text-4xl font-normal leading-tight">
+                numa oportunidade irresistível.
+              </span>
             </h2>
             <p className="text-xs text-gray-400 leading-relaxed">
-              Pinpoint ATS flaws, receive actionable rewrites, and practice tailored interview simulations.
+              Identifique falhas ATS, receba reformulações práticas e prepare-se com simulações de entrevistas adaptadas.
             </p>
           </div>
 
           {/* Bottom Footnote (Clean metric without avatar circles) */}
           <div className="text-[11px] text-gray-500 font-medium">
-            Over 50,000 candidates interview-ready
+            Mais de 50 000 candidatos preparados para entrevistas
           </div>
         </div>
 
         {/* RIGHT COLUMN: Clean White Auth Form */}
-        <div className="md:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-[#fffdf8]">
+        <div className="auth-form-enter md:col-span-7 p-6 sm:p-10 flex flex-col justify-center bg-[#fcf8ef]">
           <div className="max-w-sm w-full mx-auto">
             
             {/* Header */}
             <div className="mb-6">
               <h1 className="text-2xl font-bold text-gray-950 mb-1">
-                Welcome back
+                Bem-vindo de volta
               </h1>
               <p className="text-xs text-gray-500">
-                Access your dashboard and saved audits
+                Aceda ao seu painel e às auditorias guardadas
               </p>
             </div>
 
             {loginSuccess ? (
               <div className="p-6 rounded-2xl bg-emerald-50 border border-emerald-200 text-center animate-fadeIn">
                 <CheckCircle2 className="w-10 h-10 text-emerald-600 mx-auto mb-2" />
-                <h3 className="text-base font-bold text-emerald-950 mb-1">Signed in successfully</h3>
-                <p className="text-xs text-emerald-700 mb-4">Redirecting you to CVViews Site...</p>
+                <h3 className="text-base font-bold text-emerald-950 mb-1">Sessão iniciada com sucesso</h3>
+                <p className="text-xs text-emerald-700 mb-4">A redirecioná-lo para o CVViews...</p>
                 <Link
                   href="/"
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gray-950 text-white text-xs font-bold hover:bg-gray-800 transition-colors"
                 >
-                  <span>Go to CVViews</span>
+                  <span>Ir para o CVViews</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
@@ -91,7 +98,7 @@ export default function LoginPage() {
                 <div className="grid grid-cols-2 gap-2.5 mb-5">
                   <button
                     type="button"
-                    aria-label="Sign in with Google"
+                    aria-label="Iniciar sessão com o Google"
                     className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-black/[0.08] text-xs font-semibold text-gray-800 transition-colors cursor-pointer"
                   >
                     <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
@@ -117,7 +124,7 @@ export default function LoginPage() {
 
                   <button
                     type="button"
-                    aria-label="Sign in with GitHub"
+                    aria-label="Iniciar sessão com o GitHub"
                     className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-black/[0.08] text-xs font-semibold text-gray-800 transition-colors cursor-pointer"
                   >
                     <svg className="w-4 h-4 fill-gray-900 shrink-0" viewBox="0 0 24 24">
@@ -131,7 +138,7 @@ export default function LoginPage() {
                 <div className="relative flex items-center justify-center mb-5">
                   <div className="border-t border-black/[0.08] w-full" />
                   <span className="bg-white px-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider absolute">
-                    or continue with email
+                    ou continuar com e-mail
                   </span>
                 </div>
 
@@ -140,7 +147,7 @@ export default function LoginPage() {
                   {/* Email address */}
                   <div>
                     <label className="text-xs font-semibold text-gray-700 block mb-1">
-                      Email address
+                      Endereço de e-mail
                     </label>
                     <div className="relative flex items-center">
                       <Mail className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
@@ -149,7 +156,7 @@ export default function LoginPage() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@company.com"
+                        placeholder="nome@empresa.pt"
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 border border-black/[0.1] focus:border-black focus:bg-white text-xs text-gray-950 placeholder-gray-400 outline-none transition-colors"
                       />
                     </div>
@@ -159,13 +166,13 @@ export default function LoginPage() {
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-semibold text-gray-700">
-                        Password
+                        Palavra-passe
                       </label>
                       <a
-                        href="#"
+                        href="mailto:suporte@cvviews.pt?subject=Recuperação%20de%20palavra-passe"
                         className="text-xs text-gray-500 hover:text-gray-950 transition-colors"
                       >
-                        Forgot password?
+                        Esqueceu-se da palavra-passe?
                       </a>
                     </div>
                     <div className="relative flex items-center">
@@ -182,7 +189,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 text-gray-400 hover:text-gray-600 transition-colors p-1"
-                        aria-label={showPassword ? "Hide password" : "Show password"}
+                        aria-label={showPassword ? "Ocultar palavra-passe" : "Mostrar palavra-passe"}
                       >
                         {showPassword ? (
                           <EyeOff className="w-4 h-4" />
@@ -203,7 +210,7 @@ export default function LoginPage() {
                       <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
-                        <span>Sign In</span>
+                        <span>Iniciar sessão</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -212,18 +219,18 @@ export default function LoginPage() {
 
                 {/* Footer Switcher */}
                 <div className="mt-6 text-center text-xs text-gray-500">
-                  <span>Don&apos;t have an account? </span>
+                  <span>Ainda não tem uma conta? </span>
                   <Link
                     href="/signup"
                     className="font-bold text-gray-950 hover:underline transition-all"
                   >
-                    Create free account
+                    Criar conta gratuita
                   </Link>
                 </div>
 
                 {/* Terms of Service Notice */}
                 <p className="mt-4 text-[10px] text-center text-gray-400 leading-relaxed">
-                  By continuing, you agree to our Terms of Service and Privacy Policy.
+                  Ao continuar, aceita os nossos <Link href="/termos" className="underline hover:text-gray-700">Termos de serviço</Link> e a <Link href="/privacidade" className="underline hover:text-gray-700">Política de privacidade</Link>.
                 </p>
               </div>
             )}

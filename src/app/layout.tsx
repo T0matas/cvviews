@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Manrope } from "next/font/google";
 import "./globals.css";
+import { SmoothScroll } from "@/components/SmoothScroll";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { PageEntrance } from "@/components/PageEntrance";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -9,9 +12,9 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "CVViews – AI Resume Diagnosis & Interview Generator",
+  title: "CVViews – Diagnóstico de CV e Simulação de Entrevistas com IA",
   description:
-    "Upload your resume, discover exactly what's strong and what needs improvement, chat with the AI mentor, and generate personalized real interview simulations.",
+    "Carregue o seu CV, descubra o que está bem e o que precisa de melhorar, converse com o mentor de IA e crie simulações de entrevistas personalizadas.",
   icons: {
     icon: "/icon.svg",
   },
@@ -23,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={manrope.variable}>
+    <html lang="pt-PT" className={manrope.variable}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -32,7 +35,14 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-sans antialiased bg-[#f4efe6]">{children}</body>
+      <body className="font-sans antialiased bg-[#f4efe6]">
+        <SmoothScroll>
+          <>
+            <PageEntrance>{children}</PageEntrance>
+            <CookieConsentBanner />
+          </>
+        </SmoothScroll>
+      </body>
     </html>
   );
 }

@@ -85,7 +85,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
             {/* Close button */}
             <button
               onClick={onClose}
-              aria-label="Close modal"
+              aria-label="Fechar janela"
               className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
@@ -104,16 +104,16 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
               {/* Middle Headline */}
               <div className="my-auto py-8">
                 <h3 className="text-2xl font-extrabold text-white leading-snug mb-3">
-                  Turn your resume into an unstoppable opportunity.
+                  Transforme o seu CV numa oportunidade irresistível.
                 </h3>
                 <p className="text-xs text-gray-400 leading-relaxed">
-                  Pinpoint ATS flaws, receive actionable rewrites, and practice tailored interview simulations.
+                  Identifique falhas ATS, receba reformulações práticas e prepare-se com simulações de entrevistas adaptadas.
                 </p>
               </div>
 
               {/* Bottom Simple Footnote */}
               <div className="text-[11px] text-gray-500">
-                Over 50,000 candidates interview-ready
+                Mais de 50 000 candidatos preparados para entrevistas
               </div>
             </div>
 
@@ -123,12 +123,12 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                 {/* Header */}
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold text-gray-950 mb-1">
-                    {mode === "login" ? "Welcome back" : "Create account"}
+                    {mode === "login" ? "Bem-vindo de volta" : "Criar conta"}
                   </h2>
                   <p className="text-xs text-gray-500">
                     {mode === "login"
-                      ? "Access your dashboard and saved audits"
-                      : "Start auditing your resume in seconds"}
+                      ? "Aceda ao seu painel e às auditorias guardadas"
+                      : "Comece a analisar o seu CV em segundos"}
                   </p>
                 </div>
 
@@ -174,7 +174,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                 <div className="relative flex items-center justify-center mb-5">
                   <div className="border-t border-black/[0.08] w-full" />
                   <span className="bg-white px-2.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider absolute">
-                    or continue with email
+                    ou continuar com e-mail
                   </span>
                 </div>
 
@@ -183,7 +183,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   {mode === "signup" && (
                     <div>
                       <label className="text-xs font-semibold text-gray-700 block mb-1">
-                        Full Name
+                        Nome completo
                       </label>
                       <div className="relative flex items-center">
                         <User className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
@@ -192,7 +192,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
-                          placeholder="Jane Doe"
+                          placeholder="Joana Silva"
                           className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 border border-black/[0.1] focus:border-black focus:bg-white text-xs text-gray-950 placeholder-gray-400 outline-none transition-colors"
                         />
                       </div>
@@ -201,7 +201,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
 
                   <div>
                     <label className="text-xs font-semibold text-gray-700 block mb-1">
-                      Email address
+                      Endereço de e-mail
                     </label>
                     <div className="relative flex items-center">
                       <Mail className="w-4 h-4 text-gray-400 absolute left-3 pointer-events-none" />
@@ -210,7 +210,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="you@company.com"
+                        placeholder="nome@empresa.pt"
                         className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-gray-50 border border-black/[0.1] focus:border-black focus:bg-white text-xs text-gray-950 placeholder-gray-400 outline-none transition-colors"
                       />
                     </div>
@@ -219,15 +219,14 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="text-xs font-semibold text-gray-700">
-                        Password
+                        Palavra-passe
                       </label>
                       {mode === "login" && (
                         <a
-                          href="#"
-                          onClick={(e) => e.preventDefault()}
+                          href="mailto:suporte@cvviews.pt?subject=Recuperação%20de%20palavra-passe"
                           className="text-[11px] text-gray-600 hover:text-gray-950 hover:underline font-medium"
                         >
-                          Forgot password?
+                          Esqueceu-se da palavra-passe?
                         </a>
                       )}
                     </div>
@@ -261,7 +260,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                       <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
                     ) : (
                       <>
-                        {mode === "login" ? "Sign In" : "Create Account"}
+                        {mode === "login" ? "Iniciar sessão" : "Criar conta"}
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -277,16 +276,16 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
                   >
                     {mode === "login" ? (
                       <>
-                        Don&apos;t have an account?{" "}
+                        Ainda não tem uma conta?{" "}
                         <span className="font-bold text-gray-950 hover:underline">
-                          Create free account
+                          Criar conta gratuita
                         </span>
                       </>
                     ) : (
                       <>
-                        Already have an account?{" "}
+                        Já tem uma conta?{" "}
                         <span className="font-bold text-gray-950 hover:underline">
-                          Sign in
+                          Iniciar sessão
                         </span>
                       </>
                     )}
@@ -295,7 +294,7 @@ export function AuthModal({ isOpen, onClose, initialMode = "login" }: AuthModalP
 
                 {/* Terms Footer */}
                 <p className="mt-4 text-[10px] text-center text-gray-400 leading-relaxed">
-                  By continuing, you agree to our Terms of Service and Privacy Policy.
+                  Ao continuar, aceita os nossos Termos de serviço e a Política de privacidade.
                 </p>
               </div>
             </div>
