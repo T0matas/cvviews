@@ -1,0 +1,217 @@
+{
+ "analyze": {
+  "review": {
+   "is_cv": true,
+   "not_cv_reason": "",
+   "overall_score": 68,
+   "verdict": "Bom currículo, mas pode ser afinado para a vaga.",
+   "summary": "O CV mostra uma carreira sólida em marketing digital, com experiência em gestão de redes sociais, campanhas e liderança de equipa. Falta-se quantificação detalhada e foco nas palavras-chave da vaga de Gestora de Marketing Digital.",
+   "profile": {
+    "name": "Joana Ribeiro",
+    "current_role": "Marketing Manager",
+    "seniority": "Intermédio",
+    "years_experience": "5 a 6 anos"
+   },
+   "scores": [
+    {
+     "category": "Impacto e resultados",
+     "score": 70,
+     "note": "Resultados mensuráveis são mencionados, mas poucos detalhes sobre alcance e métricas."
+    },
+    {
+     "category": "Clareza e estrutura",
+     "score": 75,
+     "note": "Estrutura clara, mas formatação inconsistente e uso de maiúsculas desnecessárias."
+    },
+    {
+     "category": "Adequação à vaga",
+     "score": 65,
+     "note": "Experiência alinhada, porém faltam competências específicas da vaga como SEO e automação."
+    },
+    {
+     "category": "Competências e palavras-chave",
+     "score": 70,
+     "note": "Lista de ferramentas presente, mas poderia incluir palavras-chave como “estratégia omnichannel”."
+    },
+    {
+     "category": "Formatação e ATS",
+     "score": 60,
+     "note": "Uso de separadores e letras maiúsculas pode confundir ATS; falta de secções padronizadas."
+    },
+    {
+     "category": "Linguagem e tom",
+     "score": 80,
+     "note": "Linguagem simples e correta, sem jargões exagerados."
+    }
+   ],
+   "strengths": [
+    {
+     "title": "Resultados comprovados",
+     "detail": "Mostra um aumento concreto nas vendas online, o que demonstra foco em resultados.",
+     "evidence": "Aumentei as vendas online em 32% num ano com uma nova estratégia de email marketing"
+    },
+    {
+     "title": "Liderança de equipa",
+     "detail": "Coordena uma equipa, indicando capacidade de gestão e trabalho em equipa.",
+     "evidence": "Coordenação de uma equipa de 3 pessoas"
+    },
+    {
+     "title": "Domínio de ferramentas digitais",
+     "detail": "Lista ferramentas relevantes para marketing digital, mostrando competência técnica.",
+     "evidence": "Google Analytics, Meta Business Suite, Mailchimp, Canva, Photoshop, Microsoft Office"
+    }
+   ],
+   "weaknesses": [
+    {
+     "title": "Formatação pouco ATS-friendly",
+     "detail": "Uso de blocos de texto em maiúsculas e separadores não padronizados dificulta a leitura automática.",
+     "fix": "Reformata o CV com secções claras (Experiência, Formação, Competências) e elimina maiúsculas excessivas.",
+     "severity": "high"
+    },
+    {
+     "title": "Pouca quantificação adicional",
+     "detail": "Apenas um resultado numérico é apresentado; os restantes pontos carecem de métricas.",
+     "fix": "Inclui percentagens ou números para outras realizações, como alcance de campanhas ou ROI.",
+     "severity": "medium"
+    },
+    {
+     "title": "Ausência de palavras-chave da vaga",
+     "detail": "Termos como SEO, automação, estratégia omnichannel não aparecem.",
+     "fix": "Integra essas palavras-chave nas descrições de funções, mantendo a veracidade.",
+     "severity": "medium"
+    },
+    {
+     "title": "Perfil muito genérico",
+     "detail": "A frase de perfil usa termos vagos como “dinâmica e proativa” sem exemplos concretos.",
+     "fix": "Reescreve o perfil focando nas competências específicas da vaga e nos resultados obtidos.",
+     "severity": "low"
+    }
+   ],
+   "rewrites": [
+    {
+     "original": "Profissional dinâmica e proativa, apaixonada por marketing digital, com grande capacidade de trabalho em equipa e orientação para resultados.",
+     "improved": "Profissional de marketing digital com experiência comprovada em aumento de vendas online (32% em [X] meses) e liderança de equipa, focada em estratégias orientadas a resultados.",
+     "why": "Torna-se mais concreta ao incluir um resultado mensurável e destaca competências relevantes para a vaga."
+    },
+    {
+     "original": "Responsável pelas redes sociais da marca",
+     "improved": "Gestão integral das redes sociais, aumentando o engajamento em [X %] e gerando leads qualificados.",
+     "why": "Adiciona impacto mensurável e demonstra valor para o empregador."
+    },
+    {
+     "original": "Criação de conteúdos para clientes de vários setores",
+     "improved": "Desenvolvimento de conteúdos digitais adaptados a diferentes setores, resultando em aumento médio de tráfego orgânico de [X %].",
+     "why": "Mostra resultados e alinha a tarefa às competências de SEO e estratégia de conteúdo."
+    }
+   ],
+   "ats": {
+    "score": 62,
+    "issues": [
+     "Uso de letras maiúsculas em cabeçalhos pode ser interpretado como texto não-relevante pelos ATS.",
+     "Separadores (P E R F I L, E X P E R I Ê N C I A) não são reconhecidos como títulos de secção padrão."
+    ],
+    "missing_keywords": [
+     "SEO",
+     "automação",
+     "estratégia omnichannel",
+     "KPIs",
+     "ROI",
+     "conteúdo SEO",
+     "campanhas de performance",
+     "analytics"
+    ]
+   },
+   "next_steps": [
+    "Reformata o CV com secções padrão e elimina maiúsculas excessivas.",
+    "Adiciona métricas quantificadas a todas as experiências profissionais.",
+    "Inclui palavras-chave da vaga (SEO, automação, ROI, etc.) nas descrições.",
+    "Atualiza o perfil profissional com resultados concretos.",
+    "Revê a ordem das competências para destacar as mais relevantes à vaga."
+   ]
+  },
+  "cvText": "Joana Ribeiro\nMarketing Digital\nPorto | joana.ribeiro@example.com\nP E R F I L\nProfissional dinâmica e proativa, apaixonada por marketing digital, com grande capacidade de trabalho em\nequipa e orientação para resultados.\nE X P E R I Ê N C I A P RO F I S S I O N A L\nMarketing Manager 2021 – atual\nLumo Casa, decoração, Porto\nResponsável pelas redes sociais da marca\nGestão de campanhas de Google Ads e Meta Ads\nAumentei as vendas online em 32% num ano com uma nova estratégia de email marketing\nCoordenação de uma equipa de 3 pessoas\nTécnica de Marketing 2018 – 2021\nPonte Norte, agência de comunicação, Porto\nCriação de conteúdos para clientes de vários setores\nApoio na organização de eventos\nElaboração de relatórios mensais\nFO R M AÇ ÃO\nLicenciatura em Ciências da Comunicação 2014 – 2018\nUniversidade do Porto\nCO M P E T Ê N C I A S\nGoogle Analytics, Meta Business Suite, Mailchimp,\nCanva, Photoshop, Microsoft Office\nL Í N G UA S\nPortuguês (nativo)\nInglês (C1)\nEspanhol (B1)"
+ },
+ "chat": "Profissional de marketing digital com histórico comprovado de aumento de vendas online (32 % em um ano) e gestão de campanhas multicanal que melhoraram o ROI. Líder de equipa de três pessoas, focada em estratégias orientadas a resultados e na otimização de KPIs. \n\n*Alterações*: substituímos termos genéricos (“dinâmica e proativa”) por resultados mensuráveis e por competências de liderança e orientação a KPIs.",
+ "interview": {
+  "title": "Gestora de Marketing Digital, entrevista misto",
+  "intro": "Prepara-te a responder a estas perguntas, focando em exemplos concretos do teu percurso.",
+  "questions": [
+   {
+    "cv_link": "Perfil / experiência recente",
+    "difficulty": "Aquecimento",
+    "question": "Podes resumir brevemente o que fazes atualmente na Lumo Casa e quais são as tuas principais responsabilidades?",
+    "type": "Sobre o CV",
+    "why_asked": "Confirmar a compreensão geral do cargo atual e a adequação ao perfil da vaga.",
+    "tips": [
+     "Destaca as áreas de responsabilidade chave (social media, campanhas, equipa).",
+     "Menciona resultados relevantes de forma concisa.",
+     "Usa verbos de ação e números quando possível."
+    ]
+   },
+   {
+    "cv_link": "Aumento de vendas online em 32 %",
+    "difficulty": "Média",
+    "question": "Como desenvolveste a estratégia de email marketing que gerou um crescimento de 32 % nas vendas online? Quais foram os passos críticos e as ferramentas que utilizaste?",
+    "type": "Comportamental",
+    "why_asked": "Avaliar a capacidade de planear e executar campanhas orientadas a resultados.",
+    "tips": [
+     "Descreve a análise inicial (dados, segmentação).",
+     "Explica a escolha da ferramenta (Mailchimp) e a estrutura dos e-mails.",
+     "Aponta os indicadores de performance que monitoraste e como ajustaste a campanha."
+    ]
+   },
+   {
+    "cv_link": "Coordenação de equipa de 3 pessoas",
+    "difficulty": "Difícil",
+    "question": "Qual foi o maior desafio ao coordenar a equipa de marketing e como garantiste que todos cumprissem os prazos e mantivessem a qualidade do trabalho?",
+    "type": "Situacional",
+    "why_asked": "Entender as competências de liderança e gestão de projetos.",
+    "tips": [
+     "Fala sobre a definição de papéis e prioridades.",
+     "Menciona a utilização de ferramentas de colaboração (ex.: Trello, e-mail).",
+     "Mostra como trataste conflitos ou desvios de prazo."
+    ]
+   },
+   {
+    "cv_link": "Experiência na Ponte Norte",
+    "difficulty": "Média",
+    "question": "Na agência Ponte Norte trabalhaste com clientes de setores variados; como adaptaste a criação de conteúdos às diferentes audiências?",
+    "type": "Técnica",
+    "why_asked": "Verificar a flexibilidade criativa e o conhecimento de plataformas de conteúdo.",
+    "tips": [
+     "Cita exemplos de dois setores diferentes.",
+     "Explica o processo de pesquisa de público-alvo.",
+     "Mostra a escolha de formatos (posts, infográficos) e ferramentas (Canva, Photoshop)."
+    ]
+   },
+   {
+    "cv_link": "",
+    "difficulty": "Aquecimento",
+    "question": "O que te motiva a avançar para a posição de Gestora de Marketing Digital nesta empresa e que valor acreditas que podes acrescentar à equipa?",
+    "type": "Motivação",
+    "why_asked": "Avaliar alinhamento de objetivos pessoais com a missão da empresa.",
+    "tips": [
+     "Relaciona a missão da empresa com a tua experiência em e-commerce.",
+     "Destaca competências específicas (Google Ads, Meta Business Suite).",
+     "Mostra entusiasmo por trabalhar em equipa e por projetos de crescimento."
+    ]
+   }
+  ]
+ },
+ "feedback": {
+  "score": 4,
+  "verdict": "Resposta muito curta e pouco detalhada",
+  "went_well": [
+   "Mencionou o resultado concreto (32 % de aumento)",
+   "Indicou que fez segmentação da lista"
+  ],
+  "improve": [
+   "Explicar o processo completo (análise, definição de objetivos, criação de conteúdo, testes A/B, calendário)",
+   "Citar as ferramentas específicas usadas (Mailchimp, Google Analytics, etc.)",
+   "Incluir métricas intermédias (taxa de abertura, cliques) e como foram monitorizadas"
+  ],
+  "stronger_answer": "Na Lumo Casa identifiquei que as vendas online estavam estagnadas, por isso defini o objetivo de aumentar a taxa de conversão em [X] % num ano. Primeiro analisei o comportamento dos utilizadores no site com Google Analytics e segmentei a base de contactos em Mailchimp por perfil de compra, frequência e interesses. Criei duas linhas editoriais de email: novidades de produtos e ofertas personalizadas, e desenvolvi conteúdos com Canva e Photoshop, sempre alinhados à identidade da marca. Lancei uma campanha piloto, medindo taxa de abertura e cliques, e ajustei o assunto e o CTA com testes A/B. Depois implementei um calendário quinzenal, automatizei fluxos de nutrição e acompanhei os resultados no relatório mensal da Meta Business Suite. O esforço gerou um crescimento de 32 % nas vendas online em doze meses."
+ },
+ "qIndex": 1,
+ "answer": "Na Lumo Casa as vendas online estavam paradas. Segmentei a lista de clientes e criei campanhas de email por interesse. Num ano, subiram 32%."
+}

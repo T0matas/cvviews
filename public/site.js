@@ -230,12 +230,6 @@ document.addEventListener("click", (e) => {
 const film = $("#filmVideo");
 if (film) {
   const toggle = $("#filmToggle");
-  // Phones get the tall cut of the film.
-  if (matchMedia("(max-width: 640px)").matches) {
-    film.poster = "/video/cvviews-filme-tall.jpg";
-    $("source", film).src = "/video/cvviews-filme-tall.mp4";
-    film.load();
-  }
   let heldByUser = reduceMotion;
   const show = (playing) => {
     toggle.setAttribute("aria-pressed", String(!playing));

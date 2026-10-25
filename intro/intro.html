@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CVviews, introdução</title>
+<!--
+  The intro video. The interface pieces are the site's own components (its real stylesheet, its real
+  markup), and the words in them are what the app produced for a made-up CV (content.json,
+  cv-corrigido.jpg). Every frame is a pure function of the time, renderAt(t); render.mjs steps through
+  it and writes intro/cvviews-introducao.mp4. Opened on its own (through render.mjs's server), it plays.
+-->
+<link rel="stylesheet" href="/fonts.css" />
+<link rel="stylesheet" href="/styles.css" />
+<style>
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+.stage { position: relative; width: 100vw; height: 100vh; overflow: hidden; background: var(--bg); }
+/* nothing moves on its own: every change comes from renderAt */
+.stage *, .stage *::before, .stage *::after { animation: none !important; transition: none !important; }
+
+.glow { display: none; position: absolute; left: 0; top: 0; width: 1000px; height: 1000px; margin: -500px 0 0 -500px; border-radius: 50%; pointer-events: none; }
+.g1 { background: radial-gradient(closest-side, rgb(116 201 156 / .16), rgb(116 201 156 / .05) 55%, transparent); }
+.g2 { background: radial-gradient(closest-side, rgb(238 138 118 / .08), transparent); }
+.g3 { background: radial-gradient(closest-side, rgb(236 235 230 / .06), transparent); }
+.vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 95% at 50% 45%, transparent 58%, rgb(0 0 0 / .55)); z-index: 20; }
+
+.scene { position: absolute; inset: 0; display: none; perspective: 1400px; }
+.cam { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transform-style: preserve-3d; }
+
+/* 1. the opening line */
+.kwrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.kline { font: 400 58px/1.15 var(--serif); letter-spacing: -.03em; color: var(--ink); white-space: nowrap; display: flex; align-items: center; gap: .26em; }
+.kline2 { font: 400 92px/1.15 var(--serif); letter-spacing: -.035em; white-space: nowrap; }
+.kw { display: inline-block; }
+.kchip { display: inline-grid; place-items: center; width: 68px; height: 68px; border-radius: 999px; border: 1.5px solid var(--line-2); background: var(--card); color: var(--ink); font-size: 31px; box-shadow: 0 18px 40px -18px rgb(0 0 0 / .9); }
+.kroll { display: inline-block; height: 1.15em; overflow: hidden; position: relative; vertical-align: top; }
+.kroll-in { display: flex; flex-direction: column; align-items: flex-start; }
+.kr { display: block; height: 1.15em; white-space: nowrap; color: var(--ins); }
+
+/* 2-3. the composer, as on the page */
+.demo-dock { width: 760px; }
+.prompt-box { position: relative; min-height: 64px; padding: 8px 8px 6px; font: 400 17px/1.55 var(--sans); color: var(--ink); }
+.ph-text { position: absolute; left: 8px; top: 8px; color: var(--ink-3); white-space: nowrap; }
+.typed { white-space: pre; }
+.caret { display: inline-block; width: 2px; height: 1.2em; margin-left: 1px; vertical-align: -3px; background: var(--ink); }
+
+/* 4. thinking */
+.think { display: flex; align-items: center; gap: 20px; height: 108px; padding: 0 44px 0 38px; border-radius: 999px; background: var(--card); box-shadow: 0 0 0 1px var(--line-2), 0 40px 90px -40px rgb(0 0 0 / .95); }
+.think-dot { width: 18px; height: 18px; border-radius: 99px; background: var(--ins); }
+.think-txt { position: relative; height: 46px; min-width: 470px; font: 500 35px/46px var(--sans); color: var(--ink); }
+.think-txt > span { position: absolute; left: 0; top: 0; white-space: nowrap; }
+.think-dots { display: inline-flex; gap: 6px; margin-left: 4px; }
+.think-dots i { width: 7px; height: 7px; border-radius: 9px; background: var(--ink-2); }
+
+/* 5-9. the conversation column, as on the page */
+.demo-col { width: 760px; }
+.chatcol { display: flex; flex-direction: column; gap: 28px; }
+.turn-me { align-self: flex-end; }
+.cvshot-page { margin: 0; }
+.cvshot-page img { display: block; width: 100%; height: auto; border-radius: var(--r); box-shadow: var(--lift-hi); background: #fff; }
+.del-wrap { position: relative; }
+.rw-text del#rwDel { text-decoration: none; color: var(--ink); }
+.strike { position: absolute; left: -2px; top: 0; width: calc(100% + 4px); height: 100%; overflow: visible; pointer-events: none; }
+.strike path { fill: none; stroke: var(--del); stroke-width: 2.2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.rw-text ins .w { display: inline; }
+.rw-text ins#rwIns { text-decoration-color: transparent; }
+.blank { border-radius: 6px; padding: 0 3px; margin: 0 -3px; }
+.faq-line { margin-top: 20px; max-width: 52ch; font: italic 400 17px/1.5 var(--serif); color: var(--ink-2); }
+.copy-act { margin-top: 10px; display: inline-block; }
+.fake-area { min-height: 92px; }
+#fbBtn { white-space: nowrap; }
+.q-inner { padding-bottom: 0; }
+
+/* 10. what else it does */
+.fpill { position: absolute; left: 0; top: 0; display: inline-flex; align-items: center; gap: 14px; height: 74px; padding: 0 30px 0 24px; border-radius: 999px; background: var(--card); box-shadow: 0 0 0 1px var(--line-2), 0 30px 60px -30px rgb(0 0 0 / .95); font: 600 25px/1 var(--sans); color: var(--ink); white-space: nowrap; }
+.fpill .ph { font-size: 29px; color: var(--ins); }
+
+/* 11. the name */
+.endc { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.end-word { position: relative; font: 450 150px/1 var(--serif); letter-spacing: -.04em; color: var(--ink); }
+.pen { position: absolute; left: 4%; right: 2%; bottom: -18px; height: 30px; overflow: visible; }
+.pen path { fill: none; stroke: var(--ins); stroke-width: 3.2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.end-tag { margin-top: 48px; font: 400 26px/1.3 var(--serif); color: var(--ink-2); }
+
+.cursor { position: absolute; left: 0; top: 0; width: 22px; height: 30px; z-index: 30; pointer-events: none; filter: drop-shadow(0 2px 4px rgb(0 0 0 / .55)); transform-origin: 2px 2px; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="glow g1" id="g1"></div>
+  <div class="glow g2" id="g2"></div>
+  <div class="glow g3" id="g3"></div>
+
+  <!-- 1 -->
+  <section class="scene" id="s1"><div class="cam" id="cam1">
+    <div class="kwrap">
+      <p class="kline"><span class="kw">Conhece</span><span class="kw">o</span><span class="kw">teu</span><span class="kw">novo</span><span class="kchip" id="kchip"><i class="ph ph-paperclip"></i></span></p>
+      <p class="kline2"><span class="kroll" id="kroll"><span class="kroll-in" id="krollIn"><span class="kr">revisor de CV.</span><span class="kr">recrutador de bolso.</span><span class="kr">treinador de entrevistas.</span></span></span></p>
+    </div>
+  </div></section>
+
+  <!-- 2-3 -->
+  <section class="scene" id="s2"><div class="cam" id="cam2">
+    <div class="demo-dock">
+      <div class="composer" id="composer">
+        <div class="attachments"><div class="att" id="att"><span class="att-ic is-pdf"><i class="ph ph-file-pdf"></i></span><span class="att-text"><span class="att-name">CV-Joana-Ribeiro.pdf</span><span class="att-meta">PDF, 55 KB</span></span><span class="att-x"><i class="ph ph-x"></i></span></div></div>
+        <div class="prompt-box" id="promptBox"><span class="ph-text" id="ph1">Cola aqui o teu CV, ou anexa um PDF, Word ou fotografias</span><span class="ph-text" id="ph2">A que vaga te estás a candidatar? (opcional)</span><span class="typed" id="typed"></span><i class="caret" id="caret1"></i></div>
+        <div class="bar">
+          <span class="icon-btn" id="clip"><i class="ph ph-paperclip"></i></span>
+          <div class="modes"><label class="mode"><input type="radio" name="m" checked /><span>Rever</span></label><label class="mode"><input type="radio" name="m" /><span>Perguntar ao Leo</span></label><label class="mode"><input type="radio" name="m" /><span>Entrevista</span></label></div>
+          <span class="send" id="send"><i class="ph ph-arrow-up"></i></span>
+        </div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- 4 -->
+  <section class="scene" id="s4"><div class="cam" id="cam4">
+    <div class="think" id="think"><span class="think-dot" id="thinkDot"></span><span class="think-txt"><span id="tt1">A ler o teu CV</span><span id="tt2">A comparar com a vaga</span><span id="tt3">A marcar o que funciona</span></span><span class="think-dots" id="thinkDots"><i></i><i></i><i></i></span></div>
+  </div></section>
+
+  <!-- 5 -->
+  <section class="scene" id="s5"><div class="cam" id="cam5">
+    <div class="demo-col">
+      <div class="turn turn-leo"><p class="byline" id="rvBy">Leo</p><div class="turn-body"><div class="rv">
+        <p class="rv-profile" id="rvProfile">Joana Ribeiro, Marketing Manager, intermédio, 5 a 6 anos</p>
+        <h3 class="rv-verdict" id="rvVerdict">Bom currículo, mas pode ser afinado para a vaga.</h3>
+        <p class="rv-score-line" id="rvScore">No geral, dava-lhe <strong><span id="scoreN">68</span> em 100</strong>, na média. A partir de 85 é excelente.</p>
+        <h4 class="rv-h" id="rvH">O que corrigir</h4>
+        <ol class="notes" id="notes">
+          <li><p class="note-title">Formatação pouco ATS-friendly <span class="sev sev-high">corrigir primeiro</span></p><p class="note-fix"><em>O que fazer:</em> Reformata o CV com secções claras (Experiência, Formação, Competências) e elimina maiúsculas excessivas.</p></li>
+          <li><p class="note-title">Ausência de palavras-chave da vaga <span class="sev sev-medium">vale a pena corrigir</span></p><p class="note-fix"><em>O que fazer:</em> Integra essas palavras-chave nas descrições de funções, mantendo a veracidade.</p></li>
+          <li><p class="note-title">Perfil muito genérico <span class="sev sev-low">pormenor</span></p><p class="note-fix"><em>O que fazer:</em> Reescreve o perfil focando nas competências específicas da vaga e nos resultados obtidos.</p></li>
+        </ol>
+      </div></div></div>
+    </div>
+  </div></section>
+
+  <!-- 6 -->
+  <section class="scene" id="s6"><div class="cam" id="cam6">
+    <div class="demo-col" id="cvCol">
+      <h4 class="rv-h" id="cvH" style="margin-top: 0">O teu CV, corrigido</h4>
+      <p class="rv-p" id="cvP">O que anexaste, com esta revisão por cima: <span class="leg leg-del">a riscar</span>, <span class="leg leg-ins">a escrever no lugar</span> e <span class="leg leg-hi">a manter</span>.</p>
+      <figure class="cvshot-page" id="cvPage" style="margin-top: 18px"><img id="cvImg" src="/intro/cv-corrigido.jpg" alt="" /></figure>
+    </div>
+  </div></section>
+
+  <!-- 7 -->
+  <section class="scene" id="s7"><div class="cam" id="cam7">
+    <div class="demo-col">
+      <h4 class="rv-h" id="rwH" style="margin-top: 0">Linhas a reescrever</h4>
+      <div class="rewrites"><div class="rw">
+        <p class="rw-text" id="rwText"><span class="del-wrap" id="delWrap"><del id="rwDel">Responsável pelas redes sociais da marca</del><svg class="strike" viewBox="0 0 100 10" preserveAspectRatio="none"><path id="strikePath" pathLength="1" d="M0 6.2 C 30 5.4, 62 6.6, 100 5.6" /></svg></span> <ins id="rwIns">Gestão integral das redes sociais, aumentando o engajamento em <span class="blank" id="blank">[X %]</span> e gerando leads qualificados.</ins></p>
+        <p class="rw-why" id="rwWhy">Mostra o impacto em vez de só a tarefa.</p>
+        <span class="text-act copy-act" id="copyAct">Copiar a nova linha</span>
+      </div></div>
+      <p class="faq-line" id="faqLine">Quando uma linha reescrita precisa de um número que só tu sabes, fica um [espaço] para o preencheres.</p>
+    </div>
+  </div></section>
+
+  <!-- 8 -->
+  <section class="scene" id="s8"><div class="cam" id="cam8">
+    <div class="demo-col chatcol">
+      <div class="turn turn-me" id="me"><p class="said">Reescreve o meu perfil em duas frases, sem clichés.</p></div>
+      <div class="turn turn-leo" id="leo"><p class="byline" id="leoBy">Leo</p><div class="turn-body"><p class="thinking" id="leoThink">O Leo está a pensar…</p><p id="leoText">Profissional de marketing digital com histórico comprovado de aumento de vendas online e gestão de campanhas multicanal que melhoraram o ROI. Líder de equipa de três pessoas, focada em estratégias orientadas a resultados e na otimização de KPIs.</p></div></div>
+    </div>
+  </div></section>
+
+  <!-- 9 -->
+  <section class="scene" id="s9"><div class="cam" id="cam9">
+    <div class="demo-col" id="ivCol">
+      <ol class="qs" style="margin-top: 0"><li class="q open">
+        <div class="q-head" id="qHead"><span class="q-n">2</span><span><span class="q-text">Como desenvolveste a estratégia de email marketing que gerou um crescimento de 32 % nas vendas online?</span><span class="q-meta">Comportamental, média</span></span><i class="ph ph-caret-down"></i></div>
+        <div class="q-inner">
+          <p id="qWhy"><b>Porque perguntam:</b> Avaliar a capacidade de planear e executar campanhas orientadas a resultados.</p>
+          <div class="practice">
+            <span class="field-label" id="qLabel">Treina a tua resposta</span>
+            <div class="field fake-area" id="ansBox"><span id="ans"></span><i class="caret" id="caret2"></i></div>
+            <div class="practice-row" id="qRow"><span>Recebes uma nota, dicas e uma versão mais forte.</span><span class="btn btn-ink btn-sm" id="fbBtn">Pedir feedback</span></div>
+            <div class="fb" id="fb">
+              <p class="fb-line" id="fbLine"><strong>4 em 10.</strong> Resposta muito curta e pouco detalhada</p>
+              <div class="fb-cols" id="fbCols">
+                <div><h5>O que resultou</h5><ul><li>Mencionou o resultado concreto (32 % de aumento)</li><li>Indicou que fez segmentação da lista</li></ul></div>
+                <div><h5>Para ficar mais forte</h5><ul><li>Citar as ferramentas específicas usadas (Mailchimp, Google Analytics, etc.)</li><li>Incluir métricas intermédias (taxa de abertura, cliques) e como foram monitorizadas</li></ul></div>
+              </div>
+              <div class="fb-model" id="fbModel"><h5>Uma versão mais forte</h5><p>Na Lumo Casa identifiquei que as vendas online estavam estagnadas, por isso defini o objetivo de aumentar a taxa de conversão em [X] % num ano. Primeiro analisei o comportamento dos utilizadores no site com Google Analytics e segmentei a base de contactos em Mailchimp por perfil de compra, frequência e interesses.</p></div>
+            </div>
+          </div>
+        </div>
+      </li></ol>
+    </div>
+  </div></section>
+
+  <!-- 10 -->
+  <section class="scene" id="s10"><div class="cam" id="cam10">
+    <span class="fpill" id="fp0"><i class="ph ph-clock"></i>Em menos de um minuto</span>
+    <span class="fpill" id="fp1"><i class="ph ph-file-pdf"></i>PDF, Word ou fotografias</span>
+    <span class="fpill" id="fp2"><i class="ph ph-chat-circle"></i>O Leo já leu o teu CV</span>
+    <span class="fpill" id="fp3"><i class="ph ph-microphone-stage"></i>Perguntas de entrevista a partir do teu CV</span>
+    <span class="fpill" id="fp4"><i class="ph ph-check-circle"></i>Grátis para começar</span>
+  </div></section>
+
+  <!-- 11 -->
+  <section class="scene" id="s11"><div class="cam" id="cam11">
+    <div class="endc"><p class="end-word" id="endWord">CVviews<svg class="pen" viewBox="0 0 300 26" preserveAspectRatio="none"><path id="endPen" pathLength="1" d="M4 15 C 70 9, 150 10, 296 12" /></svg></p><p class="end-tag" id="endTag">O teu CV, lido como um recrutador o lê.</p></div>
+  </div></section>
+
+  <svg class="cursor" id="cursor" viewBox="0 0 17 24"><path d="M1.2 1.2 L1.2 19.4 L5.6 15.2 L8.6 22.2 L11.7 20.9 L8.8 14.1 L14.9 14 Z" fill="#fff" stroke="#111" stroke-width="1.2" stroke-linejoin="round" /></svg>
+  <div class="vignette"></div>
+</div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const W = innerWidth, H = innerHeight;
+const DURATION = 55;
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, x) => a + (b - a) * x;
+const E = {
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  outQuint: (x) => 1 - Math.pow(1 - x, 5),
+  inOut: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  back: (x) => { const c = 1.6; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); },
+};
+const env = (t, a, b, c, d) => Math.min(E.out(seg(t, a, b)), 1 - E.inOut(seg(t, c, d)));
+
+// Places an element: opacity, offset, scale, rotations and blur, all at once.
+function put(el, { o = 1, x = 0, y = 0, s = 1, r = 0, rx = 0, ry = 0, blur = 0 } = {}) {
+  el.style.opacity = o.toFixed(4);
+  el.style.visibility = o < 0.002 ? "hidden" : "visible";
+  el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) rotate(${r.toFixed(2)}deg) scale(${s.toFixed(4)})`;
+  el.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+}
+const rise = (t, a, dur = 0.7, dist = 18, blur = 8) => {
+  const p = E.out(seg(t, a, a + dur));
+  return { o: p, y: (1 - p) * dist, blur: (1 - p) * blur };
+};
+const drawPath = (path, p) => { path.style.strokeDashoffset = (1 - p).toFixed(4); path.style.visibility = p > 0.002 ? "visible" : "hidden"; };
+const words = (el, cls) => {
+  // keeps inner markup (like the [X %] blank) by splitting text nodes only
+  const out = [];
+  const walk = (node) => {
+    for (const child of [...node.childNodes]) {
+      if (child.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        child.textContent.split(/(\s+)/).forEach((part) => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.append(part); return; }
+          const s = document.createElement("span"); s.className = cls; s.textContent = part; frag.append(s); out.push(s);
+        });
+        child.replaceWith(frag);
+      } else if (child.nodeType === 1 && !child.classList.contains("blank")) walk(child);
+      else if (child.nodeType === 1) { child.classList.add(cls); out.push(child); }
+    }
+  };
+  walk(el);
+  return out;
+};
+const dots = (el, t, speed = 1.6) => $$("i", el).forEach((d, i) => {
+  const k = 0.5 + 0.5 * Math.sin((t * speed - i * 0.18) * Math.PI * 2);
+  d.style.opacity = (0.3 + 0.7 * k).toFixed(3);
+  d.style.transform = `translateY(${(-3 * k).toFixed(2)}px)`;
+});
+
+/* ---------- Camera ----------
+   A camera looks at a point of its scene (cx, cy, in the scene's own layout) from a zoom s, and can tilt.
+   Keys are [time, state]; between keys it eases. A fast move blurs a little, as a real camera would. */
+function camState(keys, t) {
+  if (t <= keys[0][0]) return { ...keys[0][1] };
+  for (let i = 1; i < keys.length; i++) {
+    const [t1, k1] = keys[i];
+    if (t <= t1) {
+      const [t0, k0] = keys[i - 1];
+      const u = E.inOut(seg(t, t0, t1));
+      const out = {};
+      for (const k of new Set([...Object.keys(k0), ...Object.keys(k1)])) out[k] = lerp(k0[k] ?? k1[k], k1[k] ?? k0[k], u);
+      return out;
+    }
+  }
+  return { ...keys[keys.length - 1][1] };
+}
+function setCam(cam, keys, t, extra = {}) {
+  const a = camState(keys, t), b = camState(keys, t - 1 / 30);
+  const speed = Math.hypot(a.cx - b.cx, a.cy - b.cy) * a.s + Math.abs(a.s - b.s) * 300;
+  const st = { rx: 0, ry: 0, rz: 0, ...a };
+  cam.style.transformOrigin = `${st.cx.toFixed(2)}px ${st.cy.toFixed(2)}px`;
+  cam.style.transform = `translate(${(W / 2 - st.cx).toFixed(2)}px, ${(H / 2 - st.cy).toFixed(2)}px) scale(${st.s.toFixed(4)}) rotateX(${st.rx.toFixed(2)}deg) rotateY(${st.ry.toFixed(2)}deg) rotate(${st.rz.toFixed(2)}deg)`;
+  const blur = Math.min(3.5, Math.max(0, speed - 28) * 0.045) + (extra.blur || 0);
+  cam.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+  cam.style.opacity = (extra.o ?? 1).toFixed(4);
+}
+// Where things sit in their scene, measured once with every camera at rest.
+const P = {};
+function measureAll() {
+  const at = (sel, cam, fx = 0.5, fy = 0.5) => {
+    const c = $(cam).getBoundingClientRect(), r = $(sel).getBoundingClientRect();
+    return { x: r.left - c.left + r.width * fx, y: r.top - c.top + r.height * fy, w: r.width, h: r.height };
+  };
+  P.chip = at("#kchip", "#cam1");
+  P.clip = at("#clip", "#cam2");
+  P.composer = at("#composer", "#cam2");
+  P.prompt = at("#promptBox", "#cam2", 0.32, 0.5);
+  P.send = at("#send", "#cam2");
+  P.verdict = at("#rvVerdict", "#cam5", 0.5, 0.4);
+  P.notes = at("#notes", "#cam5", 0.5, 0.45);
+  P.cvHead = at("#cvP", "#cam6", 0.5, 1.6);
+  const page = at("#cvPage", "#cam6", 0, 0);
+  const img = (fx, fy) => ({ x: page.x + page.w * fx, y: page.y + page.h * fy });
+  P.cvTop = img(0.5, 0.17);
+  P.cvProfile = img(0.42, 0.255);
+  P.cvExp = img(0.43, 0.385);
+  P.cvSlip = img(0.64, 0.5);
+  P.cvWhole = img(0.5, 0.3);
+  P.rw = at("#rwText", "#cam7", 0.5, 0.5);
+  P.rwLow = at("#faqLine", "#cam7", 0.5, 0.2);
+  P.chat = at(".chatcol", "#cam8", 0.5, 0.5);
+  P.qHead = at("#qHead", "#cam9", 0.5, 0.5);
+  P.ans = at("#ansBox", "#cam9", 0.5, 0.5);
+  P.fb = at("#fbLine", "#cam9", 0.5, 2.2);
+  P.fbModel = at("#fbModel", "#cam9", 0.5, 0.5);
+}
+const C = (p, s, more = {}) => ({ cx: p.x, cy: p.y, s, ...more });
+
+/* ---------- Scenes ---------- */
+const scenes = [];
+const scene = (id, a, b, fn) => scenes.push({ el: $(id), a, b, fn });
+
+// 1. "Conhece o teu novo (clip) revisor de CV." The last words roll, like a slot.
+const kws = $$(".kw"), krs = $$(".kr");
+let rollWidths = [], rollLine = 0;
+scene("#s1", 0, 4.45, (t) => {
+  kws.forEach((w, i) => put(w, rise(t, 0.2 + i * 0.12, 0.75, 26, 12)));
+  const pop = E.back(seg(t, 0.72, 1.22));
+  put($("#kchip"), { o: clamp(seg(t, 0.72, 0.95)), s: 0.35 + 0.65 * pop, r: (1 - pop) * -20 });
+  const k = E.inOut(seg(t, 1.95, 2.4)) + E.inOut(seg(t, 2.95, 3.4));
+  $("#krollIn").style.transform = `translateY(${(-k * rollLine).toFixed(2)}px)`;
+  const i0 = Math.min(1, Math.floor(k)), f = k - i0;
+  $("#kroll").style.width = `${lerp(rollWidths[i0], rollWidths[Math.min(2, i0 + 1)], f).toFixed(2)}px`;
+  put($("#kroll"), rise(t, 0.95, 0.7, 22, 10));
+  setCam($("#cam1"), [[0, C(P.base1, 1)], [3.75, C(P.base1, 1.04)], [4.45, C(P.chip, 7.5)]], t, { o: 1 - E.inOut(seg(t, 4.15, 4.45)) });
+});
+
+// 2-3. Attaching the CV, saying the job, sending.
+const TARGET = "Gestora de Marketing Digital";
+const typeAt = (() => {
+  let acc = 0, seed = 5; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const steps = [...TARGET].map((ch) => (acc += (ch === " " ? 0.075 : 0.05) + rnd() * 0.035));
+  return steps.map((v) => v / acc);
+})();
+scene("#s2", 4.05, 11.75, (t) => {
+  setCam($("#cam2"), [
+    [4.05, C(P.clip, 4.2)],
+    [4.85, C(P.composer, 1.42)],
+    [7.95, C(P.composer, 1.48)],
+    [8.55, C(P.prompt, 2.35)],
+    [10.25, C(P.prompt, 2.42)],
+    [10.85, C(P.composer, 1.45)],
+    [11.25, C(P.composer, 1.47)],
+    [11.75, C(P.send, 3.2)],
+  ], t, { o: Math.min(E.out(seg(t, 4.05, 4.35)), 1 - E.inOut(seg(t, 11.4, 11.75))) });
+  const fly = E.outQuint(seg(t, 5.35, 6.05));
+  put($("#att"), { o: clamp(seg(t, 5.35, 5.6)), x: (1 - fly) * 260, y: (1 - fly) * 170, r: (1 - fly) * 9, s: 1 + (1 - fly) * 0.25 });
+  const swap = E.inOut(seg(t, 6.0, 6.35));
+  put($("#ph1"), { o: 1 - swap });
+  const typing = t >= 8.6;
+  put($("#ph2"), { o: swap * (typing ? 0 : 1) });
+  const n = typeAt.filter((v) => v <= seg(t, 8.6, 10.1)).length;
+  $("#typed").textContent = TARGET.slice(0, n);
+  const caretOn = t > 7.9 && (t < 10.2 || Math.floor(t * 2.4) % 2 === 0);
+  $("#caret1").style.opacity = caretOn ? 1 : 0;
+  const press = Math.max(0, 1 - Math.abs(t - 11.12) / 0.12);
+  put($("#send"), { s: 1 - 0.1 * press });
+  const clipPress = Math.max(0, 1 - Math.abs(t - 5.22) / 0.12);
+  put($("#clip"), { s: 1 - 0.1 * clipPress });
+});
+
+// 4. The app thinking: its own words, in a pill that floats.
+scene("#s4", 11.45, 14.5, (t) => {
+  const inn = E.out(seg(t, 11.5, 12.1)), out = E.inOut(seg(t, 14.0, 14.5));
+  put($("#think"), { o: inn * (1 - out), s: 0.82 + 0.18 * inn + 0.12 * out, ry: lerp(-12, 8, seg(t, 11.45, 14.5)), rx: lerp(6, -4, seg(t, 11.45, 14.5)), y: Math.sin(t * 2.1) * 6, blur: (1 - inn) * 10 + out * 8 });
+  [[$("#tt1"), 11.5, 12.55], [$("#tt2"), 12.55, 13.45], [$("#tt3"), 13.45, 99]].forEach(([el, a, b]) => {
+    const i = E.out(seg(t, a, a + 0.35)), o = E.inOut(seg(t, b, b + 0.3));
+    put(el, { o: Math.min(i, 1 - o), y: (1 - i) * 22 - o * 22, blur: (1 - i) * 4 + o * 4 });
+  });
+  dots($("#thinkDots"), t);
+  const k = 0.5 + 0.5 * Math.sin(t * 5);
+  $("#thinkDot").style.transform = `scale(${(0.8 + 0.3 * k).toFixed(3)})`;
+  setCam($("#cam4"), [[11.45, C(P.base4, 1)], [14.5, C(P.base4, 1.06)]], t);
+});
+
+// 5. The verdict and what to fix.
+const verdictWords = words($("#rvVerdict"), "vw");
+scene("#s5", 14.25, 19.9, (t) => {
+  setCam($("#cam5"), [[14.25, C(P.verdict, 1.5)], [16.1, C(P.verdict, 1.56)], [16.85, C(P.notes, 1.22)], [19.25, C(P.notes, 1.26)], [19.9, { cx: P.notes.x, cy: P.notes.y + 520, s: 1.2 }]], t, { o: 1 - E.inOut(seg(t, 19.45, 19.9)) });
+  put($("#rvBy"), rise(t, 14.3, 0.6, 10, 5));
+  put($("#rvProfile"), rise(t, 14.35, 0.6, 10, 5));
+  verdictWords.forEach((w, i) => put(w, rise(t, 14.5 + i * 0.07, 0.7, 20, 10)));
+  put($("#rvScore"), rise(t, 15.05, 0.6, 12, 6));
+  $("#scoreN").textContent = String(Math.round(68 * E.out(seg(t, 15.15, 16.0))));
+  put($("#rvH"), rise(t, 16.55, 0.6, 14, 6));
+  $$("#notes > li").forEach((li, i) => {
+    const p = E.out(seg(t, 16.85 + i * 0.3, 17.65 + i * 0.3));
+    put(li, { o: p, y: (1 - p) * 40, rx: (1 - p) * 38, blur: (1 - p) * 8 });
+  });
+});
+
+// 6. The CV itself, drawn on: the camera reads it like a person would.
+scene("#s6", 19.6, 26.95, (t) => {
+  setCam($("#cam6"), [
+    [19.6, C(P.cvHead, 1.12)],
+    [20.95, C(P.cvHead, 1.12)],
+    [22.1, C(P.cvProfile, 1.62)],
+    [22.75, C(P.cvProfile, 1.66)],
+    [23.75, C(P.cvExp, 1.68)],
+    [24.4, C(P.cvExp, 1.7)],
+    [25.3, C(P.cvSlip, 1.68)],
+    [25.95, C(P.cvSlip, 1.7)],
+    [26.95, C(P.cvWhole, 0.92)],
+  ], t, { o: Math.min(E.out(seg(t, 19.6, 19.9)), 1 - E.inOut(seg(t, 26.55, 26.95))) });
+  put($("#cvH"), rise(t, 19.7, 0.6, 14, 6));
+  put($("#cvP"), rise(t, 19.9, 0.6, 12, 6));
+  const p = E.outQuint(seg(t, 20.05, 21.35));
+  put($("#cvPage"), { o: clamp(seg(t, 20.05, 20.4)), y: (1 - p) * 140, rx: (1 - p) * 32, r: (1 - p) * -3, s: 0.94 + 0.06 * p });
+});
+
+// 7. One line, before and after: struck, rewritten, and the number left blank.
+const insWords = words($("#rwIns"), "w");
+scene("#s7", 26.75, 32.35, (t) => {
+  setCam($("#cam7"), [[26.75, C(P.rw, 1.62)], [30.35, C(P.rw, 1.68)], [30.95, C(P.rwLow, 1.42)], [32.35, C(P.rwLow, 1.46)]], t, { o: Math.min(E.out(seg(t, 26.75, 27.05)), 1 - E.inOut(seg(t, 31.95, 32.35))) });
+  put($("#rwH"), rise(t, 26.9, 0.6, 12, 6));
+  put($("#delWrap"), rise(t, 27.1, 0.6, 12, 6));
+  const strike = seg(t, 27.75, 28.3);
+  drawPath($("#strikePath"), E.inOut(strike));
+  $("#rwDel").style.color = strike > 0 ? `rgb(${Math.round(lerp(236, 143, strike))} ${Math.round(lerp(235, 141, strike))} ${Math.round(lerp(230, 134, strike))})` : "";
+  insWords.forEach((w, i) => { const a = 28.45 + i * 0.075; const q = E.out(seg(t, a, a + 0.35)); put(w, { o: q, y: (1 - q) * 6, blur: (1 - q) * 4 }); });
+  // the line's underline runs under the spaces too, so it comes in once every word is there
+  const under = E.out(seg(t, 28.45 + insWords.length * 0.075 + 0.2, 28.45 + insWords.length * 0.075 + 0.6));
+  $("#rwIns").style.textDecorationColor = `rgb(116 201 156 / ${(0.45 * under).toFixed(3)})`;
+  const glow = Math.max(0, Math.sin(Math.PI * seg(t, 30.05, 31.0)));
+  $("#blank").style.boxShadow = `0 0 0 ${(2 * glow).toFixed(2)}px rgb(116 201 156 / ${(0.9 * glow).toFixed(3)})`;
+  $("#blank").style.background = `rgb(116 201 156 / ${(0.16 * glow).toFixed(3)})`;
+  put($("#rwWhy"), rise(t, 29.75, 0.6, 10, 5));
+  put($("#copyAct"), rise(t, 29.9, 0.6, 10, 5));
+  $("#copyAct").textContent = t >= 31.62 ? "Copiado" : "Copiar a nova linha";
+  put($("#faqLine"), rise(t, 30.75, 0.7, 12, 6));
+});
+
+// 8. Asking Leo.
+const leoWords = words($("#leoText"), "lw");
+scene("#s8", 32.15, 38.35, (t) => {
+  setCam($("#cam8"), [[32.15, C(P.chat, 1.34)], [38.35, C(P.chat, 1.4)]], t, { o: Math.min(E.out(seg(t, 32.15, 32.45)), 1 - E.inOut(seg(t, 37.9, 38.35))) });
+  const me = E.outQuint(seg(t, 32.35, 32.95));
+  put($("#me"), { o: clamp(seg(t, 32.35, 32.6)), x: (1 - me) * 40, s: 0.96 + 0.04 * me });
+  put($("#leoBy"), rise(t, 33.15, 0.5, 8, 4));
+  put($("#leoThink"), { o: env(t, 33.25, 33.45, 33.85, 34.05) * (0.55 + 0.45 * (0.5 + 0.5 * Math.sin(t * 7))) });
+  $("#leoThink").style.display = t < 34.05 ? "" : "none";
+  leoWords.forEach((w, i) => { const a = 34.1 + i * 0.07; const q = E.out(seg(t, a, a + 0.35)); put(w, { o: q, y: (1 - q) * 5, blur: (1 - q) * 4 }); });
+});
+
+// 9. Practising the interview, and the feedback.
+const ANSWER = "Na Lumo Casa as vendas online estavam paradas. Segmentei a lista de clientes e criei campanhas de email por interesse. Num ano, subiram 32%.";
+const ansAt = (() => {
+  let acc = 0, seed = 9; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const steps = [...ANSWER].map((ch) => (acc += (ch === " " ? 0.05 : ".,".includes(ch) ? 0.09 : 0.03) + rnd() * 0.02));
+  return steps.map((v) => v / acc);
+})();
+scene("#s9", 38.15, 47.05, (t) => {
+  setCam($("#cam9"), [
+    [38.15, C(P.qHead, 1.5)],
+    [39.1, C(P.qHead, 1.52)],
+    [39.65, C(P.ans, 1.55)],
+    [43.35, C(P.ans, 1.56)],
+    [44.05, C(P.fb, 1.3)],
+    [45.0, C(P.fb, 1.32)],
+    [45.7, C(P.fbModel, 1.34)],
+    [47.05, C(P.fbModel, 1.38)],
+  ], t, { o: Math.min(E.out(seg(t, 38.15, 38.45)), 1 - E.inOut(seg(t, 46.6, 47.05))) });
+  put($("#qHead"), rise(t, 38.25, 0.7, 16, 8));
+  put($("#qWhy"), rise(t, 38.5, 0.6, 12, 6));
+  put($("#qLabel"), rise(t, 38.7, 0.6, 10, 5));
+  put($("#ansBox"), rise(t, 38.8, 0.6, 10, 5));
+  put($("#qRow"), rise(t, 38.9, 0.6, 10, 5));
+  const n = ansAt.filter((v) => v <= seg(t, 39.95, 43.0)).length;
+  $("#ans").textContent = ANSWER.slice(0, n);
+  $("#caret2").style.opacity = t > 39.8 && t < 43.15 && (t < 43.0 || Math.floor(t * 2.4) % 2 === 0) ? 1 : 0;
+  const press = Math.max(0, 1 - Math.abs(t - 43.3) / 0.12);
+  put($("#fbBtn"), { s: 1 - 0.07 * press });
+  $("#fbBtn").textContent = t >= 43.3 && t < 43.95 ? "A ler a tua resposta…" : "Pedir feedback";
+  const fb = E.out(seg(t, 43.95, 44.6));
+  put($("#fb"), { o: fb, y: (1 - fb) * 26, blur: (1 - fb) * 8 });
+  put($("#fbLine"), rise(t, 44.05, 0.5, 8, 4));
+  put($("#fbCols"), rise(t, 44.3, 0.6, 10, 5));
+  put($("#fbModel"), rise(t, 45.35, 0.6, 10, 5));
+});
+
+// 10. What else it does, in passing.
+const PILLS = [[-330, -150, -6], [250, -170, 5], [-360, 70, 4], [260, 95, -5], [-40, 210, 2]];
+scene("#s10", 46.85, 50.75, (t) => {
+  setCam($("#cam10"), [[46.85, { cx: W / 2, cy: H / 2, s: 1.08, ry: 10 }], [50.75, { cx: W / 2, cy: H / 2, s: 1, ry: -8 }]], t, { o: 1 - E.inOut(seg(t, 50.35, 50.75)) });
+  PILLS.forEach(([x, y, r], i) => {
+    const el = $(`#fp${i}`);
+    const p = E.back(seg(t, 47.0 + i * 0.22, 47.6 + i * 0.22));
+    const gather = E.inOut(seg(t, 49.85, 50.6));
+    const w = el.offsetWidth, h = el.offsetHeight;
+    put(el, {
+      o: clamp(seg(t, 47.0 + i * 0.22, 47.25 + i * 0.22)) * (1 - gather),
+      x: W / 2 - w / 2 + x * (1 - gather) + Math.sin(t * 1.3 + i) * 6,
+      y: H / 2 - h / 2 + y * (1 - gather) + Math.cos(t * 1.1 + i * 2) * 6,
+      s: (0.6 + 0.4 * p) * (1 - 0.4 * gather), r: r * (1 - gather), blur: gather * 6,
+    });
+  });
+});
+
+// 11. The name.
+scene("#s11", 50.45, DURATION, (t) => {
+  const fade = 1 - E.inOut(seg(t, 54.2, DURATION));
+  const w = rise(t, 50.6, 1.0, 26, 16);
+  put($("#endWord"), { ...w, o: w.o * fade });
+  drawPath($("#endPen"), E.inOut(seg(t, 51.35, 52.15)));
+  const g = rise(t, 51.8, 0.7, 12, 6);
+  put($("#endTag"), { ...g, o: g.o * fade });
+  setCam($("#cam11"), [[50.45, C(P.base11, 1.04)], [DURATION, C(P.base11, 1)]], t);
+});
+
+/* ---------- The pointer ---------- */
+const centerOf = (sel, dx = 0, dy = 0) => () => { const r = $(sel).getBoundingClientRect(); return [r.left + r.width / 2 + dx, r.top + r.height / 2 + dy]; };
+const fixed = (x, y) => () => [x, y];
+const TRACKS = [
+  { show: [4.75, 5.95], clicks: [5.22], way: [[4.75, fixed(W * 0.8, H * 0.95)], [5.15, centerOf("#clip", 3, 4)], [5.45, centerOf("#clip", 3, 4)], [5.95, centerOf("#clip", 90, 70)]] },
+  { show: [10.7, 11.5], clicks: [11.12], way: [[10.7, centerOf("#send", -170, 90)], [11.05, centerOf("#send", 2, 3)], [11.5, centerOf("#send", 2, 3)]] },
+  { show: [31.0, 31.95], clicks: [31.6], way: [[31.0, centerOf("#copyAct", 180, 60)], [31.5, centerOf("#copyAct", -10, 2)], [31.95, centerOf("#copyAct", -10, 2)]] },
+  { show: [39.25, 40.05], clicks: [39.78], way: [[39.25, centerOf("#ansBox", 260, 120)], [39.7, centerOf("#ansBox", -80, -10)], [40.05, centerOf("#ansBox", -40, 20)]] },
+  { show: [42.85, 43.75], clicks: [43.3], way: [[42.85, centerOf("#fbBtn", -160, 80)], [43.22, centerOf("#fbBtn", 4, 3)], [43.75, centerOf("#fbBtn", 30, 40)]] },
+];
+function pointer(t) {
+  const cur = $("#cursor");
+  put(cur, { o: 0 });
+  for (const tr of TRACKS) {
+    const [a, b] = tr.show;
+    if (t < a || t > b) continue;
+    const w = tr.way;
+    let k = w.findIndex(([tt]) => tt > t);
+    if (k === -1) k = w.length - 1;
+    const [t0, f0] = w[Math.max(0, k - 1)], [t1, f1] = w[k];
+    const u = t1 > t0 ? E.inOut(seg(t, t0, t1)) : 1;
+    const [x0, y0] = f0(), [x1, y1] = f1();
+    const arc = Math.sin(Math.PI * u) * Math.hypot(x1 - x0, y1 - y0) * 0.1;
+    const press = tr.clicks.reduce((m, c) => Math.max(m, 1 - Math.abs(t - c) / 0.12), 0);
+    put(cur, { o: env(t, a, a + 0.2, b - 0.25, b), x: lerp(x0, x1, u) + arc * 0.5 - 2, y: lerp(y0, y1, u) - arc - 2, s: 1 - 0.12 * press });
+  }
+}
+
+/* ---------- Light ---------- */
+function light(t) {
+  const strong = Math.max(env(t, 0, 1.2, 3.9, 4.6), env(t, 11.4, 12.2, 13.9, 14.6), env(t, 46.8, 47.8, 50.3, 51.0), env(t, 50.5, 51.8, 54.1, DURATION));
+  const base = 0.52 * E.out(seg(t, 0, 1.0)) * (1 - E.inOut(seg(t, 54.1, DURATION)));
+  put($("#g1"), { o: Math.max(base, strong), x: W * 0.5 + Math.sin(t * 0.23) * W * 0.16, y: H * 0.55 + Math.cos(t * 0.19) * H * 0.12, s: 1.2 + 0.1 * Math.sin(t * 0.31) });
+  put($("#g2"), { o: 0.6 * base + 0.3 * strong, x: W * 0.82 + Math.cos(t * 0.17) * W * 0.08, y: H * 0.25 + Math.sin(t * 0.21) * H * 0.1, s: 0.9 });
+  put($("#g3"), { o: 0.7 * base, x: W * 0.2 + Math.sin(t * 0.13) * W * 0.08, y: H * 0.8 + Math.cos(t * 0.15) * H * 0.06, s: 1 });
+}
+
+window.renderAt = (t) => {
+  for (const s of scenes) {
+    const on = t >= s.a && t <= s.b;
+    s.el.style.display = on ? "block" : "none";
+    if (on) s.fn(t);
+  }
+  light(t);
+  pointer(t);
+};
+window.FILM = { duration: DURATION, fps: 30 };
+
+const FACES = ["400 20px Literata", "450 20px Literata", "italic 400 20px Literata", "400 16px \"Host Grotesk\"", "600 16px \"Host Grotesk\"", "650 16px \"Host Grotesk\"", "500 20px Caveat", "16px Phosphor"];
+window.filmReady = Promise.all([...FACES.map((f) => document.fonts.load(f)), new Promise((r) => { const img = $("#cvImg"); if (img.complete) r(); else img.onload = img.onerror = r; })])
+  .then(() => document.fonts.ready)
+  .then(() => {
+    // measure with every scene laid out and every camera at rest
+    for (const s of scenes) s.el.style.display = "block";
+    rollWidths = krs.map((k) => k.offsetWidth);
+    rollLine = krs[0].offsetHeight;
+    // the camera dives into the clip while the last words show, so that is where it is measured
+    $("#kroll").style.width = `${rollWidths[2]}px`;
+    const mid = (cam) => ({ x: W / 2, y: H / 2 });
+    P.base1 = mid(); P.base4 = mid(); P.base11 = mid();
+    measureAll();
+    $("#kroll").style.width = `${rollWidths[0]}px`;
+    // hand-drawn strokes, sized in real pixels so the pen's progress is even along them
+    const fit = (path, shape) => {
+      const svg = path.ownerSVGElement, r = svg.getBoundingClientRect();
+      svg.setAttribute("viewBox", `0 0 ${r.width.toFixed(1)} ${r.height.toFixed(1)}`);
+      path.setAttribute("d", shape(r.width, r.height));
+    };
+    fit($("#strikePath"), (w, h) => `M2 ${(h * 0.6).toFixed(1)} C ${(w * 0.3).toFixed(1)} ${(h * 0.53).toFixed(1)}, ${(w * 0.62).toFixed(1)} ${(h * 0.65).toFixed(1)}, ${(w - 2).toFixed(1)} ${(h * 0.55).toFixed(1)}`);
+    fit($("#endPen"), (w, h) => `M${(w * 0.012).toFixed(1)} ${(h * 0.62).toFixed(1)} C ${(w * 0.23).toFixed(1)} ${(h * 0.36).toFixed(1)}, ${(w * 0.5).toFixed(1)} ${(h * 0.4).toFixed(1)}, ${(w * 0.988).toFixed(1)} ${(h * 0.46).toFixed(1)}`);
+    for (const s of scenes) s.el.style.display = "none";
+    window.renderAt(0);
+  });
+
+if (!location.hash.includes("render")) {
+  window.filmReady.then(() => {
+    const t0 = performance.now();
+    const loop = (now) => { window.renderAt(((now - t0) / 1000) % DURATION); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  });
+}
+</script>
+</body>
+</html>
