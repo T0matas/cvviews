@@ -73,10 +73,55 @@ If the document is not a CV, set is_cv to false, explain briefly in not_cv_reaso
 Write every field in European Portuguese (pt-PT), except quotes from the CV and rewritten lines, which stay in the CV's own language.
 ${HUMAN_STYLE}`;
 
+// The whole CV again, with the review applied: what goes is gone, what is weak is rewritten.
+const FULL_SCHEMA = obj({
+  name: str("The candidate's name, as on the CV."),
+  headline: str("Their title or target role, one short line. Empty string if the CV has none."),
+  contact: list(str("One contact detail (email, phone, city, link), exactly as on the CV."), "Contact details from the CV, in order. Empty if none."),
+  sections: list(obj({
+    title: str("Section title in the CV's own language, e.g. 'Professional experience' or 'Experiência profissional'."),
+    entries: list(obj({
+      title: str("Job title, degree or item name. Empty string for a plain paragraph (like a profile)."),
+      subtitle: str("Company or school and place. Empty string if none."),
+      dates: str("Dates exactly as on the CV. Empty string if none."),
+      lines: list(str("One bullet point, or for a paragraph entry the paragraph itself."), "The lines of this entry."),
+    }), "Entries in this section, in the CV's order."),
+  }), "Every section of the CV, in its order, nothing left out except what the review said to cut."),
+});
+
+const FULL_SYSTEM = `You are CVviews. You get a CV and a review of it, and you write the whole CV again with the review applied.
+Keep every true fact, section, job, date and contact detail. Apply the review: use its rewritten lines where they fit, drop what it said to cut, fix the weaknesses it found.
+Every line the review rewrote must appear as the review's improved version, and clichés it flagged go. Lines the review did not touch can be tightened, never padded.
+Work line by line. Every line you write comes from a line of the same job or section on the CV (or the review's rewrite of that line). Never move a line to another job, never write the same line twice.
+Never add anything the CV does not say: no new duties, achievements, frequencies, skill levels, tools, jobs or results. Names, companies, places and dates stay exactly as written (do not add months or change the format), and no examples the CV does not name (sectors, clients, channels).
+A placeholder like [X] or [X %] is only for a figure missing from a result the CV already mentions; do not add new results around placeholders.
+In Portuguese, write as in Portugal: "geri" (not "gerenciei"), "orçamento" (not "budget"), "equipa", "desempenho".
+Write in the CV's own language (an English CV stays in English, a Portuguese one in European Portuguese). Plain text only, no markdown.
+${HUMAN_STYLE}`;
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { error: "Usa POST." });
   try {
-    const { cv, target } = await readJson(req);
+    const { cv, target, mode, review: given } = await readJson(req);
+    if (mode === "full") {
+      // Part of a review already counted, so it counts nothing itself.
+      await gate(req, {});
+      const cvText = await readCv(cv);
+      const full = await structured({
+        system: FULL_SYSTEM,
+        content: [...cvTextBlocks(cvText, cv.name), { type: "text", text: `A revisão (JSON):\n${JSON.stringify(given || {}).slice(0, 20000)}\n\n${target?.trim() ? `Vaga: ${target.trim().slice(0, 2000)}\n\n` : ""}Escreve o CV todo, já corrigido.` }],
+        schema: FULL_SCHEMA,
+        maxTokens: 16000,
+      });
+      // Every line the review rewrote goes in as the review wrote it, even if the model left the old one.
+      const wordsOf = (s) => new Set(String(s).toLowerCase().match(/[\p{L}\p{N}]+/gu) || []);
+      const alike = (a, b) => { const x = wordsOf(a), y = wordsOf(b); let both = 0; for (const w of x) if (y.has(w)) both++; return both / Math.max(1, Math.min(x.size, y.size)); };
+      const rewrites = (given?.rewrites || []).filter((w) => w.original && w.improved);
+      const applied = (line) => rewrites.find((w) => alike(line, w.original) >= 0.75)?.improved ?? line;
+      const fix = (s) => blankUnknownNumbers(applied(s), cvText, target || "");
+      full.sections = (full.sections || []).map((s) => ({ ...s, entries: (s.entries || []).map((e) => ({ ...e, dates: String(e.dates || "").replace(/(\d{4}),\s*/g, "$1 - "), lines: (e.lines || []).map(fix) })) }));
+      return sendJson(res, 200, { full });
+    }
     await gate(req, { count: "review" });
     const ask = target?.trim()
       ? `Vaga ou anúncio:\n<target>\n${target.trim().slice(0, 6000)}\n</target>\n\nRevê o meu CV para esta vaga.`

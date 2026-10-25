@@ -1042,3 +1042,21 @@ textarea.field { resize: vertical; min-height: 120px; }
   .film-frame { border-radius: 8px; }
   .film-toggle { right: 8px; bottom: 8px; height: 30px; padding: 0 11px 0 10px; font-size: 12px; }
 }
+
+/* ---------- The whole CV, corrected: a clean page, like the printed one ---------- */
+.cvfull { margin-top: 18px; }
+.cvdoc { padding: 44px 48px 48px; border-radius: var(--r); background: #fff; color: #1a1a1a; box-shadow: var(--lift-hi); font: 15px/1.5 Calibri, "Segoe UI", Arial, sans-serif; }
+.cvdoc-head h2 { font: 700 28px/1.1 Calibri, "Segoe UI", Arial, sans-serif; letter-spacing: -.01em; }
+.cvdoc-role { margin-top: 4px; font-size: 16px; color: #333; }
+.cvdoc-contact { margin-top: 6px; font-size: 13.5px; color: #555; }
+.cvdoc section { margin-top: 22px; }
+.cvdoc h3 { padding-bottom: 5px; border-bottom: 1px solid #222; font: 700 13px/1.2 Calibri, "Segoe UI", Arial, sans-serif; letter-spacing: .08em; text-transform: uppercase; }
+.cvdoc-entry { margin-top: 10px; }
+.cvdoc-row { display: flex; justify-content: space-between; gap: 16px; }
+.cvdoc-row span { color: #555; white-space: nowrap; }
+.cvdoc-sub { font-style: italic; color: #444; }
+.cvdoc ul { margin: 4px 0 0 20px; display: grid; gap: 2px; }
+.cvdoc p { margin-top: 4px; }
+.cvdoc-blank { padding: 0 2px; border-radius: 3px; background: #fff1b8; color: inherit; font-weight: 700; }
+.rv-p .cvdoc-blank { background: var(--warn-soft); color: var(--warn); }
+@media (max-width: 640px) { .cvdoc { padding: 24px 20px 28px; font-size: 13.5px; } .cvdoc-head h2 { font-size: 22px; } .cvdoc-row { flex-wrap: wrap; } }

@@ -893,6 +893,71 @@ async function paintCv(slot, r, cv, marked) {
   }
 }
 
+/* ---------------- The whole CV, corrected ----------------
+   After the marked-up CV, the same CV written out again with the review applied: a clean page to use. */
+const blanks = (s) => esc(s).replace(/\[[^\]\n]{1,14}\]/g, (m) => `<mark class="cvdoc-blank">${m}</mark>`);
+function cvDocHtml(f) {
+  const head = `<header class="cvdoc-head"><h2>${esc(f.name)}</h2>${f.headline ? `<p class="cvdoc-role">${esc(f.headline)}</p>` : ""}${f.contact?.length ? `<p class="cvdoc-contact">${f.contact.map(esc).join(" · ")}</p>` : ""}</header>`;
+  const body = (f.sections || []).map((s) => `<section><h3>${esc(s.title)}</h3>${(s.entries || []).map((e) => {
+    const top = e.title || e.dates ? `<div class="cvdoc-row"><b>${esc(e.title)}</b><span>${esc(e.dates)}</span></div>` : "";
+    const sub = e.subtitle ? `<p class="cvdoc-sub">${esc(e.subtitle)}</p>` : "";
+    const lines = e.lines || [];
+    const text = !e.title && lines.length === 1 ? `<p>${blanks(lines[0])}</p>` : lines.length ? `<ul>${lines.map((l) => `<li>${blanks(l)}</li>`).join("")}</ul>` : "";
+    return `<div class="cvdoc-entry">${top}${sub}${text}</div>`;
+  }).join("")}</section>`).join("");
+  return head + body;
+}
+function cvDocText(f) {
+  const out = [f.name, f.headline, (f.contact || []).join(" | "), ""];
+  for (const s of f.sections || []) {
+    out.push(s.title.toUpperCase());
+    for (const e of s.entries || []) {
+      const top = [e.title, e.subtitle, e.dates].filter(Boolean).join(", ");
+      if (top) out.push(top);
+      for (const l of e.lines || []) out.push(e.title || (e.lines || []).length > 1 ? `- ${l}` : l);
+    }
+    out.push("");
+  }
+  return out.filter((l, i, a) => l !== undefined && !(l === "" && a[i - 1] === "")).join("\n").trim();
+}
+// The page prints on its own sheet; the browser's print window saves it as a PDF.
+const PRINT_CSS = `@page { size: A4; margin: 16mm 16mm 18mm; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font: 10.5pt/1.45 Calibri, "Segoe UI", Arial, sans-serif; color: #1a1a1a; }
+.cvdoc-head h2 { font-size: 22pt; line-height: 1.1; }
+.cvdoc-role { margin-top: 2mm; font-size: 12pt; color: #333; }
+.cvdoc-contact { margin-top: 2mm; font-size: 9.5pt; color: #555; }
+section { margin-top: 6mm; break-inside: auto; }
+h3 { font-size: 10.5pt; letter-spacing: .08em; text-transform: uppercase; padding-bottom: 1.2mm; border-bottom: .8pt solid #222; }
+.cvdoc-entry { margin-top: 3mm; break-inside: avoid; }
+.cvdoc-row { display: flex; justify-content: space-between; gap: 6mm; }
+.cvdoc-row span { color: #555; white-space: nowrap; }
+.cvdoc-sub { font-style: italic; color: #444; }
+ul { margin: 1mm 0 0 5mm; } li { margin-top: .6mm; } p { margin-top: 1mm; }
+.cvdoc-blank { background: none; color: inherit; font-weight: 700; }`;
+function printCv(f) {
+  const frame = Object.assign(document.createElement("iframe"), { title: "CV para imprimir" });
+  frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0";
+  document.body.append(frame);
+  const doc = frame.contentDocument;
+  doc.open();
+  doc.write(`<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>${esc(f.name || "CV")} - CV</title><style>${PRINT_CSS}</style></head><body>${cvDocHtml(f)}</body></html>`);
+  doc.close();
+  setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); setTimeout(() => frame.remove(), 2000); }, 250);
+}
+async function fullCv(slot, r, cv) {
+  try {
+    const review = { weaknesses: r.weaknesses, rewrites: r.rewrites, ats: r.ats, next_steps: r.next_steps };
+    const { full } = await postJson("/api/analyze", { mode: "full", cv: cvPayload(cv), target: state.role || "", review });
+    slot.innerHTML = `<article class="cvdoc appear">${cvDocHtml(full)}</article>
+      <p class="cvmark-act"><button type="button" class="text-act" data-print>Descarregar em PDF</button>
+      <button type="button" class="text-act" data-copy="${esc(cvDocText(full))}">Copiar o texto</button></p>`;
+    $("[data-print]", slot).addEventListener("click", () => printCv(full));
+  } catch (err) {
+    slot.innerHTML = `<p class="rv-p">Não foi possível escrever o CV corrigido agora. ${esc(err.message)}</p>`;
+  }
+}
+
 function renderReview(out, r, cvText, cv) {
   if (r.is_cv === false) {
     out.innerHTML = `<div class="not-cv">
@@ -959,6 +1024,10 @@ function renderReview(out, r, cvText, cv) {
       <p class="rv-p">O que anexaste, com esta revisão por cima: <span class="leg leg-del">a riscar</span>, <span class="leg leg-ins">a escrever no lugar</span> e <span class="leg leg-hi">a manter</span>.</p>
       ${visual ? `<div class="cvshot" data-cvshot><p class="cvshot-wait"><span class="cvshot-dot" aria-hidden="true"></span><span data-step>A preparar o teu CV</span>…</p></div>` : sheet(marked)}` : ""}
 
+      ${cv ? `<h4 class="rv-h">O teu CV, já corrigido</h4>
+      <p class="rv-p">Tudo aplicado, pronto a usar. Onde vires um <span class="cvdoc-blank">[X]</span>, põe o teu número.</p>
+      <div class="cvfull" data-cvfull><p class="cvshot-wait"><span class="cvshot-dot" aria-hidden="true"></span><span>A escrever o teu CV corrigido</span>…</p></div>` : ""}
+
       <p class="actions">
         <button type="button" class="text-act" data-act="copy">Copiar a revisão</button>
         <button type="button" class="text-act" data-act="ask">Perguntar sobre isto</button>
@@ -968,6 +1037,7 @@ function renderReview(out, r, cvText, cv) {
   appear(out);
   if (visual) paintCv($("[data-cvshot]", out), r, cv, marked);
   else if ($(".cvmark", out)) markWhenSeen($(".cvmark", out));
+  if (cv) fullCv($("[data-cvfull]", out), r, cv);
 
   announce(`Revisão pronta. O teu CV tem ${score} em 100.`);
 
