@@ -527,12 +527,10 @@ textarea.field { resize: vertical; min-height: 120px; }
 .fb-model p { padding-left: 14px; border-left: 1px solid var(--line-2); font: italic 400 16px/1.65 var(--serif); }
 @media (max-width: 640px) { .fb-cols { grid-template-columns: 1fr; } }
 
-/* ---------- How it works: a sample CV marked up as you scroll ---------- */
 /* Each part of the page starts at a hairline that runs edge to edge. */
-.how, .more, .plans, .privacy, .faq, .closing { border-top: 1px solid var(--line); }
-.how { padding: 64px 0 120px; }
-.how-grid { max-width: 1200px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr); gap: 80px; }
-.paper-wrap { position: sticky; top: calc(var(--nav-h) + 28px); }
+.more, .plans, .privacy, .faq, .closing { border-top: 1px solid var(--line); }
+
+/* ---------- The marked CV: a review drawn on the page, as a reviewer would with a pen ---------- */
 .paper {
   --rail: 0px; --gap: 0px;
   position: relative; background: var(--card); border-radius: var(--r); box-shadow: var(--lift-hi);
@@ -551,8 +549,6 @@ textarea.field { resize: vertical; min-height: 120px; }
   .paper { --rail: 156px; --gap: 22px; padding-right: 32px; }
   .row { grid-template-columns: minmax(0, 1fr) var(--rail); gap: var(--gap); }
 }
-/* mid widths: the page stays sticky, so it drops the comments to fit the screen */
-@media (min-width: 901px) and (max-width: 1179px) { .how .m-note { display: none; } }
 /* keep the name clear of the circled grade */
 .paper-head { padding-right: 96px; }
 .paper-list { list-style: none; padding: 0; margin: 4px 0 0; }
@@ -595,53 +591,14 @@ textarea.field { resize: vertical; min-height: 120px; }
   opacity: 0; transform: rotate(-9deg) scale(.7); transition: opacity .4s ease, transform .7s var(--ease);
 }
 .paper.s4 .m-grade { opacity: 1; transform: rotate(-9deg); }
-.paper-wrap figcaption { margin-top: 16px; font-size: 13.5px; color: var(--ink-3); }
 
-.how-steps { display: flex; flex-direction: column; }
-.how-step { min-height: 74vh; display: flex; flex-direction: column; justify-content: center; gap: 12px; transition: opacity .5s ease; }
-.how-step:first-child { min-height: 64vh; justify-content: flex-start; padding-top: 24px; }
-.how-step:first-child p { font-size: 18px; color: var(--ink-2); }
-/* tall enough that the page stays pinned while the last step is read */
-.how-step:last-child { min-height: 100vh; }
-.how-step h3 { display: flex; align-items: center; gap: 12px; font: 400 27px/1.2 var(--serif); letter-spacing: -.018em; }
-.how-step p { color: var(--ink-2); max-width: 36ch; }
-.how-step .btn { align-self: flex-start; margin-top: 14px; }
-.key { width: 22px; height: 14px; border-radius: 4px; flex: none; }
-.key-hi { background: linear-gradient(var(--ins), var(--ins)) 0 100% / 100% 2px no-repeat, var(--card); box-shadow: inset 0 0 0 1px var(--line-2); }
-.key-del { background: linear-gradient(var(--del), var(--del)) center / 100% 2px no-repeat, var(--bg); box-shadow: inset 0 0 0 1px var(--line-2); }
-.key-ins { background: var(--ins-soft); box-shadow: inset 0 0 0 1.5px var(--ins); }
-.key-score { width: 14px; height: 14px; border-radius: 99px; background: var(--ink); }
-@media (min-width: 901px) {
-  .how.js .how-step:not(.is-active) { opacity: .32; }
-}
-/* short laptop screens: the sticky page has to fit under the nav */
-@media (min-width: 901px) and (max-height: 860px) {
-  .paper { padding-top: 30px; padding-bottom: 32px; font-size: 13.5px; line-height: 1.5; }
-  .paper-name { font-size: 26px; }
-  .paper-h { margin-top: 18px; }
-}
-/* Small screens: the steps become a short legend above the page, then the page itself. */
-@media (max-width: 900px) {
-  .how { padding: 64px 0 72px; }
-  .how-grid { grid-template-columns: 1fr; gap: 36px; padding: 0 var(--gutter); }
-  .how-doc { order: 2; }
-  .paper-wrap { position: static; }
-  .how-steps { gap: 0; }
-  .how-step, .how-step:first-child, .how-step:last-child { min-height: 0; padding: 0; justify-content: flex-start; gap: 6px; }
-  .how-step:first-child { padding-bottom: 24px; }
-  .how-step:not(:first-child) { padding: 16px 0; border-top: 1px solid var(--line); }
-  .how-step:not(:first-child) p { padding-left: 34px; font-size: 15px; }
-  .how-step h3 { font-size: 21px; }
-  .how-step h3 br { display: none; }
-  .how-step .btn { margin: 16px 0 0; width: 100%; justify-content: center; }
-}
 @media (max-width: 640px) {
   .paper { padding: 26px 20px 30px; font-size: 14px; }
   .m-grade { top: 18px; right: 14px; width: 70px; height: 54px; font-size: 31px; }
   .paper-head { padding-right: 70px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .m-hi, .m-del, .m-note, .m-grade, .how-step { transition: none; }
+  .m-hi, .m-del, .m-note, .m-grade { transition: none; }
   .paper.s3 .m-ins { animation: none; }
 }
 
@@ -962,25 +919,52 @@ textarea.field { resize: vertical; min-height: 120px; }
 .notfound .lede { margin: 20px auto 0; max-width: 46ch; }
 .notfound .btn { margin-top: 32px; }
 
-/* ---------- Prices ---------- */
+/* ---------- Prices ----------
+   Two plans side by side. Each card has the same four rows (top, button, fine print, what you get),
+   shared through a subgrid, so the prices, buttons and every line of the list sit level across both. */
 .plans { padding: 112px 0; }
-.plans-sub { margin-top: 14px; max-width: 52ch; font-size: 18px; color: var(--ink-2); }
-.plans-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; max-width: 820px; margin-top: 40px; }
-.plan { display: flex; flex-direction: column; padding: 28px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-2); }
-.plan-pro { border-color: color-mix(in srgb, var(--ins) 55%, var(--line)); background: color-mix(in srgb, var(--ins) 5%, var(--bg-2)); }
-.plan-name { font-size: 15px; font-weight: 650; color: var(--ink-2); }
+.plans-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 48px; align-items: end; }
+.plans-sub { max-width: 44ch; justify-self: end; font-size: 18px; line-height: 1.5; color: var(--ink-2); }
+.plans-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, auto); gap: 0 16px; margin-top: 48px; }
+.plan {
+  display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0;
+  padding: 32px 32px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-2);
+}
+.plan-pro {
+  border-color: color-mix(in srgb, var(--ins) 45%, var(--line));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ins) 8%, var(--bg-2)), var(--bg-2) 55%);
+}
+.plan-name { font: 650 15px/1.2 var(--sans); color: var(--ink-2); }
 .plan-pro .plan-name { color: var(--ins); }
-.plan-price { margin-top: 8px; font-size: 15px; color: var(--ink-3); }
-.plan-price b { font: 400 40px/1 var(--serif); letter-spacing: -.02em; color: var(--ink); margin-right: 4px; }
-.plan-list { list-style: none; padding: 0; margin: 24px 0 28px; display: grid; gap: 11px; flex: 1; }
-.plan-list li { position: relative; padding-left: 26px; font-size: 15px; color: var(--ink-2); }
-.plan-list li::before { content: "\e182"; font-family: "Phosphor"; position: absolute; left: 0; top: 1px; font-size: 16px; color: var(--ink-3); }
-.plan-pro .plan-list li::before { color: var(--ins); }
-.plan-fine { margin-top: 12px; font-size: 13px; color: var(--ink-3); text-align: center; }
+.plan-price { margin-top: 18px; font-size: 15px; color: var(--ink-3); }
+.plan-price b { font: 400 52px/1 var(--serif); letter-spacing: -.03em; color: var(--ink); margin-right: 6px; }
+.plan-for { margin-top: 14px; max-width: 34ch; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
+.plan-cta { padding-top: 28px; }
+.plan-fine { margin-top: 10px; font-size: 13px; color: var(--ink-3); text-align: center; }
+.plan-specs { margin: 28px 0 0; border-top: 1px solid var(--line); }
+.plan-specs > div { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 52px; border-bottom: 1px solid var(--line); }
+.plan-specs > div:last-child { border-bottom: 0; }
+.plan-specs dt { font-size: 15px; color: var(--ink-2); }
+.plan-specs dd { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); text-align: right; }
+.plan-specs .yes::before { content: "\e182" / ""; font: 400 18px/1 "Phosphor"; color: var(--ink-2); }
+.plan-pro .plan-specs .yes::before { color: var(--ins); }
+.plan-specs .no::before { content: "—" / ""; font-weight: 400; color: var(--ink-3); }
 .plans-note { margin-top: 16px; font-size: 14.5px; color: var(--del); }
 .plans-note:empty { display: none; }
 .err.upsell { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; background: var(--ins-soft); }
-@media (max-width: 700px) { .plans { padding: 80px 0; } .plans-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 860px) {
+  .plans-head { grid-template-columns: minmax(0, 1fr); }
+  .plans-sub { justify-self: start; }
+}
+@media (max-width: 700px) {
+  .plans { padding: 80px 0; }
+  .plans-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 14px; margin-top: 36px; }
+  .plan { grid-row: auto; grid-template-rows: none; padding: 24px 22px 6px; }
+  .plan-price b { font-size: 44px; }
+  .plan-cta { padding-top: 22px; }
+  .plan-specs { margin-top: 22px; }
+  .plan-specs > div { min-height: 48px; }
+}
 
 /* ---------- Cookie notice ---------- */
 /* A small card in the bottom-left corner. After a choice it slips away. */

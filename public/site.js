@@ -123,42 +123,6 @@ if (!reduceMotion && "IntersectionObserver" in window) {
   $$("[data-reveal]").forEach((el) => revealIo.observe(el));
 }
 
-/* ---------------- Como funciona: the sample CV gets marked up ---------------- */
-const paper = $("#paper");
-if (paper) {
-  const how = paper.closest(".how");
-  const steps = $$(".how-step");
-  const setStage = (n) => {
-    ["s1", "s2", "s3", "s4"].forEach((c, i) => paper.classList.toggle(c, i < n));
-    steps.forEach((s) => s.classList.toggle("is-active", +s.dataset.stage === n));
-  };
-
-  // The page sticks under the bar; on a short screen it sticks higher, so its last line stays in view.
-  const wrap = $(".paper-wrap");
-  const fit = () => { wrap.style.top = `${Math.min(92, innerHeight - wrap.offsetHeight - 16)}px`; };
-  new ResizeObserver(fit).observe(wrap);
-  addEventListener("resize", fit);
-
-  if (!reduceMotion && "IntersectionObserver" in window) {
-    const wide = matchMedia("(min-width: 901px)");
-    how.classList.add("js");
-    setStage(0);
-    // Wide screens: whichever step crosses the middle of the screen sets how far the markup has got.
-    const stepIo = new IntersectionObserver((entries) => entries.forEach((en) => {
-      if (en.isIntersecting && wide.matches) setStage(+en.target.dataset.stage);
-    }), { rootMargin: "-48% 0px -48% 0px" });
-    steps.forEach((s) => stepIo.observe(s));
-    // Phones: the steps sit above the page, so play the markup once when the page comes into view.
-    let played = false;
-    new IntersectionObserver(([en]) => {
-      if (wide.matches || played || !en.isIntersecting) return;
-      played = true;
-      [1, 2, 3, 4].forEach((n, i) => setTimeout(() => setStage(n), 500 + i * 1100));
-    }, { threshold: 0.3 }).observe(paper);
-    wide.addEventListener("change", () => { if (!wide.matches) setStage(4); });
-  }
-}
-
 /* ---------------- Footer: the time and the weather in Portugal ----------------
    The clock runs on Lisbon time. The weather comes from our own /api/tempo once the footer is near;
    if it can't be had, the time is enough. */
@@ -266,10 +230,10 @@ document.addEventListener("click", (e) => {
 const film = $("#filmVideo");
 if (film) {
   const toggle = $("#filmToggle");
-  // Phones get a tall cut of the tour, recorded on a phone-sized screen.
+  // Phones get the tall cut of the film.
   if (matchMedia("(max-width: 640px)").matches) {
-    film.poster = "/video/cvviews-tour-m.jpg";
-    $("source", film).src = "/video/cvviews-tour-m.mp4";
+    film.poster = "/video/cvviews-filme-tall.jpg";
+    $("source", film).src = "/video/cvviews-filme-tall.mp4";
     film.load();
   }
   let heldByUser = reduceMotion;

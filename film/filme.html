@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>CVviews, o filme</title>
+<!--
+  The product film on the home page. Every frame is a pure function of the time, renderAt(t), so the
+  film renders the same way every time. Opened on its own (through film/render.mjs's server or any
+  static server that also serves /fonts from public/), it plays in a loop; render.mjs steps through it
+  frame by frame and turns it into the two videos in public/video: wide (1280×720 stage) and tall (405×720).
+-->
+<style>
+@font-face { font-family: "Caveat"; src: url("/fonts/caveat-latin-wght-normal.woff2") format("woff2"); font-weight: 400 700; }
+@font-face { font-family: "Literata"; src: url("/fonts/literata-latin-opsz-normal.woff2") format("woff2"); font-weight: 200 900; }
+@font-face { font-family: "Literata"; src: url("/fonts/literata-latin-opsz-italic.woff2") format("woff2"); font-weight: 200 900; font-style: italic; }
+@font-face { font-family: "Host Grotesk"; src: url("/fonts/host-grotesk-latin-wght-normal.woff2") format("woff2"); font-weight: 300 800; }
+@font-face { font-family: "Phosphor"; src: url("/fonts/Phosphor.woff2") format("woff2"); font-display: block; }
+
+:root {
+  --bg: #0b0b0a; --bg-2: #151514; --card: #1c1c1a; --line: #262624; --line-2: #363532;
+  --ink: #ecebe6; --ink-2: #b9b7b0; --ink-3: #8f8d86;
+  --del: #ee8a76; --ins: #74c99c; --ins-soft: #162b20; --sage: #111813;
+  --serif: "Literata", Georgia, serif; --sans: "Host Grotesk", system-ui, sans-serif; --hand: "Caveat", cursive;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); }
+body { font-family: var(--sans); color: var(--ink); -webkit-font-smoothing: antialiased; text-rendering: geometricPrecision; }
+.ph { font-family: "Phosphor"; font-style: normal; line-height: 1; display: inline-block; }
+.ph-paperclip::before { content: "\e39a"; }
+.ph-arrow-up::before { content: "\e08e"; }
+.ph-file-pdf::before { content: "\e702"; }
+.ph-check::before { content: "\e182"; }
+.ph-arrow-right::before { content: "\e06c"; }
+
+.stage { position: relative; width: 100vw; height: 100vh; overflow: hidden; background: var(--bg); }
+.glow { position: absolute; left: 0; top: 0; width: 900px; height: 900px; margin: -450px 0 0 -450px; border-radius: 50%; pointer-events: none; }
+.glow-a { background: radial-gradient(closest-side, rgb(116 201 156 / .17), rgb(116 201 156 / .05) 55%, transparent); }
+.glow-b { background: radial-gradient(closest-side, rgb(236 235 230 / .07), transparent); }
+.vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 55%, rgb(0 0 0 / .55)); }
+.scene { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; }
+.scene > * { will-change: transform, opacity; }
+
+/* captions: which part of the product this is */
+.cap { position: absolute; left: 64px; top: 52px; display: flex; align-items: baseline; gap: 14px; }
+.cap-n { font: 600 14px/1 var(--sans); color: var(--ins); font-variant-numeric: tabular-nums; letter-spacing: .04em; }
+.cap-t { font: 400 30px/1.15 var(--serif); letter-spacing: -.02em; color: var(--ink); }
+
+/* 1. the name */
+.logo { position: relative; text-align: center; }
+.logo-word { font: 450 116px/1 var(--serif); letter-spacing: -.035em; }
+.pen { position: absolute; left: 4%; right: 2%; height: 26px; overflow: visible; }
+.pen path { fill: none; stroke: var(--ins); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; vector-effect: non-scaling-stroke; }
+.logo .pen { bottom: -22px; }
+
+/* 2. what it is */
+.title { text-align: center; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; margin-bottom: 26px; font: 600 15px/1 var(--sans); letter-spacing: .02em; color: var(--ink-2); }
+.eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 9px; background: var(--ins); }
+.headline { max-width: 860px; font: 400 70px/1.08 var(--serif); letter-spacing: -.03em; }
+.w { display: inline-block; }
+
+/* 3. attaching a CV */
+.attach { display: flex; flex-direction: column; align-items: center; gap: 26px; }
+.composer { width: 720px; padding: 14px; border-radius: 22px; background: var(--card); box-shadow: 0 0 0 1px var(--line), 0 30px 70px -30px rgb(0 0 0 / .9); }
+.att-row { height: 48px; display: flex; align-items: center; padding: 0 2px 6px; }
+.att { display: inline-flex; align-items: center; gap: 10px; height: 42px; padding: 0 14px 0 8px; border-radius: 12px; background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line-2); }
+.att-ic { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 7px; background: #3a1f1a; color: var(--del); font-size: 17px; }
+.att-name { font: 600 14.5px/1 var(--sans); }
+.att-meta { font: 400 13.5px/1 var(--sans); color: var(--ink-3); }
+.placeholder { padding: 6px 6px 22px; font: 400 17px/1.4 var(--sans); color: var(--ink-3); }
+.bar { display: flex; align-items: center; gap: 6px; }
+.icon-btn, .send { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 99px; font-size: 18px; }
+.icon-btn { box-shadow: inset 0 0 0 1px var(--line-2); color: var(--ink-2); }
+.mode { height: 36px; display: inline-flex; align-items: center; padding: 0 15px; border-radius: 99px; font: 600 15px/1 var(--sans); color: var(--ink-2); }
+.mode.on { background: rgb(236 235 230 / .1); color: var(--ink); }
+.send { margin-left: auto; background: var(--ink); color: var(--bg); }
+.reading { display: flex; align-items: center; gap: 12px; font: 500 16px/1 var(--sans); color: var(--ink-2); }
+.dots { display: inline-flex; gap: 5px; }
+.dots i { width: 6px; height: 6px; border-radius: 9px; background: var(--ins); }
+.progress { width: 200px; height: 3px; border-radius: 9px; background: var(--line-2); overflow: hidden; }
+.progress b { display: block; height: 100%; width: 100%; background: var(--ins); transform-origin: 0 50%; transform: scaleX(0); }
+
+/* 4. the review, drawn on the CV */
+.review { display: flex; align-items: center; gap: 72px; }
+.paper {
+  position: relative; width: 600px; padding: 34px 30px 34px 38px; border-radius: 14px; background: var(--card);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / .03), 0 40px 80px -30px rgb(0 0 0 / .95);
+  font: 400 14px/1.5 var(--sans); color: var(--ink); transform-origin: 50% 40%;
+}
+.marks { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+.marks path { fill: none; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.marks path.del { stroke: var(--del); stroke-width: 1.8; }
+.marks path.hi { stroke: var(--ins); stroke-width: 2.2; }
+.p-name { font: 450 28px/1.1 var(--serif); letter-spacing: -.02em; }
+.p-meta { margin-top: 5px; font-size: 13px; color: var(--ink-3); }
+.p-h { margin-top: 20px; padding-bottom: 5px; border-bottom: 1px solid var(--line); font: 650 11.5px/1.2 var(--sans); letter-spacing: .05em; text-transform: uppercase; color: var(--ink-2); }
+.p-role { margin-top: 12px; display: flex; justify-content: space-between; gap: 12px; font-weight: 650; }
+.p-role span { font-weight: 400; font-size: 13px; color: var(--ink-3); white-space: nowrap; }
+.p-row { display: grid; grid-template-columns: minmax(0, 1fr) 150px; gap: 18px; align-items: start; margin-top: 7px; }
+.p-list { list-style: none; }
+.p-list .p-txt { position: relative; padding-left: 14px; }
+.p-list .p-txt::before { content: ""; position: absolute; left: 1px; top: .66em; width: 4px; height: 4px; border-radius: 9px; background: var(--ink-3); }
+.p-row.room { padding-top: 15px; }
+.hand { font: 500 1.4em/1.12 var(--hand); color: var(--ins); visibility: hidden; }
+.ins-wrap { position: relative; }
+.above { position: absolute; left: 2px; bottom: 86%; white-space: nowrap; transform: rotate(-2deg); transform-origin: 0 100%; }
+.under { display: block; margin-top: 1px; }
+.rw { margin-top: 4px; }
+.rw .hand { display: block; white-space: nowrap; }
+.note { justify-self: start; font: 500 20px/1.02 var(--hand); color: var(--ins); visibility: hidden; transform: rotate(-2.5deg); transform-origin: 0 50%; }
+.note.red { color: var(--del); }
+.review-side { width: 400px; }
+.cap-inline { position: static; display: block; margin-bottom: 40px; }
+.cap-inline .cap-n { display: block; margin-bottom: 12px; }
+.cap-inline .cap-t { font-size: 34px; max-width: 11em; }
+.legend { list-style: none; display: grid; gap: 30px; }
+.legend li { display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 14px; row-gap: 6px; align-items: center; }
+.legend b { font: 400 25px/1.2 var(--serif); letter-spacing: -.018em; }
+.legend li > span:last-child { grid-column: 2; font-size: 16px; line-height: 1.45; color: var(--ink-2); }
+.legend .short { display: none; }
+.key { width: 24px; height: 15px; border-radius: 4px; }
+.key-hi { background: linear-gradient(var(--ins), var(--ins)) 0 100% / 100% 2px no-repeat, var(--card); box-shadow: inset 0 0 0 1px var(--line-2); }
+.key-del { background: linear-gradient(var(--del), var(--del)) center / 100% 2px no-repeat, var(--bg); box-shadow: inset 0 0 0 1px var(--line-2); }
+.key-ins { background: var(--ins-soft); box-shadow: inset 0 0 0 1.5px var(--ins); }
+
+/* 5. talking to Leo */
+.chat { width: 760px; display: grid; gap: 22px; }
+.chat-head { display: flex; align-items: center; gap: 14px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.avatar { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 99px; background: var(--ins-soft); color: var(--ins); font: 500 22px/1 var(--serif); box-shadow: inset 0 0 0 1px rgb(116 201 156 / .4); }
+.chat-head b { display: block; font: 600 17px/1.2 var(--sans); }
+.chat-head span { font-size: 14px; color: var(--ink-3); }
+.me { justify-self: end; max-width: 70%; padding: 14px 18px; border-radius: 18px 18px 6px 18px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line-2); font: 400 18px/1.45 var(--sans); }
+.leo { position: relative; max-width: 92%; min-height: 110px; font: 400 21px/1.55 var(--serif); letter-spacing: -.005em; color: var(--ink); }
+.leo .typing { position: absolute; left: 0; top: 10px; }
+.leo .wd { display: inline; }
+
+/* 6. practising the interview */
+.iv { display: flex; align-items: center; gap: 28px; }
+.iv-q { width: 600px; padding: 32px; border-radius: 16px; background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line); }
+.iv-n { font: 600 13px/1 var(--sans); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
+.iv-text { margin-top: 14px; font: 400 28px/1.25 var(--serif); letter-spacing: -.02em; }
+.iv-answer { margin-top: 24px; min-height: 108px; padding: 16px 18px; border-radius: 12px; background: var(--card); box-shadow: inset 0 0 0 1px var(--line-2); font: 400 17px/1.5 var(--sans); }
+.caret { display: inline-block; width: 2px; height: 1.15em; margin-left: 1px; vertical-align: -3px; background: var(--ins); }
+.iv-foot { display: flex; justify-content: flex-end; margin-top: 16px; }
+.iv-send { height: 40px; display: inline-flex; align-items: center; gap: 8px; padding: 0 18px; border-radius: 99px; background: var(--ink); color: var(--bg); font: 600 15px/1 var(--sans); }
+.fb { width: 400px; padding: 30px; border-radius: 16px; background: var(--sage); box-shadow: inset 0 0 0 1px rgb(116 201 156 / .28); }
+.fb-score { font: 400 16px/1 var(--sans); color: var(--ink-2); }
+.fb-score b { font: 400 64px/1 var(--serif); letter-spacing: -.04em; color: var(--ink); margin-right: 8px; }
+.fb-note { margin-top: 16px; font: 500 25px/1.15 var(--hand); color: var(--ins); visibility: hidden; transform: rotate(-1.5deg); transform-origin: 0 50%; }
+.fb-h { margin-top: 22px; padding-top: 18px; border-top: 1px solid rgb(116 201 156 / .2); font: 600 13px/1 var(--sans); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-3); }
+.fb-model { margin-top: 10px; font: italic 400 18px/1.5 var(--serif); color: var(--ink); }
+
+/* 7. the end card */
+.end { position: relative; text-align: center; display: flex; flex-direction: column; align-items: center; }
+.end-word { position: relative; font: 450 150px/1 var(--serif); letter-spacing: -.04em; }
+.end-word .pen { bottom: -18px; height: 30px; }
+.end-tag { margin-top: 44px; font: 400 22px/1.3 var(--serif); color: var(--ink-2); }
+.end-btn { margin-top: 30px; height: 52px; display: inline-flex; align-items: center; gap: 10px; padding: 0 26px; border-radius: 99px; background: var(--ink); color: var(--bg); font: 600 17px/1 var(--sans); }
+.end-price { margin-top: 18px; font-size: 15px; color: var(--ink-3); }
+
+/* the pointer */
+.cursor { position: absolute; left: 0; top: 0; width: 26px; height: 26px; z-index: 10; pointer-events: none; filter: drop-shadow(0 2px 4px rgb(0 0 0 / .5)); }
+.ripple { position: absolute; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 99px; z-index: 9; box-shadow: inset 0 0 0 2px rgb(236 235 230 / .7); pointer-events: none; }
+
+/* ---------- Tall cut (phones) ---------- */
+.portrait .cap { left: 0; right: 0; top: 40px; justify-content: center; gap: 10px; }
+.portrait .cap-n { font-size: 11px; }
+.portrait .cap-t { font-size: 20px; }
+.portrait .logo-word { font-size: 64px; }
+.portrait .logo .pen { bottom: -14px; height: 18px; }
+.portrait .eyebrow { margin-bottom: 18px; font-size: 12px; }
+.portrait .headline { max-width: 330px; font-size: 38px; }
+.portrait .composer { width: 365px; padding: 10px; border-radius: 18px; }
+.portrait .att-row { height: 40px; }
+.portrait .att { height: 34px; gap: 8px; padding: 0 10px 0 6px; border-radius: 10px; }
+.portrait .att-ic { width: 22px; height: 22px; font-size: 13px; }
+.portrait .att-name { font-size: 12px; }
+.portrait .att-meta { font-size: 11px; }
+.portrait .placeholder { padding: 4px 4px 16px; font-size: 14px; }
+.portrait .icon-btn, .portrait .send { width: 32px; height: 32px; font-size: 15px; }
+.portrait .mode { height: 30px; padding: 0 10px; font-size: 12.5px; }
+.portrait .mode-long { display: none; }
+.portrait .reading { font-size: 13px; gap: 9px; }
+.portrait .progress { width: 110px; }
+.portrait .review { flex-direction: column; gap: 16px; }
+.portrait .review-side { order: -1; width: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.portrait .cap-inline { display: flex; margin: 0; justify-content: center; }
+.portrait .cap-inline .cap-n { display: inline; margin: 0; }
+.portrait .cap-inline .cap-t { font-size: 20px; max-width: none; }
+.portrait .legend { display: flex; gap: 6px; }
+.portrait .legend li { display: flex; gap: 6px; height: 26px; padding: 0 9px; border-radius: 99px; box-shadow: inset 0 0 0 1px var(--line-2); }
+.portrait .legend b { font: 600 11.5px/1 var(--sans); letter-spacing: 0; }
+.portrait .legend b .full, .portrait .legend li > span:last-child { display: none; }
+.portrait .legend b .short { display: inline; }
+.portrait .key { width: 16px; height: 10px; border-radius: 3px; }
+.portrait .paper { width: 375px; padding: 22px 14px 22px 20px; border-radius: 12px; font-size: 11px; }
+.portrait .p-name { font-size: 21px; }
+.portrait .p-meta { font-size: 10.5px; }
+.portrait .p-h { margin-top: 14px; font-size: 9.5px; }
+.portrait .p-role { margin-top: 9px; }
+.portrait .p-role span { font-size: 10px; }
+.portrait .p-row { grid-template-columns: minmax(0, 1fr) 82px; gap: 8px; margin-top: 5px; }
+.portrait .p-list .p-txt { padding-left: 11px; }
+.portrait .p-row.room { padding-top: 12px; }
+.portrait .note { font-size: 14px; }
+.portrait .chat { width: 365px; gap: 16px; }
+.portrait .chat-head { gap: 10px; padding-bottom: 12px; }
+.portrait .avatar { width: 34px; height: 34px; font-size: 17px; }
+.portrait .chat-head b { font-size: 14px; }
+.portrait .chat-head span { font-size: 12px; }
+.portrait .me { max-width: 85%; padding: 11px 14px; font-size: 14.5px; }
+.portrait .leo { min-height: 150px; font-size: 16.5px; }
+.portrait .iv { flex-direction: column; gap: 14px; margin-top: 30px; }
+.portrait .iv-q { width: 365px; padding: 20px; }
+.portrait .iv-n { font-size: 10.5px; }
+.portrait .iv-text { margin-top: 10px; font-size: 19px; }
+.portrait .iv-answer { margin-top: 14px; min-height: 70px; padding: 11px 12px; font-size: 13px; }
+.portrait .iv-foot { margin-top: 10px; }
+.portrait .iv-send { height: 32px; padding: 0 14px; font-size: 12.5px; }
+.portrait .fb { width: 365px; padding: 18px 20px; }
+.portrait .fb-score { font-size: 13px; }
+.portrait .fb-score b { font-size: 42px; }
+.portrait .fb-note { margin-top: 10px; font-size: 19px; }
+.portrait .fb-h { margin-top: 12px; padding-top: 12px; font-size: 10.5px; }
+.portrait .fb-model { margin-top: 7px; font-size: 13.5px; }
+.portrait .end-word { font-size: 78px; }
+.portrait .end-word .pen { bottom: -12px; height: 20px; }
+.portrait .end-tag { margin-top: 30px; font-size: 17px; }
+.portrait .end-btn { margin-top: 22px; height: 44px; padding: 0 20px; font-size: 14.5px; }
+.portrait .end-price { font-size: 12px; }
+.portrait .cursor { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="glow glow-a" id="glowA"></div>
+  <div class="glow glow-b" id="glowB"></div>
+
+  <section class="scene" id="s-logo">
+    <div class="logo">
+      <p class="logo-word" id="logoWord">CVviews</p>
+      <svg class="pen" id="logoPen" viewBox="0 0 300 26" preserveAspectRatio="none"><path pathLength="1" d="M4 17 C 60 10, 140 9, 296 13" /></svg>
+    </div>
+  </section>
+
+  <section class="scene" id="s-title">
+    <div class="title" id="title">
+      <p class="eyebrow" id="eyebrow">Apresentamos o CVviews</p>
+      <h1 class="headline" id="headline">O teu CV, lido como um recrutador o lê.</h1>
+    </div>
+  </section>
+
+  <section class="scene" id="s-attach">
+    <div class="cap" id="cap1"><span class="cap-n">01</span><span class="cap-t">Anexa o teu CV</span></div>
+    <div class="attach">
+      <div class="composer" id="composer">
+        <div class="att-row"><span class="att" id="att"><span class="att-ic"><i class="ph ph-file-pdf"></i></span><span class="att-name">CV-Marta-Oliveira.pdf</span><span class="att-meta">1 página</span></span></div>
+        <p class="placeholder">Cola aqui o teu CV, ou anexa um PDF, Word ou fotografias</p>
+        <div class="bar">
+          <span class="icon-btn" id="clip"><i class="ph ph-paperclip"></i></span>
+          <span class="mode on">Rever</span><span class="mode">Perguntar<span class="mode-long">&nbsp;ao Leo</span></span><span class="mode">Entrevista</span>
+          <span class="send" id="send"><i class="ph ph-arrow-up"></i></span>
+        </div>
+      </div>
+      <div class="reading" id="reading"><span class="dots" id="readDots"><i></i><i></i><i></i></span>A ler o teu CV<span class="progress"><b id="prog"></b></span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-review">
+    <div class="review">
+      <article class="paper" id="paper">
+        <svg class="marks" id="marks"></svg>
+        <p class="p-name">Marta Oliveira</p>
+        <p class="p-meta">Designer de Produto, Lisboa</p>
+
+        <p class="p-h">Perfil</p>
+        <div class="p-row">
+          <p class="p-txt"><span class="mk del" data-a="14.8" data-b="15.9">Designer trabalhadora e apaixonada que adora criar experiências bonitas.</span></p>
+          <span class="note red" data-a="15.6" data-b="16.5">toda a gente escreve isto</span>
+        </div>
+        <p class="rw"><span class="hand" data-a="20.1" data-b="20.95">Designer de produto, quatro anos na área da saúde,</span><span class="hand" data-a="20.95" data-b="21.8">a criar aplicações que os doentes usam todos os dias.</span></p>
+
+        <p class="p-h">Experiência</p>
+        <p class="p-role">Designer de Produto, Lumena Saúde<span>2022 até hoje</span></p>
+        <ul class="p-list">
+          <li class="p-row room">
+            <p class="p-txt"><span class="ins-wrap"><span class="mk del" data-a="17.6" data-b="18.05">Responsável pelo design da</span><span class="hand above" data-a="18.05" data-b="18.75">Desenhei e lancei a</span></span> aplicação para doentes<span class="hand under" data-a="18.8" data-b="19.6">hoje usada por [X] doentes por mês</span></p>
+            <span class="note" data-a="19.6" data-b="20.3">assim já é um resultado</span>
+          </li>
+          <li class="p-row">
+            <p class="p-txt"><span class="mk hi" data-a="12.8" data-b="13.45">Fiz entrevistas a doentes e médicos</span></p>
+            <span class="note" data-a="13.4" data-b="14.1">boa, isto fica</span>
+          </li>
+        </ul>
+        <p class="p-role">Designer UX Júnior, Estúdio Nove<span>2020 a 2022</span></p>
+        <ul class="p-list">
+          <li class="p-row"><p class="p-txt"><span class="mk hi" data-a="13.2" data-b="13.85">Criei wireframes e protótipos no Figma</span></p></li>
+          <li class="p-row">
+            <p class="p-txt"><span class="mk del" data-a="16.2" data-b="16.7">Participei em reuniões com clientes</span></p>
+            <span class="note red" data-a="16.6" data-b="16.95">corta</span>
+          </li>
+        </ul>
+
+        <p class="p-h">Competências</p>
+        <div class="p-row"><p class="p-txt-plain">Figma, prototipagem, investigação com utilizadores<span class="mk del" data-a="16.9" data-b="17.25">, Microsoft Office</span></p></div>
+      </article>
+      <div class="review-side">
+      <div class="cap cap-inline" id="cap2"><span class="cap-n">02</span><span class="cap-t">Vês o que mudar, no próprio CV</span></div>
+      <ol class="legend" id="legend">
+        <li><span class="key key-hi"></span><b><span class="full">O que está bom fica sublinhado</span><span class="short">Sublinhado</span></b><span>Assim sabes no que não mexer.</span></li>
+        <li><span class="key key-del"></span><b><span class="full">O que sobra é riscado</span><span class="short">Riscado</span></b><span>Frases que um recrutador salta sem ler.</span></li>
+        <li><span class="key key-ins"></span><b><span class="full">O que é fraco é reescrito</span><span class="short">Reescrito</span></b><span>Uma tarefa passa a ser um resultado. Os números ficam para ti.</span></li>
+      </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-leo">
+    <div class="cap" id="cap3"><span class="cap-n">03</span><span class="cap-t">Falas com o Leo sobre ele</span></div>
+    <div class="chat" id="chat">
+      <header class="chat-head"><span class="avatar">L</span><div><b>Leo</b><span>Já leu o teu CV</span></div></header>
+      <p class="me" id="me">Como explico o ano em que parei?</p>
+      <div class="leo"><span class="dots typing" id="leoDots"><i></i><i></i><i></i></span><p id="leoText">Uma linha honesta, e segues em frente. Algo como “2019 a 2020: viagens e trabalho como freelancer, a fazer sites para dois clientes locais.” O emprego seguinte faz o resto.</p></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-iv">
+    <div class="cap" id="cap4"><span class="cap-n">04</span><span class="cap-t">Treinas a entrevista</span></div>
+    <div class="iv">
+      <div class="iv-q" id="ivQ">
+        <p class="iv-n">Pergunta 1 de 3</p>
+        <p class="iv-text">Fala-me do redesenho do registo na Lumena Saúde. Como soubeste que tinha resultado?</p>
+        <div class="iv-answer"><span id="answer"></span><i class="caret" id="caret"></i></div>
+        <div class="iv-foot"><span class="iv-send" id="ivSend">Enviar resposta <i class="ph ph-arrow-right"></i></span></div>
+      </div>
+      <div class="fb" id="fb">
+        <p class="fb-score" id="fbScore"><b>6</b>em 10</p>
+        <p class="fb-note" id="fbNote">Boa história. Agora diz o que mudou, com um número.</p>
+        <p class="fb-h" id="fbH">Uma versão mais forte</p>
+        <p class="fb-model" id="fbModel">“Reduzimos o registo de sete para três passos, e a conclusão subiu de [X]% para [Y]%.”</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="s-end">
+    <div class="end">
+      <p class="end-word" id="endWord">CVviews<svg class="pen" id="endPen" viewBox="0 0 300 26" preserveAspectRatio="none"><path pathLength="1" d="M4 15 C 70 9, 150 10, 296 12" /></svg></p>
+      <p class="end-tag" id="endTag">Revisão de CV em português.</p>
+      <span class="end-btn" id="endBtn">Rever o meu CV <i class="ph ph-arrow-right"></i></span>
+      <p class="end-price" id="endPrice">Grátis para começar. Pro por 4,99 € por mês.</p>
+    </div>
+  </section>
+
+  <div class="ripple" id="ripple"></div>
+  <svg class="cursor" id="cursor" viewBox="0 0 26 26"><path d="M3 2.5 L3 20.5 L8.2 15.6 L11.6 23.2 L14.6 21.9 L11.3 14.5 L18.5 14.3 Z" fill="#fff" stroke="#111" stroke-width="1.3" stroke-linejoin="round" /></svg>
+  <div class="vignette"></div>
+</div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const W = innerWidth, H = innerHeight;
+const TALL = H > W;
+document.documentElement.classList.toggle("portrait", TALL);
+
+const DURATION = 42.6;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const E = {
+  out: (x) => 1 - Math.pow(1 - x, 3),
+  inOut: (x) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2),
+  soft: (x) => x * x * (3 - 2 * x),
+};
+const lerp = (a, b, x) => a + (b - a) * x;
+const env = (t, a, b, c, d) => Math.min(E.out(seg(t, a, b)), 1 - E.inOut(seg(t, c, d)));
+
+// Places an element: opacity, offset, scale, rotation and blur in one go.
+function put(el, { o = 1, x = 0, y = 0, s = 1, r = 0, blur = 0 } = {}) {
+  el.style.opacity = o.toFixed(4);
+  el.style.visibility = o < 0.002 ? "hidden" : "visible";
+  el.style.transform = `translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0) scale(${s.toFixed(4)}) rotate(${r.toFixed(3)}deg)`;
+  el.style.filter = blur > 0.05 ? `blur(${blur.toFixed(2)}px)` : "none";
+}
+// Comes in: fades, rises and sharpens.
+const rise = (t, a, dur = 0.7, dist = 18, blur = 8) => {
+  const p = E.out(seg(t, a, a + dur));
+  return { o: p, y: (1 - p) * dist, blur: (1 - p) * blur, s: 1 };
+};
+// Goes out: drifts up, softens, fades.
+const leave = (t, a, dur = 0.6) => {
+  const p = E.inOut(seg(t, a, a + dur));
+  return { o: 1 - p, y: -16 * p, blur: 7 * p, s: 1 - 0.015 * p };
+};
+const both = (a, b) => ({ o: a.o * b.o, x: (a.x || 0) + (b.x || 0), y: (a.y || 0) + (b.y || 0), s: (a.s ?? 1) * (b.s ?? 1), r: (a.r || 0) + (b.r || 0), blur: (a.blur || 0) + (b.blur || 0) });
+// A stroke the pen hasn't reached stays hidden: a round cap would otherwise leave a dot at its end.
+const drawPath = (path, p) => {
+  path.style.strokeDashoffset = (1 - p).toFixed(4);
+  path.style.visibility = p > 0.002 ? "visible" : "hidden";
+};
+// Handwriting appears left to right, as the pen moves.
+const write = (el, p) => {
+  el.style.visibility = p > 0 ? "visible" : "hidden";
+  el.style.clipPath = `inset(-40% ${Math.max(-6, (1 - p) * 106 - 6).toFixed(2)}% -60% -6%)`;
+};
+const mix = (c1, c2, p) => `rgb(${c1.map((v, i) => Math.round(lerp(v, c2[i], p))).join(" ")})`;
+const INK = [236, 235, 230], INK3 = [143, 141, 134];
+const dots = (el, t, speed = 1.5) => $$("i", el).forEach((d, i) => {
+  const k = 0.5 + 0.5 * Math.sin((t * speed - i * 0.18) * Math.PI * 2);
+  d.style.opacity = (0.3 + 0.7 * k).toFixed(3);
+  d.style.transform = `translateY(${(-3 * k).toFixed(2)}px)`;
+});
+
+// Words of the headline and of Leo's answer, each in its own span, laid out once.
+function splitWords(el, cls) {
+  const words = el.textContent.trim().split(/\s+/);
+  el.innerHTML = words.map((w) => `<span class="${cls}">${w}</span>`).join(" ");
+  return $$("." + cls, el);
+}
+
+/* ---------- Scenes ---------- */
+const scenes = [];
+const scene = (id, a, b, fn) => scenes.push({ el: $(id), a, b, fn });
+
+// 1. The name, underlined by the green pen.
+scene("#s-logo", 0, 3.2, (t) => {
+  const out = leave(t, 2.55, 0.6);
+  put($("#logoWord"), both(rise(t, 0.25, 0.95, 16, 12), out));
+  $("#logoPen").style.opacity = out.o;
+  drawPath($("#logoPen path"), E.inOut(seg(t, 1.0, 1.75)));
+});
+
+// 2. What it is.
+const headWords = splitWords($("#headline"), "w");
+scene("#s-title", 2.95, 6.8, (t) => {
+  const out = leave(t, 6.15, 0.6);
+  put($("#eyebrow"), both(rise(t, 3.0, 0.7, 10, 6), out));
+  headWords.forEach((w, i) => put(w, both(rise(t, 3.3 + i * 0.1, 0.75, 26, 12), out)));
+});
+
+// 3. Attaching a CV.
+scene("#s-attach", 6.5, 11.75, (t) => {
+  const out = leave(t, 11.15, 0.6);
+  put($("#cap1"), both(rise(t, 6.7, 0.6, 10, 6), out));
+  put($("#composer"), both(rise(t, 6.55, 0.85, 30, 10), out));
+  const chip = E.out(seg(t, 8.3, 8.75));
+  put($("#att"), { o: chip, s: 0.9 + 0.1 * chip, y: (1 - chip) * 6 });
+  const press = Math.max(0, 1 - Math.abs(t - 9.32) / 0.14);
+  put($("#send"), { s: 1 - 0.1 * press });
+  put($("#reading"), both(rise(t, 9.55, 0.5, 10, 5), out));
+  dots($("#readDots"), t);
+  $("#prog").style.transform = `scaleX(${E.inOut(seg(t, 9.65, 11.0)).toFixed(4)})`;
+});
+
+// 4. The review, drawn on the CV as a recruiter would mark it.
+const legendItems = $$("#legend li");
+const ACTIVE = [[12.55, 14.55], [14.55, 17.4], [17.4, 99]];
+scene("#s-review", 11.5, 23.2, (t) => {
+  const out = leave(t, 22.6, 0.6);
+  put($("#cap2"), both(rise(t, 11.75, 0.6, 10, 6), out));
+  const paperIn = E.out(seg(t, 11.5, 12.4));
+  const zoom = 1 + 0.03 * E.inOut(seg(t, 12.2, 22.6));
+  put($("#paper"), both({ o: paperIn, y: (1 - paperIn) * 40, r: (1 - paperIn) * -1.4, s: zoom, blur: (1 - paperIn) * 8 }, out));
+  legendItems.forEach((li, i) => {
+    const [a, b] = ACTIVE[i];
+    const on = Math.min(E.out(seg(t, a, a + 0.35)), 1 - E.out(seg(t, b, b + 0.35)));
+    const enter = rise(t, 12.0 + i * 0.12, 0.6, 12, 6);
+    put(li, both({ ...enter, o: enter.o * (0.3 + 0.7 * on), x: TALL ? 0 : (1 - on) * -6 }, out));
+  });
+  for (const mk of marks) {
+    const p = seg(t, mk.a, mk.b);
+    let done = p * mk.total;
+    for (const f of mk.frags) { drawPath(f.path, clamp(done / f.w)); done -= f.w; }
+    if (mk.kind === "del") mk.el.style.color = mix(INK, INK3, E.out(p));
+  }
+  $$(".hand, .note", $("#paper")).forEach((el) => write(el, seg(t, +el.dataset.a, +el.dataset.b)));
+});
+
+// 5. Talking to Leo about it.
+const leoWords = splitWords($("#leoText"), "wd");
+scene("#s-leo", 23.0, 30.2, (t) => {
+  const out = leave(t, 29.6, 0.6);
+  put($("#cap3"), both(rise(t, 23.2, 0.6, 10, 6), out));
+  put($("#chat"), both(rise(t, 23.0, 0.8, 26, 8), out));
+  const me = E.out(seg(t, 23.75, 24.2));
+  put($("#me"), { o: me, y: (1 - me) * 12, s: 0.97 + 0.03 * me });
+  put($("#leoDots"), { o: env(t, 24.35, 24.55, 24.9, 25.1) });
+  dots($("#leoDots"), t, 1.8);
+  leoWords.forEach((w, i) => {
+    const a = 25.05 + i * 0.082;
+    const p = E.out(seg(t, a, a + 0.35));
+    put(w, { o: p, y: (1 - p) * 4, blur: (1 - p) * 4 });
+  });
+});
+
+// 6. Practising the interview, and the feedback.
+const ANSWER = "Mudámos o registo para três passos, e passou a haver mais gente a acabá-lo.";
+const typeTimes = (() => { // a person's rhythm: a little uneven, slower after a comma
+  let acc = 0, seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const steps = [...ANSWER].map((ch) => (acc += (ch === "," ? 0.16 : ch === " " ? 0.055 : 0.04) + rnd() * 0.03));
+  return steps.map((s) => s / acc);
+})();
+scene("#s-iv", 30.0, 37.2, (t) => {
+  const out = leave(t, 36.6, 0.6);
+  put($("#cap4"), both(rise(t, 30.2, 0.6, 10, 6), out));
+  put($("#ivQ"), both(rise(t, 30.05, 0.8, 26, 8), out));
+  const p = seg(t, 31.2, 33.2);
+  const n = typeTimes.filter((v) => v <= p).length;
+  $("#answer").textContent = ANSWER.slice(0, n);
+  const typing = t > 31.2 && t < 33.25;
+  $("#caret").style.opacity = typing || Math.floor(t * 2.2) % 2 === 0 ? 1 : 0;
+  const press = Math.max(0, 1 - Math.abs(t - 33.92) / 0.14);
+  put($("#ivSend"), { s: 1 - 0.08 * press });
+  const fbIn = E.out(seg(t, 34.1, 34.85));
+  put($("#fb"), both({ o: fbIn, x: TALL ? 0 : (1 - fbIn) * 36, y: TALL ? (1 - fbIn) * 24 : 0, blur: (1 - fbIn) * 8 }, out));
+  put($("#fbScore"), rise(t, 34.3, 0.6, 10, 4));
+  write($("#fbNote"), seg(t, 34.65, 35.65));
+  put($("#fbH"), rise(t, 35.7, 0.5, 8, 4));
+  put($("#fbModel"), rise(t, 35.85, 0.6, 10, 5));
+});
+
+// 7. The name again, and where to start.
+scene("#s-end", 37.0, DURATION, (t) => {
+  const fade = 1 - E.inOut(seg(t, 41.8, DURATION));
+  const word = rise(t, 37.2, 1.0, 22, 14);
+  put($("#endWord"), { ...word, o: word.o * fade });
+  drawPath($("#endPen path"), E.inOut(seg(t, 38.0, 38.8)));
+  for (const [id, a] of [["#endTag", 38.4], ["#endBtn", 38.8], ["#endPrice", 39.1]]) {
+    const r = rise(t, a, 0.6, 12, 6);
+    put($(id), { ...r, o: r.o * fade });
+  }
+});
+
+/* ---------- The pointer ---------- */
+const center = (sel, dx = 0, dy = 0) => () => { const r = $(sel).getBoundingClientRect(); return [r.left + r.width / 2 + dx, r.top + r.height / 2 + dy]; };
+const fixed = (x, y) => () => [x, y];
+const TRACKS = [
+  { show: [7.15, 9.95], clicks: [8.12, 9.3], way: [
+    [7.15, fixed(W * (TALL ? 0.82 : 0.76), H * (TALL ? 0.8 : 0.9))],
+    [7.4, fixed(W * (TALL ? 0.82 : 0.76), H * (TALL ? 0.8 : 0.9))],
+    [8.05, center("#clip", 2, 3)],
+    [8.55, center("#clip", 2, 3)],
+    [9.22, center("#send", 2, 3)],
+    [9.55, center("#send", 2, 3)],
+    [9.95, center("#send", 46, 34)],
+  ] },
+  { show: [33.05, 34.6], clicks: [33.92], way: [
+    [33.05, center("#ivSend", -150, 70)],
+    [33.2, center("#ivSend", -150, 70)],
+    [33.85, center("#ivSend", 8, 4)],
+    [34.15, center("#ivSend", 8, 4)],
+    [34.6, center("#ivSend", 60, 50)],
+  ] },
+];
+function pointer(t) {
+  const cur = $("#cursor"), rip = $("#ripple");
+  put(cur, { o: 0 }); put(rip, { o: 0 });
+  for (const tr of TRACKS) {
+    const [a, b] = tr.show;
+    if (t < a || t > b) continue;
+    const w = tr.way;
+    let k = w.findIndex(([tt]) => tt > t);
+    if (k === -1) k = w.length - 1;
+    const [t0, f0] = w[Math.max(0, k - 1)], [t1, f1] = w[k];
+    const u = t1 > t0 ? E.inOut(seg(t, t0, t1)) : 1;
+    const [x0, y0] = f0(), [x1, y1] = f1();
+    const arc = Math.sin(Math.PI * u) * Math.hypot(x1 - x0, y1 - y0) * 0.1;
+    const x = lerp(x0, x1, u) + arc * 0.6, y = lerp(y0, y1, u) - arc;
+    const press = tr.clicks.reduce((m, c) => Math.max(m, 1 - Math.abs(t - c) / 0.13), 0);
+    put(cur, { o: env(t, a, a + 0.25, b - 0.3, b), x: x - 3, y: y - 2.5, s: 1 - 0.14 * Math.max(0, press) });
+    for (const c of tr.clicks) {
+      const q = seg(t, c, c + 0.5);
+      if (q > 0 && q < 1) put(rip, { o: 0.55 * (1 - q), x, y, s: 0.25 + 1.1 * E.out(q) });
+    }
+  }
+}
+
+/* ---------- Light ---------- */
+function light(t) {
+  const strong = Math.max(env(t, 2.9, 4.0, 6.2, 7.0), env(t, 36.9, 38.2, 41.6, DURATION));
+  const base = 0.38 * (1 - E.inOut(seg(t, 41.6, DURATION))) * E.out(seg(t, 0.2, 1.4));
+  put($("#glowA"), { o: Math.max(base, strong * 0.95), x: W * 0.5 + Math.sin(t * 0.21) * W * 0.12, y: H * 0.55 + Math.cos(t * 0.17) * H * 0.1, s: (TALL ? 0.8 : 1.15) + 0.08 * Math.sin(t * 0.3) });
+  put($("#glowB"), { o: 0.5 * base + 0.4 * strong, x: W * 0.28 + Math.cos(t * 0.13) * W * 0.1, y: H * 0.3 + Math.sin(t * 0.19) * H * 0.08, s: TALL ? 0.7 : 1 });
+}
+
+/* ---------- The marks on the CV, measured once ---------- */
+let marks = [];
+function measureMarks() {
+  const paper = $("#paper"), svg = $("#marks");
+  const pr = paper.getBoundingClientRect();
+  svg.setAttribute("width", pr.width); svg.setAttribute("height", pr.height);
+  svg.setAttribute("viewBox", `0 0 ${pr.width} ${pr.height}`);
+  let seed = 7; const jit = () => ((seed = (seed * 16807) % 2147483647) / 2147483647 - 0.5) * 2.2;
+  marks = $$(".mk", paper).map((el) => {
+    const kind = el.classList.contains("del") ? "del" : "hi";
+    const frags = [...el.getClientRects()].filter((r) => r.width > 3).map((r) => {
+      const x0 = r.left - pr.left - 2, x1 = r.right - pr.left + 2, w = x1 - x0;
+      const y = kind === "del" ? r.top - pr.top + r.height * 0.56 : r.bottom - pr.top - 1;
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", `M${x0.toFixed(1)} ${(y + jit()).toFixed(1)} C${(x0 + w * 0.32).toFixed(1)} ${(y + jit()).toFixed(1)} ${(x0 + w * 0.7).toFixed(1)} ${(y + jit()).toFixed(1)} ${x1.toFixed(1)} ${(y + jit() - 0.5).toFixed(1)}`);
+      path.setAttribute("pathLength", "1");
+      path.setAttribute("class", kind);
+      svg.append(path);
+      return { path, w };
+    });
+    return { el, kind, frags, total: frags.reduce((s, f) => s + f.w, 0), a: +el.dataset.a, b: +el.dataset.b };
+  });
+}
+
+window.renderAt = (t) => {
+  for (const s of scenes) {
+    const on = t >= s.a && t <= s.b;
+    s.el.style.display = on ? "flex" : "none";
+    if (on) s.fn(t);
+  }
+  light(t);
+  pointer(t);
+};
+window.FILM = { duration: DURATION, fps: 30 };
+const FACES = ["500 20px Caveat", "400 20px Literata", "italic 400 20px Literata", "450 20px Literata", "400 16px \"Host Grotesk\"", "600 16px \"Host Grotesk\"", "650 16px \"Host Grotesk\"", "16px Phosphor"];
+window.filmReady = Promise.all(FACES.map((f) => document.fonts.load(f))).then(() => document.fonts.ready).then(() => {
+  const review = $("#s-review");
+  review.style.display = "flex";
+  measureMarks();
+  review.style.display = "none";
+  window.renderAt(0);
+});
+
+// Opened on its own, it plays in a loop.
+if (!location.hash.includes("render")) {
+  window.filmReady.then(() => {
+    const t0 = performance.now();
+    const loop = (now) => { window.renderAt(((now - t0) / 1000) % DURATION); requestAnimationFrame(loop); };
+    requestAnimationFrame(loop);
+  });
+}
+</script>
+</body>
+</html>

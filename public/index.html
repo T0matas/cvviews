@@ -135,80 +135,15 @@
       </div>
     </section>
 
-    <!-- A short film of the site, framed on the meadow -->
-    <section class="film" aria-label="Uma volta pelo CVviews">
+    <!-- The product film, framed on the meadow (made from film/filme.html) -->
+    <section class="film" id="como-funciona" aria-label="Como funciona o CVviews">
       <div class="film-stage" data-reveal>
         <img class="film-scenery" src="/img/meadow-1600.webp" srcset="/img/meadow-900.webp 900w, /img/meadow-1600.webp 1600w" sizes="100vw" alt="" loading="lazy" decoding="async" />
         <div class="film-frame">
-          <video class="film-video" id="filmVideo" muted loop playsinline preload="none" poster="/video/cvviews-tour.jpg" aria-label="Uma volta pelo CVviews: o CV de exemplo a ser corrigido, o Leo, as entrevistas e os preços">
-            <source src="/video/cvviews-tour.mp4" type="video/mp4" />
+          <video class="film-video" id="filmVideo" muted loop playsinline preload="none" poster="/video/cvviews-filme.jpg" aria-label="Filme de apresentação do CVviews: anexas o CV, vês o que mudar marcado no próprio CV, falas com o Leo e treinas a entrevista">
+            <source src="/video/cvviews-filme.mp4" type="video/mp4" />
           </video>
           <button class="film-toggle" type="button" id="filmToggle" aria-pressed="false"><span class="film-glyph" aria-hidden="true"></span><span class="film-label">Pausar</span></button>
-        </div>
-      </div>
-    </section>
-
-    <!-- What a review does to a CV, shown on a sample as you scroll -->
-    <section class="how" id="como-funciona">
-      <div class="how-grid">
-        <div class="how-doc">
-          <figure class="paper-wrap">
-            <article class="paper s1 s2 s3 s4" id="paper" aria-label="Um CV de exemplo, marcado por uma revisão">
-              <header class="paper-head">
-                <p class="paper-name">Marta Oliveira</p>
-                <p class="paper-meta">Designer de Produto, Lisboa<span>marta.oliveira@email.pt</span></p>
-              </header>
-
-              <p class="paper-h">Perfil</p>
-              <div class="row">
-                <p><del class="m-del">Designer trabalhadora e apaixonada que adora criar experiências bonitas.</del> <ins class="m-ins">Designer de produto com quatro anos na área da saúde, a criar aplicações que os doentes usam todos os dias.</ins></p>
-                <span class="m-note n2">toda a gente escreve isto</span>
-              </div>
-
-              <p class="paper-h">Experiência</p>
-              <p class="paper-role"><b>Designer de Produto, Lumena Saúde</b><span>2022 até hoje</span></p>
-              <ul class="paper-list">
-                <li class="row"><p><del class="m-del">Responsável pelo design da</del> <ins class="m-ins">Desenhei e lancei a</ins> aplicação para doentes<ins class="m-ins">, hoje usada por [X] doentes por mês</ins></p><span class="m-note n3">assim já é um resultado</span></li>
-                <li class="row"><p><span class="m-hi">Fiz entrevistas a doentes e médicos</span></p><span class="m-note n1">boa, isto fica</span></li>
-                <li class="row"><p><del class="m-del">Trabalhei no redesenho do registo, que melhorou a conclusão</del> <ins class="m-ins">Liderei o redesenho do registo, que subiu a conclusão de [X]% para [Y]%</ins></p><span class="m-note n3">põe aqui os teus números</span></li>
-                <li class="row"><p><del class="m-del">Ajudei com</del> <ins class="m-ins">Criei [N] componentes para</ins> o sistema de design</p></li>
-              </ul>
-              <p class="paper-role"><b>Designer UX Júnior, Estúdio Nove</b><span>2020 a 2022</span></p>
-              <ul class="paper-list">
-                <li class="row"><p><span class="m-hi">Criei wireframes e protótipos no Figma</span></p></li>
-                <li class="row"><p><del class="m-del">Participei em reuniões com clientes</del></p><span class="m-note n2">corta</span></li>
-              </ul>
-
-              <p class="paper-h">Competências</p>
-              <div class="row"><p>Figma, prototipagem, investigação com utilizadores<del class="m-del">, Microsoft Office</del></p></div>
-
-            </article>
-            <figcaption>Um CV de exemplo, marcado como uma revisão o lê.</figcaption>
-          </figure>
-        </div>
-
-        <div class="how-steps">
-          <div class="how-step" data-stage="0">
-            <h2 class="display-2" data-reveal>Um CV depois de passar por aqui</h2>
-            <p>É um CV inventado. Vai descendo e vê o que lhe acontece.</p>
-          </div>
-          <div class="how-step" data-stage="1">
-            <h3><span class="key key-hi" aria-hidden="true"></span>O que está bom fica sublinhado</h3>
-            <p>Assim sabes no que não deves mexer.</p>
-          </div>
-          <div class="how-step" data-stage="2">
-            <h3><span class="key key-del" aria-hidden="true"></span>O que sobra é riscado</h3>
-            <p>Frases que um recrutador salta sem ler, como “trabalhadora e apaixonada”.</p>
-          </div>
-          <div class="how-step" data-stage="3">
-            <h3><span class="key key-ins" aria-hidden="true"></span>As frases fracas são reescritas</h3>
-            <p>Uma tarefa passa a ser um resultado. Quando falta um número, fica um [espaço] para o pores tu. Não inventamos números.</p>
-          </div>
-          <div class="how-step" data-stage="4">
-            <h3><span class="key key-score" aria-hidden="true"></span>No fim, uma nota de 0 a 100</h3>
-            <p>Com a nota de cada parte do CV e as palavras-chave que os programas de triagem procuram.</p>
-            <a class="btn btn-ink" href="/" data-start="review">Rever o meu CV</a>
-          </div>
         </div>
       </div>
     </section>
@@ -256,32 +191,48 @@
     <!-- Plans -->
     <section class="plans" id="planos">
       <div class="wrap">
-        <h2 class="display-2" data-reveal>Preços</h2>
-        <p class="plans-sub" data-reveal style="--i:1">Começas de graça. Se precisares de mais, o Pro custa menos do que um café por semana.</p>
+        <div class="plans-head">
+          <h2 class="display-2" data-reveal>Preços</h2>
+          <p class="plans-sub" data-reveal style="--i:1">Começas de graça. Quando andares mesmo à procura de emprego, o Pro tira os limites.</p>
+        </div>
         <div class="plans-grid">
-          <article class="plan" data-reveal style="--i:2">
-            <p class="plan-name">Grátis</p>
-            <p class="plan-price"><b>0 €</b></p>
-            <ul class="plan-list">
-              <li>3 revisões por mês</li>
-              <li>3 CV corrigidos em imagem por mês</li>
-              <li>10 mensagens por dia com o Leo</li>
-              <li>Perguntas de entrevista a partir do teu CV</li>
-            </ul>
-            <a class="btn btn-ghost btn-block" href="/" data-start="review">Começar</a>
-            <p class="plan-fine">Não precisas de conta.</p>
+          <article class="plan" data-reveal style="--i:2" aria-labelledby="planFree">
+            <header class="plan-top">
+              <h3 class="plan-name" id="planFree">Grátis</h3>
+              <p class="plan-price"><b>0 €</b></p>
+              <p class="plan-for">Para experimentar e corrigir o essencial.</p>
+            </header>
+            <div class="plan-cta">
+              <a class="btn btn-ghost btn-block" href="/" data-start="review">Começar</a>
+              <p class="plan-fine">Não precisas de conta.</p>
+            </div>
+            <dl class="plan-specs">
+              <div><dt>Revisões do CV</dt><dd>3 por mês</dd></div>
+              <div><dt>CV corrigido em imagem</dt><dd>3 por mês</dd></div>
+              <div><dt>Mensagens ao Leo</dt><dd>10 por dia</dd></div>
+              <div><dt>Mostrar imagens ao Leo</dt><dd class="no"><span class="sr-only">Não incluído</span></dd></div>
+              <div><dt>Perguntas de entrevista</dt><dd class="yes"><span class="sr-only">Incluído</span></dd></div>
+              <div><dt>Feedback às respostas</dt><dd class="no"><span class="sr-only">Não incluído</span></dd></div>
+            </dl>
           </article>
-          <article class="plan plan-pro" data-reveal style="--i:3">
-            <p class="plan-name">Pro</p>
-            <p class="plan-price"><b>4,99 €</b> por mês</p>
-            <ul class="plan-list">
-              <li>Revisões ilimitadas</li>
-              <li>CV corrigido em imagem sempre que quiseres</li>
-              <li>Leo sem limite, e podes mostrar-lhe imagens</li>
-              <li>Feedback a cada resposta de entrevista, com uma versão mais forte</li>
-            </ul>
-            <button type="button" class="btn btn-ink btn-block" data-pro>Passar a Pro</button>
-            <p class="plan-fine">Pagamento seguro pela Stripe. Cancelas quando quiseres.</p>
+          <article class="plan plan-pro" data-reveal style="--i:3" aria-labelledby="planPro">
+            <header class="plan-top">
+              <h3 class="plan-name" id="planPro">Pro</h3>
+              <p class="plan-price"><b>4,99 €</b> por mês</p>
+              <p class="plan-for">Para quem anda à procura e quer rever sem contar.</p>
+            </header>
+            <div class="plan-cta">
+              <button type="button" class="btn btn-ink btn-block" data-pro>Passar a Pro</button>
+              <p class="plan-fine">Pagamento seguro pela Stripe. Cancelas quando quiseres.</p>
+            </div>
+            <dl class="plan-specs">
+              <div><dt>Revisões do CV</dt><dd>Ilimitadas</dd></div>
+              <div><dt>CV corrigido em imagem</dt><dd>Ilimitado</dd></div>
+              <div><dt>Mensagens ao Leo</dt><dd>Sem limite</dd></div>
+              <div><dt>Mostrar imagens ao Leo</dt><dd class="yes"><span class="sr-only">Incluído</span></dd></div>
+              <div><dt>Perguntas de entrevista</dt><dd class="yes"><span class="sr-only">Incluído</span></dd></div>
+              <div><dt>Feedback às respostas</dt><dd class="yes"><span class="sr-only">Incluído</span></dd></div>
+            </dl>
           </article>
         </div>
         <p class="plans-note" id="planNote" role="status"></p>
