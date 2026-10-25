@@ -528,7 +528,7 @@ async function showPlan(user) {
     dd.replaceChildren(s.plan === "pro"
       ? fact("ph-check-circle", renews ? `Pro, ${s.cancelling ? "termina" : "renova"} a ${DAY.format(renews)}` : "Pro", "state-ok")
       : fact("ph-user", "Grátis"));
-    if (!s.payments) return;
+    if (!s.payments || s.manual) return;
     button.textContent = s.plan === "pro" ? "Gerir a subscrição" : `Passar a Pro, ${s.price}`;
     button.dataset.action = s.plan === "pro" ? "portal" : "checkout";
     button.hidden = false;

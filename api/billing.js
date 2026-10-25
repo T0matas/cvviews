@@ -19,6 +19,7 @@ export default async function handler(req, res) {
         signedIn: !!user,
         renews: status.renews || null,
         cancelling: !!status.cancelling,
+        manual: !!status.manual,
         price: PRICE_LABEL,
         limits: FREE_LIMITS,
         payments: paymentsOn(),

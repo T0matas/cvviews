@@ -261,3 +261,31 @@ document.addEventListener("click", (e) => {
   try { localStorage.removeItem(CONSENT_KEY); } catch { /* nothing to forget */ }
   cookieNotice();
 });
+
+/* ---------------- The film: plays while it's on screen, unless someone paused it ---------------- */
+const film = $("#filmVideo");
+if (film) {
+  const toggle = $("#filmToggle");
+  // Phones get a tall cut of the tour, recorded on a phone-sized screen.
+  if (matchMedia("(max-width: 640px)").matches) {
+    film.poster = "/video/cvviews-tour-m.jpg";
+    $("source", film).src = "/video/cvviews-tour-m.mp4";
+    film.load();
+  }
+  let heldByUser = reduceMotion;
+  const show = (playing) => {
+    toggle.setAttribute("aria-pressed", String(!playing));
+    $(".film-label", toggle).textContent = playing ? "Pausar" : "Ver";
+  };
+  const play = () => film.play().then(() => show(true)).catch(() => show(false));
+  show(false);
+  toggle.addEventListener("click", () => {
+    if (film.paused) { heldByUser = false; play(); } else { heldByUser = true; film.pause(); show(false); }
+  });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting && !heldByUser) play();
+      else if (!en.isIntersecting && !film.paused) { film.pause(); show(false); }
+    }, { threshold: 0.35 }).observe(film);
+  }
+}

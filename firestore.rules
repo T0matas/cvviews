@@ -10,8 +10,9 @@ service cloud.firestore {
     }
 
     // Only these fields, with sensible values, and the email must be the account's own.
+    // plan and planOrigem are written by the server (or by hand in the console), never by the page.
     function validProfile(data) {
-      return data.keys().hasOnly(['name', 'email', 'provider', 'createdAt', 'lastLoginAt'])
+      return data.keys().hasOnly(['name', 'email', 'provider', 'createdAt', 'lastLoginAt', 'plan', 'planOrigem'])
         && data.name is string && data.name.size() <= 100
         && data.email == request.auth.token.email
         && data.provider in ['email', 'google']
@@ -21,9 +22,11 @@ service cloud.firestore {
     match /users/{uid} {
       allow read, delete: if signedInAs(uid);
       allow create: if signedInAs(uid) && validProfile(request.resource.data)
-        && request.resource.data.createdAt == request.time;
+        && request.resource.data.createdAt == request.time
+        && !request.resource.data.keys().hasAny(['plan', 'planOrigem']);
       allow update: if signedInAs(uid) && validProfile(request.resource.data)
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && request.resource.data.createdAt == resource.data.createdAt
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['plan', 'planOrigem']);
     }
 
     // Saved reviews: written once from the page, then only read or deleted by their owner.

@@ -37,6 +37,7 @@
   --r-lg: 22px;
   --ease: cubic-bezier(.16, 1, .3, 1);
   --nav-h: 64px;
+  --gutter: 24px;
   color-scheme: dark;
   interpolate-size: allow-keywords;
 }
@@ -77,7 +78,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .skip { position: absolute; left: 16px; top: -64px; z-index: 100; background: var(--btn); color: var(--btn-ink); padding: 10px 16px; border-radius: 999px; text-decoration: none; font-weight: 600; }
 .skip:focus { top: 12px; }
-.wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+.wrap { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 var(--gutter); }
+@media (max-width: 640px) { :root { --gutter: 20px; } }
 .narrow { max-width: 860px; }
 
 /* type */
@@ -151,7 +153,7 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 @media (max-width: 900px) {
   .nav-links, .nav-login { display: none; }
   .menu-btn { display: inline-flex; }
-  .nav-inner { padding: 0 16px; gap: 12px; }
+  .nav-inner { padding: 0 var(--gutter); gap: 12px; }
 }
 @media (max-width: 400px) { .nav-cta { display: none; } }
 
@@ -618,13 +620,20 @@ textarea.field { resize: vertical; min-height: 120px; }
   .paper-name { font-size: 26px; }
   .paper-h { margin-top: 18px; }
 }
+/* Small screens: the steps become a short legend above the page, then the page itself. */
 @media (max-width: 900px) {
-  .how { padding: 56px 0 80px; }
-  .how-grid { grid-template-columns: 1fr; gap: 48px; padding: 0 16px; }
+  .how { padding: 64px 0 72px; }
+  .how-grid { grid-template-columns: 1fr; gap: 36px; padding: 0 var(--gutter); }
   .how-doc { order: 2; }
   .paper-wrap { position: static; }
-  .how-step, .how-step:first-child { min-height: 0; padding-top: 0; }
-  .how-steps { gap: 28px; }
+  .how-steps { gap: 0; }
+  .how-step, .how-step:first-child, .how-step:last-child { min-height: 0; padding: 0; justify-content: flex-start; gap: 6px; }
+  .how-step:first-child { padding-bottom: 24px; }
+  .how-step:not(:first-child) { padding: 16px 0; border-top: 1px solid var(--line); }
+  .how-step:not(:first-child) p { padding-left: 34px; font-size: 15px; }
+  .how-step h3 { font-size: 21px; }
+  .how-step h3 br { display: none; }
+  .how-step .btn { margin: 16px 0 0; width: 100%; justify-content: center; }
 }
 @media (max-width: 640px) {
   .paper { padding: 26px 20px 30px; font-size: 14px; }
@@ -751,7 +760,8 @@ textarea.field { resize: vertical; min-height: 120px; }
 @media (max-width: 1100px) { .foot-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px 48px; } }
 @media (max-width: 640px) {
   .footer { padding: 48px 0 24px; }
-  .foot-panel { --pad: 24px; padding: 36px var(--pad) 0; border-radius: 28px; }
+  .footer .wrap { padding: 0 10px; }
+  .foot-panel { --pad: 22px; padding: 36px var(--pad) 0; border-radius: 24px; }
   .foot-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; }
   .foot-claim { font-size: 21px; }
   .foot-cta-t { font-size: 24px; }
@@ -888,7 +898,7 @@ textarea.field { resize: vertical; min-height: 120px; }
 
 /* ---------- Small screens: the composer ---------- */
 @media (max-width: 560px) {
-  .app { padding: 36px 16px 44px; }
+  .app { padding: 36px var(--gutter) 44px; }
   .app[data-state="thread"] { padding: 0 12px; }
   .dock { margin-top: 32px; }
   .composer { border-radius: 20px; padding: 8px; }
@@ -1015,3 +1025,36 @@ textarea.field { resize: vertical; min-height: 120px; }
 .saved-list span { font-size: 13px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .saved-del { flex: none; width: 32px; height: 32px; border: 0; border-radius: 999px; background: none; color: var(--ink-3); display: grid; place-items: center; }
 .saved-del:hover { background: var(--tint); color: var(--ink); }
+
+/* ---------- Film: a short tour of the site, framed on the meadow ---------- */
+.film { padding: 0 0 96px; }
+.film-stage {
+  position: relative; max-width: 1240px; margin: 0 auto; padding: 56px 72px;
+  border-radius: var(--r-lg); overflow: hidden; isolation: isolate;
+}
+.film-scenery { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; object-fit: cover; filter: saturate(.85); }
+.film-stage::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgb(11 11 10 / .25), rgb(11 11 10 / .05) 40%, rgb(11 11 10 / .35)); }
+.film-frame {
+  position: relative; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden;
+  background: var(--card); box-shadow: 0 30px 80px -20px rgb(0 0 0 / .65), 0 0 0 1px rgb(255 255 255 / .06);
+}
+.film-video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.film-toggle {
+  position: absolute; right: 14px; bottom: 14px; display: inline-flex; align-items: center; gap: 8px;
+  height: 34px; padding: 0 14px 0 12px; border: 0; border-radius: 999px; cursor: pointer;
+  background: rgb(20 20 18 / .72); color: #f2f1ed; font: 600 13px/1 var(--sans);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: background-color .2s, scale .15s;
+}
+.film-toggle:hover { background: rgb(20 20 18 / .9); }
+.film-toggle:active { scale: .96; }
+.film-glyph { width: 10px; height: 11px; background: linear-gradient(90deg, currentColor 0 35%, transparent 35% 65%, currentColor 65%); }
+.film-toggle[aria-pressed="true"] .film-glyph { width: 10px; background: currentColor; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+@media (max-width: 900px) {
+  .film { padding-bottom: 72px; }
+  .film-stage { margin: 0 var(--gutter); padding: 28px 18px; border-radius: 18px; }
+}
+@media (max-width: 640px) {
+  .film-stage { margin: 0 10px; padding: 22px 16px; }
+  .film-frame { aspect-ratio: 9 / 16; width: min(100%, calc((100svh - 140px) * 9 / 16)); margin: 0 auto; border-radius: 10px; }
+  .film-toggle { right: 8px; bottom: 8px; height: 30px; padding: 0 11px 0 10px; font-size: 12px; }
+}
