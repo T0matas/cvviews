@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+  <title>CVviews</title>
+  <meta name="description" content="A app do CVviews: revê o teu CV, fala com o Leo e treina a entrevista, a escrever ou por voz." />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="CVviews" />
+  <link rel="manifest" href="/app-ui/manifest.json" />
+  <link rel="icon" href="/app-ui/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/app-ui/icon.svg" />
+  <link rel="preload" href="/fonts/host-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts.css" />
+  <link rel="stylesheet" href="/app-ui/app.css" />
+</head>
+<body>
+  <!-- the opening mark, like the start of the film; gone after the first second -->
+  <div class="splash" id="splash" aria-hidden="true">
+    <svg class="mark" viewBox="0 0 48 48"><use href="#mark" /></svg>
+  </div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- the CVviews mark: a sheet of paper with a fold and a reviewer's tick -->
+      <symbol id="mark" viewBox="0 0 48 48">
+        <path d="M14 6h14l10 10v24a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" />
+        <path d="M28 6v10h10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" />
+        <path d="m18 28 4.5 4.5L31 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" /></symbol>
+      <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" /></symbol>
+      <symbol id="i-wave" viewBox="0 0 24 24"><path d="M4 10v4M8 7v10M12 4v16M16 8v8M20 10.5v3" /></symbol>
+      <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6" /></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5" /></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" /></symbol>
+      <symbol id="i-stop" viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" stroke="none" /></symbol>
+      <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4ZM13.5 6.5l4 4" /></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3h7l5 5v12a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" /><path d="M14 3v5h5" /></symbol>
+      <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6" /></symbol>
+      <symbol id="i-print" viewBox="0 0 24 24"><path d="M7 9V4h10v5M7 17H5a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M7 14h10v6H7z" /></symbol>
+      <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="6" cy="12" r="1.3" fill="currentColor" /><circle cx="12" cy="12" r="1.3" fill="currentColor" /><circle cx="18" cy="12" r="1.3" fill="currentColor" /></symbol>
+    </defs>
+  </svg>
+
+  <div class="shell" id="shell">
+    <div class="main">
+      <header class="top">
+        <a class="brand" href="/app" aria-label="CVviews, nova conversa">
+          <svg class="mark" viewBox="0 0 48 48"><use href="#mark" /></svg>
+          <span>CVviews</span>
+        </a>
+        <div class="top-end">
+          <button class="ghost-btn" id="newBtn" type="button" hidden>
+            <svg class="ic"><use href="#i-edit" /></svg><span>Nova conversa</span>
+          </button>
+          <a class="ghost-btn" href="/">Site</a>
+        </div>
+      </header>
+
+      <main class="stage" id="stage" data-state="empty">
+        <div class="hello" id="hello">
+          <h1 class="hello-title">Em que posso ajudar com o teu CV?</h1>
+          <p class="hello-sub">Escreve, fala ou anexa o teu CV. O resto fica connosco.</p>
+        </div>
+
+        <div class="log" id="log" aria-live="polite"></div>
+
+        <div class="dock" id="dock">
+          <ul class="cleaned" id="cleaned" hidden></ul>
+
+          <form class="composer" id="composer" novalidate>
+            <div class="atts" id="atts"></div>
+
+            <div class="compose-text">
+              <label class="sr-only" for="prompt">Mensagem</label>
+              <textarea id="prompt" rows="1" placeholder="Pergunta qualquer coisa sobre o teu CV" autocomplete="off"></textarea>
+            </div>
+
+            <!-- the voice view: what you're saying, the wave, the clock and the tick -->
+            <div class="voice" id="voice" hidden>
+              <p class="voice-text" id="voiceText"><span class="voice-final"></span><span class="voice-interim"></span><span class="voice-hint">A ouvir…</span></p>
+              <div class="voice-row">
+                <button class="icon-btn" type="button" id="voiceCancel" aria-label="Cancelar gravação"><svg class="ic"><use href="#i-x" /></svg></button>
+                <canvas class="wave" id="wave" aria-hidden="true"></canvas>
+                <span class="voice-time" id="voiceTime">0:00</span>
+                <button class="round-btn" type="button" id="voiceDone" aria-label="Terminar e usar o texto"><svg class="ic"><use href="#i-check" /></svg></button>
+              </div>
+            </div>
+
+            <div class="bar" id="bar">
+              <button class="icon-btn" type="button" id="attachBtn" aria-label="Anexar o CV" title="Anexar o CV (PDF, Word ou texto)"><svg class="ic"><use href="#i-plus" /></svg></button>
+              <input type="file" id="fileInput" class="sr-only" tabindex="-1" accept=".pdf,.docx,.txt,.md,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+              <div class="agents" role="radiogroup" aria-label="Quem trata do pedido">
+                <label class="agent is-leo"><input type="radio" name="agent" value="leo" checked /><span><i class="dot"></i>Leo</span></label>
+                <label class="agent is-review"><input type="radio" name="agent" value="review" /><span><i class="dot"></i>Revisão</span></label>
+                <label class="agent is-iv"><input type="radio" name="agent" value="interview" /><span><i class="dot"></i>Entrevista</span></label>
+              </div>
+              <button class="icon-btn plain" type="button" id="micBtn" aria-label="Ditar por voz" title="Ditar por voz"><svg class="ic"><use href="#i-mic" /></svg></button>
+              <button class="round-btn is-voice" type="submit" id="sendBtn" aria-label="Falar" title="Falar"><svg class="ic"><use href="#i-wave" /></svg></button>
+            </div>
+          </form>
+
+          <p class="note" id="note" role="status"></p>
+
+          <div class="starts" id="starts">
+            <button type="button" class="start" data-start="review">Rever o meu CV</button>
+            <button type="button" class="start" data-start="interview">Treinar uma entrevista</button>
+            <button type="button" class="start" data-ask="Como explico um ano parado no CV?">Como explico um ano parado?</button>
+            <button type="button" class="start" data-sample>Experimentar com um CV de exemplo</button>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- the document a task hands back opens here, beside the conversation -->
+    <aside class="panel" id="panel" aria-label="Documento" hidden>
+      <header class="panel-top">
+        <span class="file-ic sm"><svg class="ic"><use href="#i-file" /></svg></span>
+        <p class="panel-name" id="panelName"></p>
+        <span class="panel-meta" id="panelMeta"></span>
+        <button class="icon-btn plain" type="button" id="panelPrint" aria-label="Imprimir ou guardar em PDF" title="Imprimir ou guardar em PDF"><svg class="ic"><use href="#i-print" /></svg></button>
+        <button class="icon-btn plain" type="button" id="panelClose" aria-label="Fechar o documento"><svg class="ic"><use href="#i-x" /></svg></button>
+      </header>
+      <div class="panel-body" id="panelBody"></div>
+    </aside>
+  </div>
+
+  <script src="/app-ui/app.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+/* Self-hosted fonts and icons, so browsing the site sends nothing to third parties. */
+/* Caveat is the reviewer's handwriting on the sample CV. */
+@font-face {
+  font-family: "Caveat";
+  src: url("fonts/caveat-latin-wght-normal.woff2") format("woff2");
+  font-weight: 400 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Literata";
+  src: url("fonts/literata-latin-opsz-normal.woff2") format("woff2");
+  font-weight: 200 900; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Literata";
+  src: url("fonts/literata-latin-opsz-italic.woff2") format("woff2");
+  font-weight: 200 900; font-style: italic; font-display: swap;
+}
+@font-face {
+  font-family: "Host Grotesk";
+  src: url("fonts/host-grotesk-latin-wght-normal.woff2") format("woff2");
+  font-weight: 300 800; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Host Grotesk";
+  src: url("fonts/host-grotesk-latin-wght-italic.woff2") format("woff2");
+  font-weight: 300 800; font-style: italic; font-display: swap;
+}
+
+/* Phosphor icons (regular), trimmed to the glyphs this site uses. */
+@font-face {
+  font-family: "Phosphor";
+  src: url("fonts/Phosphor.woff2") format("woff2");
+  font-weight: normal; font-style: normal; font-display: block;
+}
+.ph {
+  font-family: "Phosphor" !important;
+  speak: never;
+  font-style: normal; font-weight: normal; font-variant: normal; text-transform: none;
+  line-height: 1; letter-spacing: 0;
+  font-feature-settings: "liga";
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  display: inline-block;
+}
+.ph-paperclip:before { content: "\e39a"; }
+.ph-plus:before { content: "\e3d4"; }
+.ph-arrow-up:before { content: "\e08e"; }
+.ph-stop:before { content: "\e46c"; }
+.ph-x:before { content: "\e4f6"; }
+.ph-file-pdf:before { content: "\e702"; }
+.ph-file-doc:before { content: "\eb1e"; }
+.ph-file-text:before { content: "\e23a"; }
+.ph-image:before { content: "\e2ca"; }
+.ph-copy:before { content: "\e1ca"; }
+.ph-check:before { content: "\e182"; }
+.ph-chat-circle:before { content: "\e168"; }
+.ph-microphone-stage:before { content: "\e75c"; }
+.ph-file-magnifying-glass:before { content: "\e238"; }
+.ph-arrow-counter-clockwise:before { content: "\e038"; }
+.ph-lock-simple:before { content: "\e308"; }
+.ph-caret-down:before { content: "\e136"; }
+.ph-list:before { content: "\e2f0"; }
+.ph-warning-circle:before { content: "\e4e2"; }
+.ph-check-circle:before { content: "\e184"; }
+.ph-arrow-right:before { content: "\e06c"; }
+.ph-arrow-up-right:before { content: "\e092"; }
+.ph-google-logo:before { content: "\e292"; }
+.ph-eye:before { content: "\e220"; }
+.ph-eye-slash:before { content: "\e224"; }
+.ph-upload-simple:before { content: "\e4c0"; }
+.ph-cookie:before { content: "\e6ca"; }
+.ph-user:before { content: "\e4c2"; }
+.ph-cloud-slash:before { content: "\e1b6"; }
+.ph-arrow-left:before { content: "\e058"; }
+.ph-circle:before { content: "\e18a"; }
+.ph-clock:before { content: "\e19a"; }
+.ph-envelope-simple:before { content: "\e218"; }
+.ph-warning:before { content: "\e4e0"; }

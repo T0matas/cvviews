@@ -1,0 +1,47 @@
+rules_version = '2';
+
+// CVviews keeps one profile per account, at users/{uid}. Everyone can read and write their own
+// profile and nothing else; the rest of the database stays closed. The site never stores CVs here.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedInAs(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Only these fields, with sensible values, and the email must be the account's own.
+    function validProfile(data) {
+      return data.keys().hasOnly(['name', 'email', 'provider', 'createdAt', 'lastLoginAt'])
+        && data.name is string && data.name.size() <= 100
+        && data.email == request.auth.token.email
+        && data.provider in ['email', 'google']
+        && data.lastLoginAt == request.time;
+    }
+
+    match /users/{uid} {
+      allow read, delete: if signedInAs(uid);
+      allow create: if signedInAs(uid) && validProfile(request.resource.data)
+        && request.resource.data.createdAt == request.time;
+      allow update: if signedInAs(uid) && validProfile(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    // Saved reviews: written once from the page, then only read or deleted by their owner.
+    match /users/{uid}/reviews/{reviewId} {
+      allow read, delete: if signedInAs(uid);
+      allow create: if signedInAs(uid)
+        && request.resource.data.keys().hasOnly(['cvName', 'cvText', 'review', 'score', 'verdict', 'createdAt'])
+        && request.resource.data.cvName is string && request.resource.data.cvName.size() <= 120
+        && request.resource.data.cvText is string && request.resource.data.cvText.size() <= 60000
+        && request.resource.data.review is map
+        && request.resource.data.score is number
+        && request.resource.data.verdict is string && request.resource.data.verdict.size() <= 200
+        && request.resource.data.createdAt == request.time;
+    }
+
+    // Everything else, including the server's usage counters, is closed to browsers.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

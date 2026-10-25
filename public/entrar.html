@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="pt-PT" class="entering">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Entrar | CVviews</title>
+  <meta name="description" content="Entra no CVviews ou cria uma conta." />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0b0b0a" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preload" href="/fonts/host-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/literata-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts.css" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body class="login-body">
+  <main class="login">
+    <section class="login-pane">
+      <header class="login-top enter" style="--i:0">
+        <a class="brand" href="/">CVviews</a>
+      </header>
+
+      <div class="login-box" id="box">
+        <div class="login-head">
+          <h1 class="login-title enter" style="--i:1" id="title" tabindex="-1">Olá de novo</h1>
+          <p class="login-sub enter" style="--i:2" id="sub">Entra no CVviews.</p>
+          <p class="login-note" id="note" role="status" hidden></p>
+        </div>
+
+        <!-- 1. Escolher como continuar -->
+        <div class="step" data-step="start">
+          <button type="button" class="btn btn-ghost btn-lg btn-block provider enter" style="--i:3" id="google">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+            Continuar com o Google
+          </button>
+          <p class="or enter" style="--i:4" id="or"><span>ou</span></p>
+          <form id="emailForm" class="step-form" novalidate>
+            <div class="field-group enter" style="--i:5">
+              <label class="field-label" for="email">Email</label>
+              <input class="field field-lg" id="email" name="email" type="email" inputmode="email" autocomplete="username" placeholder="tu@exemplo.pt" spellcheck="false" required aria-describedby="emailErr" />
+              <p class="field-error" id="emailErr"></p>
+            </div>
+            <button class="btn btn-ink btn-lg btn-block enter" style="--i:6" type="submit">Continuar com email</button>
+          </form>
+        </div>
+
+        <!-- 2a. Entrar: a palavra-passe -->
+        <form class="step step-form" data-step="password" id="passwordForm" novalidate hidden>
+          <div class="who"><i class="ph ph-envelope-simple" aria-hidden="true"></i><span class="who-email" data-email></span><button type="button" class="link small" data-go="start">Mudar</button></div>
+          <div class="field-group">
+            <div class="label-row"><label class="field-label" for="password">Palavra-passe</label><button type="button" class="link small" data-go="reset">Esqueceste-te?</button></div>
+            <div class="pw">
+              <input class="field field-lg" id="password" type="password" autocomplete="current-password" required aria-describedby="passwordErr passwordCaps" />
+              <button type="button" class="pw-toggle" aria-label="Mostrar a palavra-passe" aria-pressed="false"><i class="ph ph-eye" aria-hidden="true"></i></button>
+            </div>
+            <p class="field-hint" id="passwordCaps" hidden><i class="ph ph-warning" aria-hidden="true"></i> O Caps Lock está ligado</p>
+            <p class="field-error" id="passwordErr"></p>
+          </div>
+          <button class="btn btn-ink btn-lg btn-block" type="submit">Entrar</button>
+        </form>
+
+        <!-- 2b. Criar conta: nome e palavra-passe nova -->
+        <form class="step step-form" data-step="details" id="detailsForm" novalidate hidden>
+          <div class="who"><i class="ph ph-envelope-simple" aria-hidden="true"></i><span class="who-email" data-email></span><button type="button" class="link small" data-go="start">Mudar</button></div>
+          <div class="field-group">
+            <label class="field-label" for="name">O teu nome</label>
+            <input class="field field-lg" id="name" type="text" autocomplete="name" required aria-describedby="nameErr" />
+            <p class="field-error" id="nameErr"></p>
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="newPassword">Cria uma palavra-passe</label>
+            <div class="pw">
+              <input class="field field-lg" id="newPassword" type="password" autocomplete="new-password" required aria-describedby="rules newPasswordErr newPasswordCaps" />
+              <button type="button" class="pw-toggle" aria-label="Mostrar a palavra-passe" aria-pressed="false"><i class="ph ph-eye" aria-hidden="true"></i></button>
+            </div>
+            <ul class="rules" id="rules">
+              <li data-rule="length">Pelo menos 8 caracteres</li>
+              <li data-rule="mix">Um número ou um símbolo</li>
+              <li data-rule="email">Diferente do teu email</li>
+            </ul>
+            <p class="field-hint" id="newPasswordCaps" hidden><i class="ph ph-warning" aria-hidden="true"></i> O Caps Lock está ligado</p>
+            <p class="field-error" id="newPasswordErr"></p>
+          </div>
+          <button class="btn btn-ink btn-lg btn-block" type="submit">Criar conta</button>
+          <p class="login-fine">Ao criares conta, aceitas os <a href="/termos">Termos</a> e a <a href="/privacidade">Política de privacidade</a>.</p>
+        </form>
+
+        <!-- 3. Palavra-passe esquecida -->
+        <form class="step step-form" data-step="reset" id="resetForm" novalidate hidden>
+          <div class="field-group">
+            <label class="field-label" for="resetEmail">Email</label>
+            <input class="field field-lg" id="resetEmail" type="email" inputmode="email" autocomplete="email" spellcheck="false" required aria-describedby="resetErr" />
+            <p class="field-error" id="resetErr"></p>
+          </div>
+          <button class="btn btn-ink btn-lg btn-block" type="submit">Envia-me uma ligação</button>
+          <button type="button" class="link small step-back" data-go="password">Voltar a entrar</button>
+        </form>
+
+        <!-- 4. Nova palavra-passe, depois de abrir a ligação do email -->
+        <form class="step step-form" data-step="new-password" id="newPasswordForm" novalidate hidden>
+          <div class="field-group">
+            <label class="field-label" for="resetPassword">Nova palavra-passe</label>
+            <div class="pw">
+              <input class="field field-lg" id="resetPassword" type="password" autocomplete="new-password" required aria-describedby="resetRules resetPasswordErr resetPasswordCaps" />
+              <button type="button" class="pw-toggle" aria-label="Mostrar a palavra-passe" aria-pressed="false"><i class="ph ph-eye" aria-hidden="true"></i></button>
+            </div>
+            <ul class="rules" id="resetRules">
+              <li data-rule="length">Pelo menos 8 caracteres</li>
+              <li data-rule="mix">Um número ou um símbolo</li>
+            </ul>
+            <p class="field-hint" id="resetPasswordCaps" hidden><i class="ph ph-warning" aria-hidden="true"></i> O Caps Lock está ligado</p>
+            <p class="field-error" id="resetPasswordErr"></p>
+          </div>
+          <button class="btn btn-ink btn-lg btn-block" type="submit">Guardar a nova palavra-passe</button>
+        </form>
+
+        <!-- 5. Ver o email -->
+        <div class="step" data-step="check" hidden>
+          <div class="done">
+            <p class="done-text" id="checkText"></p>
+            <a class="btn btn-ink btn-lg btn-block" href="/" id="checkHome" hidden>Ir para o CVviews</a>
+            <button type="button" class="btn btn-ghost btn-lg btn-block" id="resendBtn">Enviar o email outra vez</button>
+            <p class="field-error" id="resendErr"></p>
+            <button type="button" class="link small" data-go="start">Usar outro email</button>
+          </div>
+        </div>
+
+        <!-- 6. Já com sessão iniciada: a conta -->
+        <div class="step account-step" data-step="signed-in" hidden>
+          <section class="account" aria-label="Os dados da tua conta">
+            <header class="account-head">
+              <span class="account-avatar" aria-hidden="true" data-initials></span>
+              <div class="account-who">
+                <p class="account-name" data-name></p>
+                <p class="account-email" data-account-email></p>
+              </div>
+            </header>
+            <dl class="account-facts">
+              <div><dt>Entras com</dt><dd data-provider></dd></div>
+              <div><dt>Email</dt><dd data-verified></dd></div>
+              <div><dt>Conta criada</dt><dd data-created></dd></div>
+              <div><dt>Último acesso</dt><dd data-last></dd></div>
+              <div><dt>Plano</dt><dd data-plan></dd></div>
+            </dl>
+          </section>
+          <a class="btn btn-ink btn-lg btn-block" href="/">Ir para o CVviews</a>
+          <section class="saved" aria-label="As tuas revisões" hidden>
+            <p class="saved-h">As tuas revisões</p>
+            <ul class="saved-list" data-saved></ul>
+          </section>
+          <button type="button" class="btn btn-ghost btn-lg btn-block" id="planBtn" hidden></button>
+          <div class="account-actions">
+            <button type="button" class="btn btn-ghost" id="changePasswordBtn" hidden>Mudar a palavra-passe</button>
+            <button type="button" class="btn btn-ghost" id="logoutBtn">Sair</button>
+          </div>
+          <p class="field-error" id="accountErr" role="alert"></p>
+          <div class="account-danger">
+            <button type="button" class="link small account-delete" id="deleteStart">Apagar a conta</button>
+            <div class="account-confirm" id="deleteConfirm" hidden>
+              <p>Isto apaga a tua conta e o teu perfil, para sempre. As revisões, o Leo e o treino de entrevistas continuam a funcionar sem conta.</p>
+              <div class="account-confirm-actions">
+                <button type="button" class="btn btn-danger" id="deleteBtn">Apagar para sempre</button>
+                <button type="button" class="link small" id="deleteCancel">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Contas ainda desligadas -->
+        <div class="step" data-step="done" hidden>
+          <div class="done">
+            <p class="done-text" id="doneText"></p>
+            <a class="btn btn-ink btn-lg btn-block" href="/">Continuar sem conta</a>
+            <button type="button" class="link small" data-go="start">Experimentar de outra forma</button>
+          </div>
+        </div>
+
+        <p class="switch enter" style="--i:7" id="switch"></p>
+      </div>
+
+      <footer class="login-foot enter" style="--i:8">
+        <a href="/privacidade">Privacidade</a>
+        <a href="/termos">Termos</a>
+        <span>© 2026 CVviews</span>
+      </footer>
+    </section>
+
+    <aside class="login-art" aria-hidden="true">
+      <img src="/img/meadow-1600.webp" srcset="/img/meadow-900.webp 900w, /img/meadow-1600.webp 1600w" sizes="(min-width: 961px) 50vw, 1px" alt="" decoding="async" loading="lazy" />
+    </aside>
+  </main>
+
+  <script src="/login.js" type="module"></script>
+</body>
+</html>

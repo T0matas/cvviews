@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>CVviews | Revisão de CV em português</title>
+  <meta name="description" content="Cola ou anexa o teu CV e vê o que um recrutador vai achar dele, com as frases que deves mudar. Também dá para treinar a entrevista." />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0b0b0a" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preload" href="/fonts/host-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/literata-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts.css" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip" href="#prompt">Saltar para a revisão do CV</a>
+
+  <header class="nav" data-cta="off">
+    <div class="nav-inner">
+      <a class="brand" href="/" aria-label="CVviews, página inicial">CVviews</a>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="/#como-funciona">Como funciona</a>
+        <a href="/#entrevistas">Entrevistas</a>
+        <a href="/#planos">Preços</a>
+        <a href="/#perguntas">Perguntas</a>
+      </nav>
+      <div class="nav-end">
+        <a class="btn btn-text nav-login" href="/entrar">Entrar</a>
+        <a class="btn btn-ink btn-sm nav-cta" href="/" data-start="review">Rever o meu CV</a>
+        <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">
+          <span class="menu-btn-open">Menu</span>
+          <span class="menu-btn-close" aria-hidden="true">Fechar <i class="ph ph-x"></i></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <span class="menu-panel is-top"></span>
+    <span class="menu-panel is-bottom"></span>
+    <span class="menu-panel is-left"></span>
+    <span class="menu-panel is-right"></span>
+    <span class="menu-corner is-tl"></span>
+    <span class="menu-corner is-tr"></span>
+    <span class="menu-corner is-bl"></span>
+    <span class="menu-corner is-br"></span>
+    <div class="menu-window"><img data-src="/img/meadow-900.webp" alt="" /></div>
+    <nav class="menu-nav" aria-label="Site">
+      <ul class="menu-links">
+        <li style="--i:0"><a href="/" data-start="review">Rever o meu CV<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:1"><a href="/#como-funciona">Como funciona<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:2"><a href="/#entrevistas">Entrevistas<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:4"><a href="/#planos">Preços<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:5"><a href="/#perguntas">Perguntas<span class="menu-line" aria-hidden="true"></span></a></li>
+      </ul>
+    </nav>
+    <div class="menu-cards">
+      <a class="menu-card" href="/entrar" style="--i:5"><span>Entrar</span><small>ou criar uma conta</small></a>
+      <a class="menu-card" href="/?exemplo=designer" style="--i:6"><span>Experimentar</span><small>A revisão de um CV inventado</small></a>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- The tool itself: a composer that becomes a conversation -->
+    <section class="app" id="app" data-state="idle" aria-label="Revisão do CV">
+      <div class="intro" id="intro">
+        <h1 class="display intro-title">O que é que um recrutador vai achar do teu CV?</h1>
+        <p class="intro-sub">Cola-o aqui ou anexa o ficheiro. Em menos de um minuto tens uma opinião sincera e as frases que deves mudar.</p>
+      </div>
+
+      <div class="thread" id="thread" hidden>
+        <div class="thread-top">
+          <p class="thread-label">As mensagens com o Leo não ficam guardadas.</p>
+          <button class="text-act" type="button" id="resetBtn">Recomeçar</button>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+
+      <div class="dock" id="dock">
+        <div class="suggest" id="suggest" hidden></div>
+
+        <form class="composer" id="composer" novalidate>
+          <div class="attachments" id="attachments"></div>
+          <label class="sr-only" for="prompt" id="promptLabel">O teu CV</label>
+          <textarea id="prompt" rows="2" placeholder="Cola aqui o teu CV, ou anexa um PDF, Word ou fotografias" autocomplete="off"></textarea>
+
+          <div class="iv-opts" id="ivOpts" hidden>
+            <label class="pill-select"><span class="sr-only">Tipo de perguntas</span>
+              <select id="ivStyle">
+                <option value="Mixed">Uma mistura de perguntas</option>
+                <option value="Behavioural">Comportamentais</option>
+                <option value="Technical">Técnicas</option>
+                <option value="CV deep-dive">Sobre o meu CV</option>
+              </select><i class="ph ph-caret-down" aria-hidden="true"></i>
+            </label>
+            <label class="pill-select"><span class="sr-only">Entrevistador</span>
+              <select id="ivLevel">
+                <option value="Friendly">Entrevistador simpático</option>
+                <option value="Standard" selected>Entrevistador justo</option>
+                <option value="Tough">Entrevistador exigente</option>
+              </select><i class="ph ph-caret-down" aria-hidden="true"></i>
+            </label>
+            <label class="pill-select"><span class="sr-only">Número de perguntas</span>
+              <select id="ivCount">
+                <option value="5">5 perguntas</option>
+                <option value="8" selected>8 perguntas</option>
+                <option value="12">12 perguntas</option>
+              </select><i class="ph ph-caret-down" aria-hidden="true"></i>
+            </label>
+          </div>
+
+          <div class="bar">
+            <button type="button" class="icon-btn" id="attachBtn" aria-label="Anexar o teu CV" title="Anexar o teu CV"><i class="ph ph-paperclip" aria-hidden="true"></i></button>
+            <input type="file" id="fileInput" class="sr-only" tabindex="-1" accept=".pdf,.docx,.txt,.md,application/pdf,text/plain,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/*,.heic,.heif" multiple />
+            <fieldset class="modes">
+              <legend class="sr-only">O que queres fazer?</legend>
+              <label class="mode"><input type="radio" name="mode" value="review" checked /><span>Rever</span></label>
+              <label class="mode"><input type="radio" name="mode" value="ask" /><span>Perguntar<span class="l-extra"> ao Leo</span></span></label>
+              <label class="mode"><input type="radio" name="mode" value="interview" /><span>Entrevista</span></label>
+            </fieldset>
+            <button type="submit" class="send" id="sendBtn" aria-label="Rever o meu CV" title="Rever o meu CV"><i class="ph ph-arrow-up" aria-hidden="true"></i></button>
+          </div>
+        </form>
+
+        <p class="composer-note" id="composerNote" role="status" aria-live="polite"></p>
+
+        <div class="samples" id="samples">
+          <span>Experimenta com um exemplo</span>
+          <button type="button" class="chip" data-sample="designer">Designer de produto</button>
+          <button type="button" class="chip" data-sample="engenheiro">Engenheiro de backend</button>
+          <button type="button" class="chip" data-sample="recem-licenciada">Recém-licenciada</button>
+        </div>
+        <p class="fineprint">Sem conta, nada fica guardado. O feedback é escrito por IA, por isso confirma o que for importante.</p>
+      </div>
+    </section>
+
+    <!-- What a review does to a CV, shown on a sample as you scroll -->
+    <section class="how" id="como-funciona">
+      <div class="how-grid">
+        <div class="how-doc">
+          <figure class="paper-wrap">
+            <article class="paper s1 s2 s3 s4" id="paper" aria-label="Um CV de exemplo, marcado por uma revisão">
+              <header class="paper-head">
+                <p class="paper-name">Marta Oliveira</p>
+                <p class="paper-meta">Designer de Produto, Lisboa<span>marta.oliveira@email.pt</span></p>
+              </header>
+
+              <p class="paper-h">Perfil</p>
+              <div class="row">
+                <p><del class="m-del">Designer trabalhadora e apaixonada que adora criar experiências bonitas.</del> <ins class="m-ins">Designer de produto com quatro anos na área da saúde, a criar aplicações que os doentes usam todos os dias.</ins></p>
+                <span class="m-note n2">toda a gente escreve isto</span>
+              </div>
+
+              <p class="paper-h">Experiência</p>
+              <p class="paper-role"><b>Designer de Produto, Lumena Saúde</b><span>2022 até hoje</span></p>
+              <ul class="paper-list">
+                <li class="row"><p><del class="m-del">Responsável pelo design da</del> <ins class="m-ins">Desenhei e lancei a</ins> aplicação para doentes<ins class="m-ins">, hoje usada por [X] doentes por mês</ins></p><span class="m-note n3">assim já é um resultado</span></li>
+                <li class="row"><p><span class="m-hi">Fiz entrevistas a doentes e médicos</span></p><span class="m-note n1">boa, isto fica</span></li>
+                <li class="row"><p><del class="m-del">Trabalhei no redesenho do registo, que melhorou a conclusão</del> <ins class="m-ins">Liderei o redesenho do registo, que subiu a conclusão de [X]% para [Y]%</ins></p><span class="m-note n3">põe aqui os teus números</span></li>
+                <li class="row"><p><del class="m-del">Ajudei com</del> <ins class="m-ins">Criei [N] componentes para</ins> o sistema de design</p></li>
+              </ul>
+              <p class="paper-role"><b>Designer UX Júnior, Estúdio Nove</b><span>2020 a 2022</span></p>
+              <ul class="paper-list">
+                <li class="row"><p><span class="m-hi">Criei wireframes e protótipos no Figma</span></p></li>
+                <li class="row"><p><del class="m-del">Participei em reuniões com clientes</del></p><span class="m-note n2">corta</span></li>
+              </ul>
+
+              <p class="paper-h">Competências</p>
+              <div class="row"><p>Figma, prototipagem, investigação com utilizadores<del class="m-del">, Microsoft Office</del></p></div>
+
+            </article>
+            <figcaption>Um CV de exemplo, marcado como uma revisão o lê.</figcaption>
+          </figure>
+        </div>
+
+        <div class="how-steps">
+          <div class="how-step" data-stage="0">
+            <h2 class="display-2" data-reveal>Um CV depois de passar por aqui</h2>
+            <p>É um CV inventado. Vai descendo e vê o que lhe acontece.</p>
+          </div>
+          <div class="how-step" data-stage="1">
+            <h3><span class="key key-hi" aria-hidden="true"></span>O que está bom fica sublinhado</h3>
+            <p>Assim sabes no que não deves mexer.</p>
+          </div>
+          <div class="how-step" data-stage="2">
+            <h3><span class="key key-del" aria-hidden="true"></span>O que sobra é riscado</h3>
+            <p>Frases que um recrutador salta sem ler, como “trabalhadora e apaixonada”.</p>
+          </div>
+          <div class="how-step" data-stage="3">
+            <h3><span class="key key-ins" aria-hidden="true"></span>As frases fracas são reescritas</h3>
+            <p>Uma tarefa passa a ser um resultado. Quando falta um número, fica um [espaço] para o pores tu. Não inventamos números.</p>
+          </div>
+          <div class="how-step" data-stage="4">
+            <h3><span class="key key-score" aria-hidden="true"></span>No fim, uma nota de 0 a 100</h3>
+            <p>Com a nota de cada parte do CV e as palavras-chave que os programas de triagem procuram.</p>
+            <a class="btn btn-ink" href="/" data-start="review">Rever o meu CV</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- After the review: Leo and interview practice -->
+    <section class="more" id="entrevistas">
+      <div class="wrap">
+        <h2 class="display-2 more-title" data-reveal>E depois podes falar sobre ele</h2>
+        <div class="more-grid">
+          <article class="feature feature-coach" data-reveal>
+            <div class="feature-copy">
+              <h3>Pergunta ao Leo</h3>
+              <p>O Leo leu o teu CV, por isso podes perguntar coisas concretas. Por exemplo, como explicar o ano em que estiveste parado.</p>
+              <a class="btn btn-ghost" href="/?modo=leo" data-start="ask">Perguntar ao Leo</a>
+            </div>
+            <figure class="excerpt">
+              <blockquote>
+                <p class="excerpt-q">Como explico o ano em que parei?</p>
+                <p class="excerpt-a">Uma linha honesta, e segues em frente. Algo como “2019 a 2020: viagens e trabalho como freelancer, a fazer sites para dois clientes locais.” O emprego seguinte faz o resto.</p>
+              </blockquote>
+              <figcaption>De uma conversa de exemplo</figcaption>
+            </figure>
+          </article>
+
+          <article class="feature feature-iv" data-reveal style="--i:1">
+            <div class="feature-copy">
+              <h3>Treina a entrevista</h3>
+              <p>As perguntas saem do que está no teu CV. Escreves a resposta e recebes uma nota e dicas.</p>
+              <a class="btn btn-ghost" href="/?modo=entrevista" data-start="interview">Começar a treinar</a>
+            </div>
+            <figure class="excerpt">
+              <ol class="excerpt-list">
+                <li>Fala-me do redesenho do registo na Lumena Saúde. Como soubeste que tinha resultado?</li>
+                <li>Conta-me uma vez em que um médico discordou do teu design.</li>
+                <li>O que mudavas hoje na aplicação para doentes?</li>
+              </ol>
+              <p class="pen-note">Sobre a primeira resposta: 6 em 10. Uma boa história, agora diz o que mudou, com um número.</p>
+              <figcaption>De uma sessão de exemplo</figcaption>
+            </figure>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plans -->
+    <section class="plans" id="planos">
+      <div class="wrap">
+        <h2 class="display-2" data-reveal>Preços</h2>
+        <p class="plans-sub" data-reveal style="--i:1">Começas de graça. Se precisares de mais, o Pro custa menos do que um café por semana.</p>
+        <div class="plans-grid">
+          <article class="plan" data-reveal style="--i:2">
+            <p class="plan-name">Grátis</p>
+            <p class="plan-price"><b>0 €</b></p>
+            <ul class="plan-list">
+              <li>3 revisões por mês</li>
+              <li>3 CV corrigidos em imagem por mês</li>
+              <li>10 mensagens por dia com o Leo</li>
+              <li>Perguntas de entrevista a partir do teu CV</li>
+            </ul>
+            <a class="btn btn-ghost btn-block" href="/" data-start="review">Começar</a>
+            <p class="plan-fine">Não precisas de conta.</p>
+          </article>
+          <article class="plan plan-pro" data-reveal style="--i:3">
+            <p class="plan-name">Pro</p>
+            <p class="plan-price"><b>4,99 €</b> por mês</p>
+            <ul class="plan-list">
+              <li>Revisões ilimitadas</li>
+              <li>CV corrigido em imagem sempre que quiseres</li>
+              <li>Leo sem limite, e podes mostrar-lhe imagens</li>
+              <li>Feedback a cada resposta de entrevista, com uma versão mais forte</li>
+            </ul>
+            <button type="button" class="btn btn-ink btn-block" data-pro>Passar a Pro</button>
+            <p class="plan-fine">Pagamento seguro pela Stripe. Cancelas quando quiseres.</p>
+          </article>
+        </div>
+        <p class="plans-note" id="planNote" role="status"></p>
+      </div>
+    </section>
+
+    <!-- Questions -->
+    <section class="faq" id="perguntas">
+      <div class="wrap faq-grid">
+        <h2 class="display-2" data-reveal>Perguntas frequentes</h2>
+        <div class="faq-list" data-reveal="list" style="--i:1">
+          <details name="faq">
+            <summary>O meu CV fica guardado?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>Só se quiseres. Sem conta, fica neste separador do navegador e desaparece quando o fechas ou atualizas. Com sessão iniciada, as tuas revisões ficam guardadas na tua conta, e podes apagá-las na página da conta.</p></div>
+          </details>
+          <details name="faq">
+            <summary>Que ficheiros posso usar?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>Um PDF, um ficheiro Word (.docx), texto simples ou fotografias das páginas, tiradas com o telemóvel (JPG, PNG, WebP ou HEIC do iPhone). Se o CV tiver várias páginas, anexa até 4 fotografias de uma vez. Os PDF podem ter até 3 MB e cada fotografia até 40 MB. Se o teu PDF for digitalizado, envia antes fotografias das páginas. Também podes colar o texto diretamente.</p></div>
+          </details>
+          <details name="faq">
+            <summary>O meu CV pode estar em inglês?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>Pode. A revisão vem sempre em português, mas as linhas reescritas ficam na língua do teu CV, para as poderes copiar diretamente.</p></div>
+          </details>
+          <details name="faq">
+            <summary>Preciso de uma conta?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>Para o plano grátis, não. Só precisas de conta para passar ao Pro, para a subscrição ficar associada a ti.</p></div>
+          </details>
+          <details name="faq">
+            <summary>Quanto custa?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>O plano grátis tem 3 revisões e 3 CV corrigidos em imagem por mês, e 10 mensagens por dia com o Leo. O Pro custa 4,99 € por mês, não tem limites, deixa-te mostrar imagens ao Leo e dá feedback às tuas respostas de entrevista. Cancelas quando quiseres.</p></div>
+          </details>
+          <details name="faq">
+            <summary>Posso treinar entrevistas sem CV?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>Sim. Escolhe Entrevista e escreve o cargo ou cola o anúncio. As perguntas passam a ser sobre a vaga em vez da tua experiência.</p></div>
+          </details>
+          <details name="faq">
+            <summary>Quem escreve o feedback?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>Um modelo de IA, com instruções para ler como um recrutador experiente e para ser honesto e concreto. Costuma ajudar, mas pode enganar-se, por isso confirma o que for importante antes de enviares o CV.</p></div>
+          </details>
+          <details name="faq">
+            <summary>Vai inventar coisas?<i class="ph ph-plus" aria-hidden="true"></i></summary>
+            <div class="faq-a"><p>Tem instruções para nunca inventar experiência. Quando uma linha reescrita precisa de um número que só tu sabes, fica um [espaço] para o preencheres.</p></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="foot-panel">
+        <div class="foot-grid">
+          <p class="foot-claim">O CVviews lê o teu CV como um recrutador e <span class="nobr">diz-te</span> o que mudar primeiro.</p>
+          <nav class="foot-col" aria-label="Explorar">
+            <p class="foot-h">Explorar</p>
+            <a href="/#como-funciona">Como funciona</a>
+            <a href="/#entrevistas">Entrevistas</a>
+            <a href="/#planos">Preços</a>
+            <a href="/#perguntas">Perguntas</a>
+            <a href="/entrar">Entrar</a>
+          </nav>
+          <div class="foot-col">
+            <p class="foot-h">Experimenta com um exemplo</p>
+            <div class="foot-chips">
+              <a class="foot-chip" href="/?exemplo=designer"><i class="ph ph-file-text" aria-hidden="true"></i>Designer de produto</a>
+              <a class="foot-chip" href="/?exemplo=engenheiro"><i class="ph ph-file-text" aria-hidden="true"></i>Engenheiro de backend</a>
+              <a class="foot-chip" href="/?exemplo=recem-licenciada"><i class="ph ph-file-text" aria-hidden="true"></i>Recém-licenciada</a>
+            </div>
+          </div>
+          <div class="foot-ctas">
+            <a class="foot-cta is-pen" href="/" data-start="review">
+              <span class="foot-cta-t">Rever o meu CV <i class="ph ph-arrow-up-right" aria-hidden="true"></i></span>
+              <span class="foot-cta-s">Começa já, sem conta</span>
+            </a>
+            <a class="foot-cta" href="/?modo=entrevista" data-start="interview">
+              <span class="foot-cta-t">Treinar a entrevista <i class="ph ph-arrow-up-right" aria-hidden="true"></i></span>
+              <span class="foot-cta-s">Perguntas feitas a partir do teu CV</span>
+            </a>
+          </div>
+        </div>
+        <p class="foot-word" data-reveal aria-hidden="true">CVviews</p>
+      </div>
+      <div class="foot-row">
+        <p>CVviews ©2026<a href="/privacidade">Privacidade</a><a href="/cookies">Cookies</a><a href="/termos">Termos</a></p>
+        <p class="foot-now" hidden><span>Portugal</span><time data-clock></time><span class="foot-weather" data-weather hidden></span></p>
+      </div>
+    </div>
+  </footer>
+
+  <div class="drop-overlay" id="dropOverlay" hidden>
+    <div class="drop-card"><i class="ph ph-upload-simple" aria-hidden="true"></i><p>Larga aqui o teu CV</p><span>PDF, Word, texto ou fotografias</span></div>
+  </div>
+
+  <script src="/vendor/lenis.min.js" defer></script>
+  <script src="/site.js" type="module"></script>
+  <script src="/app.js" type="module"></script>
+</body>
+</html>

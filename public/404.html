@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Página não encontrada | CVviews</title>
+  <meta name="description" content="Esta página não existe." />
+  <meta name="robots" content="noindex" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#0b0b0a" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="preload" href="/fonts/host-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="preload" href="/fonts/literata-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/fonts.css" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main">Saltar para o conteúdo</a>
+
+  <header class="nav" data-cta="on">
+    <div class="nav-inner">
+      <a class="brand" href="/" aria-label="CVviews, página inicial">CVviews</a>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="/#como-funciona">Como funciona</a>
+        <a href="/#entrevistas">Entrevistas</a>
+        <a href="/#planos">Preços</a>
+        <a href="/#perguntas">Perguntas</a>
+      </nav>
+      <div class="nav-end">
+        <a class="btn btn-text nav-login" href="/entrar">Entrar</a>
+        <a class="btn btn-ink btn-sm nav-cta" href="/">Rever o meu CV</a>
+        <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menu">
+          <span class="menu-btn-open">Menu</span>
+          <span class="menu-btn-close" aria-hidden="true">Fechar <i class="ph ph-x"></i></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menu">
+    <span class="menu-panel is-top"></span>
+    <span class="menu-panel is-bottom"></span>
+    <span class="menu-panel is-left"></span>
+    <span class="menu-panel is-right"></span>
+    <span class="menu-corner is-tl"></span>
+    <span class="menu-corner is-tr"></span>
+    <span class="menu-corner is-bl"></span>
+    <span class="menu-corner is-br"></span>
+    <div class="menu-window"><img data-src="/img/meadow-900.webp" alt="" /></div>
+    <nav class="menu-nav" aria-label="Site">
+      <ul class="menu-links">
+        <li style="--i:0"><a href="/">Rever o meu CV<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:1"><a href="/#como-funciona">Como funciona<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:2"><a href="/#entrevistas">Entrevistas<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:4"><a href="/#planos">Preços<span class="menu-line" aria-hidden="true"></span></a></li>
+        <li style="--i:5"><a href="/#perguntas">Perguntas<span class="menu-line" aria-hidden="true"></span></a></li>
+      </ul>
+    </nav>
+    <div class="menu-cards">
+      <a class="menu-card" href="/entrar" style="--i:5"><span>Entrar</span><small>ou criar uma conta</small></a>
+      <a class="menu-card" href="/?exemplo=designer" style="--i:6"><span>Experimentar</span><small>A revisão de um CV inventado</small></a>
+    </div>
+  </div>
+
+  <main id="main" class="notfound">
+    <div class="wrap narrow">
+      <h1 class="display-1" data-reveal>Esta página não existe</h1>
+      <p class="lede" data-reveal style="--i:1">Talvez o endereço tenha um erro, ou a página tenha mudado de sítio.</p>
+      <a class="btn btn-ink btn-lg" href="/" data-reveal style="--i:2">Voltar ao início</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="foot-panel">
+        <div class="foot-grid">
+          <p class="foot-claim">O CVviews lê o teu CV como um recrutador e <span class="nobr">diz-te</span> o que mudar primeiro.</p>
+          <nav class="foot-col" aria-label="Explorar">
+            <p class="foot-h">Explorar</p>
+            <a href="/#como-funciona">Como funciona</a>
+            <a href="/#entrevistas">Entrevistas</a>
+            <a href="/#planos">Preços</a>
+            <a href="/#perguntas">Perguntas</a>
+            <a href="/entrar">Entrar</a>
+          </nav>
+          <div class="foot-col">
+            <p class="foot-h">Experimenta com um exemplo</p>
+            <div class="foot-chips">
+              <a class="foot-chip" href="/?exemplo=designer"><i class="ph ph-file-text" aria-hidden="true"></i>Designer de produto</a>
+              <a class="foot-chip" href="/?exemplo=engenheiro"><i class="ph ph-file-text" aria-hidden="true"></i>Engenheiro de backend</a>
+              <a class="foot-chip" href="/?exemplo=recem-licenciada"><i class="ph ph-file-text" aria-hidden="true"></i>Recém-licenciada</a>
+            </div>
+          </div>
+          <div class="foot-ctas">
+            <a class="foot-cta is-pen" href="/" data-start="review">
+              <span class="foot-cta-t">Rever o meu CV <i class="ph ph-arrow-up-right" aria-hidden="true"></i></span>
+              <span class="foot-cta-s">Começa já, sem conta</span>
+            </a>
+            <a class="foot-cta" href="/?modo=entrevista" data-start="interview">
+              <span class="foot-cta-t">Treinar a entrevista <i class="ph ph-arrow-up-right" aria-hidden="true"></i></span>
+              <span class="foot-cta-s">Perguntas feitas a partir do teu CV</span>
+            </a>
+          </div>
+        </div>
+        <p class="foot-word" data-reveal aria-hidden="true">CVviews</p>
+      </div>
+      <div class="foot-row">
+        <p>CVviews ©2026<a href="/privacidade">Privacidade</a><a href="/cookies">Cookies</a><a href="/termos">Termos</a></p>
+        <p class="foot-now" hidden><span>Portugal</span><time data-clock></time><span class="foot-weather" data-weather hidden></span></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/vendor/lenis.min.js" defer></script>
+  <script src="/site.js" type="module"></script>
+</body>
+</html>

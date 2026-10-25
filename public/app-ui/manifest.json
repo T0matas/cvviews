@@ -1,0 +1,14 @@
+{
+  "name": "CVviews",
+  "short_name": "CVviews",
+  "description": "Revê o teu CV, fala com o Leo e treina a entrevista, a escrever ou por voz.",
+  "lang": "pt-PT",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    { "src": "/app-ui/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
