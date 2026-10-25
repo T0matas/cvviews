@@ -29,17 +29,18 @@ async function pdfPages(base64, onStep) {
 
     // Each text item is a run of characters on one line; split it into words, sharing out its width.
     const words = [];
-    const { items } = await page.getTextContent();
+    const { items, styles } = await page.getTextContent();
     for (const item of items) {
       if (!item.str?.trim()) continue;
       const tx = pdfjs.Util.transform(viewport.transform, item.transform);
       const h = Math.hypot(tx[2], tx[3]);
       const w = item.width * viewport.scale;
       const line = `${n}:${Math.round(tx[5] / Math.max(h * 0.5, 1))}`;
+      const family = styles?.[item.fontName]?.fontFamily || "sans-serif";
       for (const m of item.str.matchAll(/\S+/g)) {
         const x0 = tx[4] + (w * m.index) / item.str.length;
         const x1 = tx[4] + (w * (m.index + m[0].length)) / item.str.length;
-        words.push({ text: m[0], page: n - 1, line, box: { x0, x1, y0: tx[5] - h * 0.82, y1: tx[5] + h * 0.18 } });
+        words.push({ text: m[0], page: n - 1, line, size: h, family, baseline: tx[5], box: { x0, x1, y0: tx[5] - h * 0.82, y1: tx[5] + h * 0.18 } });
       }
     }
     pages.push({ canvas, words });
@@ -284,6 +285,111 @@ function note(ctx, { box, lines, arrow: from }, { size, taken }) {
   ctx.restore();
 }
 
+/* ---------------- The same page, corrected ----------------
+   The CV as it was sent, with each line the review rewrote replaced in place: the old words are painted
+   over in the paper's own colour and the new ones written where they were, at their size and colour. */
+function pixels(ctx, x, y, w, h) {
+  const X = Math.max(0, Math.floor(x)), Y = Math.max(0, Math.floor(y));
+  const W = Math.max(1, Math.min(ctx.canvas.width - X, Math.ceil(w))), H = Math.max(1, Math.min(ctx.canvas.height - Y, Math.ceil(h)));
+  const d = ctx.getImageData(X, Y, W, H).data, out = [];
+  for (let i = 0; i < d.length; i += 4) out.push([d[i], d[i + 1], d[i + 2]]);
+  return out;
+}
+const lum = ([r, g, b]) => 0.299 * r + 0.587 * g + 0.114 * b;
+const rgb = ([r, g, b]) => `rgb(${r}, ${g}, ${b})`;
+// The paper: the most common colour in a thin ring around the line.
+function paperColour(ctx, b, pad) {
+  const ring = [
+    ...pixels(ctx, b.x0 - pad, b.y0 - pad, b.x1 - b.x0 + pad * 2, 2),
+    ...pixels(ctx, b.x0 - pad, b.y1 + pad - 2, b.x1 - b.x0 + pad * 2, 2),
+    ...pixels(ctx, b.x1 + pad - 2, b.y0, 2, b.y1 - b.y0),
+  ];
+  const count = new Map();
+  let best = [255, 255, 255], most = 0;
+  for (const p of ring) {
+    const k = p.map((v) => v >> 3).join();
+    const n = (count.get(k) || 0) + 1;
+    count.set(k, n);
+    if (n > most) { most = n; best = p; }
+  }
+  return best;
+}
+// The ink: the darkest (or, on a dark page, the lightest) pixels in the line.
+function inkColour(ctx, b, paper) {
+  const px = pixels(ctx, b.x0, b.y0, b.x1 - b.x0, b.y1 - b.y0).sort((p, q) => lum(p) - lum(q));
+  if (!px.length) return [30, 30, 30];
+  const pick = lum(paper) > 128 ? px.slice(0, Math.max(1, Math.floor(px.length * 0.04))) : px.slice(-Math.max(1, Math.floor(px.length * 0.04)));
+  return [0, 1, 2].map((i) => Math.round(pick.reduce((s, p) => s + p[i], 0) / pick.length));
+}
+
+function rewriteLine(canvas, run, text, words) {
+  const ctx = canvas.getContext("2d");
+  const boxes = lineBoxes(run);
+  const first = boxes[0];
+  const sizes = run.map((w) => w.size || (w.box.y1 - w.box.y0) * 0.95).sort((a, b) => a - b);
+  let size = sizes[Math.floor(sizes.length / 2)];
+  const family = /serif/i.test(run[0].family || "") && !/sans/i.test(run[0].family || "") ? "Georgia, 'Times New Roman', serif" : "Arial, Helvetica, sans-serif";
+  // Our font is not theirs: size it so the old words, set in ours, would take the room they took on the page.
+  ctx.font = `${size}px ${family}`;
+  const setWidth = boxes.reduce((s, b) => s + (b.x1 - b.x0), 0);
+  const oursWidth = boxes.reduce((s, b) => s + ctx.measureText(run.filter((w) => w.line === b.line).map((w) => w.text).join(" ")).width, 0);
+  if (oursWidth > 0) size *= Math.min(1.2, Math.max(0.8, setWidth / oursWidth));
+  const pad = Math.max(2, size * 0.12);
+  const paper = paperColour(ctx, first, pad);
+  const ink = inkColour(ctx, first, paper);
+  const baseOf = (b) => (run.find((w) => w.line === b.line)?.baseline ?? b.y1 - (b.y1 - b.y0) * 0.2);
+  const gap = boxes.length > 1 ? baseOf(boxes[1]) - baseOf(first) : size * 1.3;
+
+  // How wide this column runs: on each nearby printed line, from the word where these lines start, follow
+  // the words rightwards until a gap as wide as a gutter; the furthest any line reaches is the edge.
+  const top = first.y0 - gap * 8, bottom = boxes.at(-1).y1 + gap * 8;
+  const byLine = new Map();
+  for (const w of words) if (w.box.y0 > top && w.box.y1 < bottom) (byLine.get(w.line) || byLine.set(w.line, []).get(w.line)).push(w);
+  let right = Math.max(...boxes.map((b) => b.x1));
+  for (const ws of byLine.values()) {
+    ws.sort((a, b) => a.box.x0 - b.box.x0);
+    let i = ws.findIndex((w) => w.box.x0 >= first.x0 - size * 1.5);
+    if (i < 0 || ws[i].box.x0 > first.x0 + size * 2) continue;
+    let edge = ws[i].box.x1;
+    for (i++; i < ws.length && ws[i].box.x0 - edge < size * 2; i++) edge = ws[i].box.x1;
+    right = Math.max(right, edge);
+  }
+  right = Math.min(right, canvas.width - 16);
+  const others = words.filter((w) => !run.includes(w));
+  const samePaper = (y) => pixels(ctx, first.x0, y - size * 0.9, right - first.x0, size * 1.15).every((p) => Math.abs(lum(p) - lum(paper)) < 24 || false) ;
+  const blankAt = (y) => !others.some((w) => w.box.y1 > y - size * 0.9 && w.box.y0 < y + size * 0.25 && w.box.x1 > first.x0 && w.box.x0 < right) && samePaper(y);
+
+  // Lines the new text may use: the old ones, then blank lines just below.
+  const slots = boxes.map((b) => ({ x: b.x0, base: baseOf(b) }));
+  for (let k = 1; k <= 3; k++) {
+    const base = baseOf(boxes.at(-1)) + gap * k;
+    if (!blankAt(base)) break;
+    slots.push({ x: boxes.at(-1).x0, base, extra: true });
+  }
+  let lines, s = size;
+  for (; s >= size * 0.6; s -= size * 0.03) {
+    ctx.font = `${s.toFixed(1)}px ${family}`;
+    lines = wrap(ctx, text, right - first.x0);
+    if (lines.length <= slots.length) break;
+  }
+  // still too long: squeeze it into the space of the old lines
+  let squeeze = 1;
+  if (lines.length > slots.length) squeeze = Math.max(0.88, slots.length / lines.length);
+
+  ctx.save();
+  ctx.fillStyle = rgb(paper);
+  for (const b of boxes) ctx.fillRect(b.x0 - size * 0.18, b.y0 - pad, b.x1 - b.x0 + size * 0.18 + 4, b.y1 - b.y0 + pad * 2);
+  ctx.fillStyle = rgb(ink);
+  ctx.textBaseline = "alphabetic";
+  lines.forEach((line, i) => {
+    const slot = slots[Math.min(i, slots.length - 1)];
+    const base = squeeze < 1 ? baseOf(first) + gap * i * squeeze : slot.base;
+    ctx.font = `${s.toFixed(1)}px ${family}`;
+    ctx.fillText(line, i === 0 ? first.x0 : (slots[i]?.x ?? first.x0), base);
+  });
+  ctx.restore();
+}
+
 /* ---------------- Putting it together ---------------- */
 export async function drawCorrections({ review, images, pdf, onStep }) {
   await document.fonts.load("600 40px Caveat");
@@ -297,6 +403,13 @@ export async function drawCorrections({ review, images, pdf, onStep }) {
   const size = Math.round(Math.min(44, Math.max(24, lineHeight * 1.15)));
   const taken = pages.map(() => []);
   let marks = 0;
+  // an untouched copy of each page, which becomes the corrected CV
+  const fixed = pages.map((p) => {
+    const c = document.createElement("canvas");
+    c.width = p.canvas.width; c.height = p.canvas.height;
+    c.getContext("2d").drawImage(p.canvas, 0, 0);
+    return c;
+  });
   seed = 7;
 
   // The lines to rewrite are found first: a line that's struck out can't also be praised.
@@ -318,6 +431,20 @@ export async function drawCorrections({ review, images, pdf, onStep }) {
   }
 
   // What goes: every line struck through in red first, so that no stroke ever runs across a slip...
+  let replaced = 0;
+  for (const { w, run: found } of rewrites) {
+    // the match can start a word late (the first word misread or loosely matched): take back the words
+    // just before it on the same line that the quote begins with
+    const run = [...found];
+    const q = tokens(w.original);
+    let at = words.indexOf(run[0]);
+    while (at > 0 && words[at - 1].line === run[0].line && q.slice(0, 3).some((t) => similar(words[at - 1].norm, t))) run.unshift(words[--at]);
+    // a quote that starts mid-sentence, rewritten as a whole new sentence, replaces that sentence from its start
+    const fresh = /^[-•–*\s]*\p{Lu}/u.test(w.short || w.improved);
+    while (fresh && at > 0 && words[at - 1].line === run[0].line && !/[.;:!?]$/.test(words[at - 1].text) && /^\p{Ll}/u.test(run[0].text)) run.unshift(words[--at]);
+    try { rewriteLine(fixed[run[0].page], run, (w.short || w.improved).replace(/^[-•–*]\s*/, ""), words.filter((x) => x.page === run[0].page)); replaced++; }
+    catch (err) { console.warn("[cv corrigido] linha", err); }
+  }
   const struckLines = rewrites.map(({ w, run }) => {
     const p = run[0].page;
     const page = pages[p];
@@ -350,5 +477,5 @@ export async function drawCorrections({ review, images, pdf, onStep }) {
     note(ctx, { box: { x: canvas.width - m.w - 40, y: canvas.height - m.h - size * 1.5, w: m.w, h: m.h }, lines: m.lines }, { size, taken: taken[p] });
   }
 
-  return { pages: pages.map((p) => p.canvas), marks };
+  return { pages: pages.map((p) => p.canvas), marks, fixed: replaced ? fixed : [] };
 }

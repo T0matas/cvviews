@@ -879,13 +879,17 @@ async function paintCv(slot, r, cv, marked) {
       return;
     }
     const { drawCorrections } = await import("/markup.js");
-    const { pages, marks } = await drawCorrections({ review: r, images: cv.images, pdf: cv.kind === "pdf" ? cv.data : null, onStep: step });
+    const { pages, marks, fixed } = await drawCorrections({ review: r, images: cv.images, pdf: cv.kind === "pdf" ? cv.data : null, onStep: step });
     if (!marks) throw new Error("no quote found on the page");
     const shots = pages.map((c) => c.toDataURL("image/jpeg", 0.9));
     const many = shots.length > 1;
     slot.innerHTML = `${shots.map((src, i) => `<figure class="cvshot-page appear" style="--k:${i}"><img src="${src}" alt="${many ? `Página ${i + 1} do` : "O"} teu CV, com as correções desenhadas por cima"></figure>`).join("")}
-      <p class="cvmark-act">${shots.map((src, i) => `<a class="text-act" href="${src}" download="cv-corrigido${many ? `-${i + 1}` : ""}.jpg">Descarregar${many ? ` a página ${i + 1}` : " o CV corrigido"}</a>`).join("")}
+      <p class="cvmark-act">${shots.map((src, i) => `<a class="text-act" href="${src}" download="cv-revisto${many ? `-${i + 1}` : ""}.jpg">Descarregar${many ? ` a página ${i + 1}` : " esta versão"}</a>`).join("")}
       ${marked ? `<button type="button" class="text-act" data-copy="${esc(marked.corrected)}">Copiar o texto já corrigido</button>` : ""}</p>`;
+    // The same document, corrected in place: its own layout, fonts and colours.
+    const full = $("[data-cvfull]", slot.closest(".rv"));
+    if (full && fixed?.length) showFixed(full, fixed.map((c) => c.toDataURL("image/jpeg", 0.92)), cv);
+    else if (full) fullCv(full, r, cv);
   } catch (err) {
     console.warn("[cv corrigido]", err);
     slot.innerHTML = marked ? sheet(marked) : `<p class="rv-p">Não foi possível desenhar as correções neste ficheiro.</p>`;
@@ -944,6 +948,28 @@ function printCv(f) {
   doc.write(`<!doctype html><html lang="pt-PT"><head><meta charset="utf-8"><title>${esc(f.name || "CV")} - CV</title><style>${PRINT_CSS}</style></head><body>${cvDocHtml(f)}</body></html>`);
   doc.close();
   setTimeout(() => { frame.contentWindow.focus(); frame.contentWindow.print(); setTimeout(() => frame.remove(), 2000); }, 250);
+}
+// The pages as images, one per printed sheet, for the browser to save as a PDF.
+function printImages(srcs, name) {
+  const frame = Object.assign(document.createElement("iframe"), { title: "CV para imprimir" });
+  frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0";
+  document.body.append(frame);
+  const doc = frame.contentDocument;
+  doc.open();
+  doc.write(`<!doctype html><html><head><meta charset="utf-8"><title>${esc(name)}</title><style>@page { size: A4; margin: 0; } body { margin: 0; } img { display: block; width: 100%; page-break-after: always; break-after: page; }</style></head><body>${srcs.map((s) => `<img src="${s}">`).join("")}</body></html>`);
+  doc.close();
+  const imgs = [...doc.images];
+  Promise.all(imgs.map((i) => (i.complete ? 0 : new Promise((r) => { i.onload = i.onerror = r; })))).then(() => {
+    frame.contentWindow.focus(); frame.contentWindow.print(); setTimeout(() => frame.remove(), 2000);
+  });
+}
+function showFixed(slot, srcs, cv) {
+  const many = srcs.length > 1;
+  const base = (cv.name || "CV").replace(/.[a-z0-9]+$/i, "");
+  slot.innerHTML = `${srcs.map((src, i) => `<figure class="cvshot-page appear" style="--k:${i}"><img src="${src}" alt="${many ? `Página ${i + 1} do` : "O"} teu CV, já corrigido"></figure>`).join("")}
+    <p class="cvmark-act">${srcs.map((src, i) => `<a class="text-act" href="${src}" download="${esc(base)}-corrigido${many ? `-${i + 1}` : ""}.jpg">Descarregar${many ? ` a página ${i + 1}` : " o CV corrigido"}</a>`).join("")}
+    <button type="button" class="text-act" data-print-fixed>Descarregar em PDF</button></p>`;
+  $("[data-print-fixed]", slot).addEventListener("click", () => printImages(srcs, `${base} corrigido`));
 }
 async function fullCv(slot, r, cv) {
   try {
@@ -1037,7 +1063,7 @@ function renderReview(out, r, cvText, cv) {
   appear(out);
   if (visual) paintCv($("[data-cvshot]", out), r, cv, marked);
   else if ($(".cvmark", out)) markWhenSeen($(".cvmark", out));
-  if (cv) fullCv($("[data-cvfull]", out), r, cv);
+  if (cv && !visual) fullCv($("[data-cvfull]", out), r, cv); // a photo or PDF is corrected in place, in paintCv
 
   announce(`Revisão pronta. O teu CV tem ${score} em 100.`);
 

@@ -54,9 +54,10 @@ const SCHEMA = obj({
   }), "3 to 6 weaknesses, most severe first."),
   rewrites: list(obj({
     original: str("A weak line quoted word for word from the CV, in the CV's own language."),
-    improved: str("A stronger rewrite in the CV's own language, so it can be pasted straight in. Keep it truthful; use [placeholders] for numbers the candidate must fill in."),
+    improved: str("A stronger rewrite in the CV's own language (an English CV gets an English line), so it can be pasted straight in. Keep it truthful; use [placeholders] for numbers the candidate must fill in."),
+    short: str("The same improvement as a natural sentence in the CV's own language and tone (no abbreviations, no symbols like + or - for up and down), about as long as the original line (at most a third longer), to replace it in place on the page. Only facts already on that line: no new results, frequencies, timeframes or quality claims; a figure the candidate must add is a placeholder like [X]."),
     why: str("Why the rewrite is stronger, one sentence."),
-  }), "2 to 4 before/after bullet rewrites."),
+  }), "3 to 6 before/after rewrites of the weakest lines (profile and bullets), weakest first."),
   ats: obj({
     score: int("Estimated applicant-tracking-system compatibility from 0 to 100."),
     missing_keywords: list(str("Keyword"), "Up to 8 keywords recruiters for this role would expect but are missing."),
@@ -70,7 +71,7 @@ Review the candidate's CV honestly and kindly: celebrate what genuinely works an
 Every point must be grounded in the actual CV - quote it where you can. Never invent experience the candidate does not have.
 If a target role or job description is given, judge relevance against it; otherwise infer the most likely target from the CV.
 If the document is not a CV, set is_cv to false, explain briefly in not_cv_reason, and keep every other field minimal (scores 0, empty lists, empty strings).
-Write every field in European Portuguese (pt-PT), except quotes from the CV and rewritten lines, which stay in the CV's own language.
+Write every field in European Portuguese (pt-PT), except quotes from the CV and rewritten lines, which stay in the CV's own language: if the CV is in English, "original", "improved" and "short" are in English.
 ${HUMAN_STYLE}`;
 
 // The whole CV again, with the review applied: what goes is gone, what is weak is rewritten.
@@ -135,7 +136,7 @@ export default async function handler(req, res) {
     if (review.profile) review.profile.seniority = SENIORITY[review.profile.seniority] || review.profile.seniority;
     review.scores = (review.scores || []).map((s) => ({ ...s, category: CATEGORIES[s.category] || s.category }));
     // A rewritten line only keeps the figures that are on the CV (or in the job ad); the rest become blanks to fill in.
-    review.rewrites = (review.rewrites || []).map((w) => ({ ...w, improved: blankUnknownNumbers(w.improved, cvText, target || "") }));
+    review.rewrites = (review.rewrites || []).map((w) => ({ ...w, improved: blankUnknownNumbers(w.improved, cvText, target || ""), short: blankUnknownNumbers(w.short, cvText, target || "") }));
     // The text goes back too, so the page can draw the CV marked up with this review.
     sendJson(res, 200, { review, cvText });
   } catch (error) {
