@@ -1,5 +1,5 @@
 import { gate } from "../lib/plan.js";
-import { HUMAN_STYLE, cvTextBlocks, friendlyError, readCv, readJson, sendJson, structured } from "../lib/ai.js";
+import { HUMAN_STYLE, blankUnknownNumbers, cvTextBlocks, friendlyError, readCv, readJson, sendJson, structured } from "../lib/ai.js";
 import { int, list, obj, oneOf, str } from "../lib/schema.js";
 
 export const config = { maxDuration: 120 };
@@ -89,6 +89,8 @@ export default async function handler(req, res) {
     });
     if (review.profile) review.profile.seniority = SENIORITY[review.profile.seniority] || review.profile.seniority;
     review.scores = (review.scores || []).map((s) => ({ ...s, category: CATEGORIES[s.category] || s.category }));
+    // A rewritten line only keeps the figures that are on the CV (or in the job ad); the rest become blanks to fill in.
+    review.rewrites = (review.rewrites || []).map((w) => ({ ...w, improved: blankUnknownNumbers(w.improved, cvText, target || "") }));
     // The text goes back too, so the page can draw the CV marked up with this review.
     sendJson(res, 200, { review, cvText });
   } catch (error) {

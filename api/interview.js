@@ -1,5 +1,5 @@
 import { gate } from "../lib/plan.js";
-import { HUMAN_STYLE, cvBlocks, friendlyError, readJson, sendJson, structured } from "../lib/ai.js";
+import { HUMAN_STYLE, blankUnknownNumbers, cvTextBlocks, friendlyError, readCv, readJson, sendJson, structured } from "../lib/ai.js";
 import { int, list, obj, oneOf, str } from "../lib/schema.js";
 
 export const config = { maxDuration: 120 };
@@ -49,7 +49,8 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { error: "Usa POST." });
   try {
     const body = await readJson(req);
-    const cvContent = body.cv ? await cvBlocks(body.cv) : [{ type: "text", text: "(Sem CV: baseia as perguntas na vaga.)" }];
+    const cvText = body.cv ? await readCv(body.cv) : "";
+    const cvContent = body.cv ? cvTextBlocks(cvText, body.cv.name) : [{ type: "text", text: "(Sem CV: baseia as perguntas na vaga.)" }];
     const role = String(body.role || "").trim().slice(0, 4000);
 
     if (body.mode === "feedback") {
@@ -65,6 +66,8 @@ export default async function handler(req, res) {
         schema: FEEDBACK_SCHEMA,
         maxTokens: 8000,
       });
+      // The model answer only keeps figures from the CV, the answer or the question; the rest become blanks.
+      feedback.stronger_answer = blankUnknownNumbers(feedback.stronger_answer, cvText, answer, String(body.question || ""), role);
       return sendJson(res, 200, { feedback });
     }
 

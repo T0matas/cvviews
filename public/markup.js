@@ -317,15 +317,25 @@ export async function drawCorrections({ review, images, pdf, onStep }) {
     marks++;
   }
 
-  // What goes: struck through in red, with the new line written underneath.
-  for (const { w, run } of rewrites) {
+  // What goes: every line struck through in red first, so that no stroke ever runs across a slip...
+  const struckLines = rewrites.map(({ w, run }) => {
     const p = run[0].page;
     const page = pages[p];
     const ctx = page.canvas.getContext("2d");
     const boxes = lineBoxes(run);
     for (const b of boxes) penLine(ctx, b.x0, b.x1, b.y0 + (b.y1 - b.y0) * 0.55, RED, Math.max(2.5, lineHeight * 0.11));
+    return { w, p, page, ctx, boxes };
+  });
+  // ...then each new line, written on a slip. All the arrows go down before any slip, so a slip laid
+  // over an arrow hides it the way paper would, instead of the arrow running across its words.
+  const spots = struckLines.map(({ w, p, page, ctx, boxes }) => {
     const spot = placeNote(ctx, w.improved.replace(/^[-•–*]\s*/, ""), { boxes, size, words: page.words, taken: taken[p], page: page.canvas });
-    note(ctx, spot, { size, taken: taken[p] });
+    taken[p].push(spot.box);
+    return { ctx, spot };
+  });
+  for (const { ctx, spot } of spots) if (spot.arrow) arrow(ctx, spot.arrow, { x: spot.box.x - 6, y: spot.box.y + size * 0.7 }, size);
+  for (const { ctx, spot } of spots) {
+    note(ctx, { box: spot.box, lines: spot.lines }, { size, taken: [] });
     marks++;
   }
 
