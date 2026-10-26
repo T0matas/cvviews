@@ -1,5 +1,7 @@
 // CVviews, the home page: the composer and the conversation it turns into.
 // The CV lives only in memory in this tab.
+import { lang, t } from "/i18n.js";
+
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 
@@ -139,7 +141,7 @@ const UPSELL = new Set(["limit", "pro"]);
 const planError = (data, status) => Object.assign(new Error(data.error || `Algo correu mal (${status}). Tenta de novo.`), { code: data.code });
 
 async function postJson(url, body, signal) {
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeaders()) }, body: JSON.stringify(body), signal });
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json", ...(await authHeaders()) }, body: JSON.stringify({ ...body, lang }), signal });
   let data = {};
   try { data = await res.json(); } catch { /* non-JSON error page */ }
   if (!res.ok) throw planError(data, res.status);
@@ -627,7 +629,7 @@ function setSuggestions(list) {
     if (!b || state.busy) return;
     const s = list[+b.dataset.i];
     setMode(s.mode);
-    prompt.value = s.text;
+    prompt.value = t(s.text); // in English, Leo gets the question in English too
     autosize();
     composer.requestSubmit();
   };
@@ -1155,7 +1157,7 @@ function startAsk(text) {
         const res = await fetch("/api/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...(await authHeaders()) },
-          body: JSON.stringify({ cv: cvPayload(state.cv), review: state.review, messages: chatPayload() }),
+          body: JSON.stringify({ cv: cvPayload(state.cv), review: state.review, messages: chatPayload(), lang }),
           signal,
         });
         if (!res.ok) {
@@ -1226,7 +1228,7 @@ function renderInterview(out, iv, role) {
   const id = log.children.length;
   out.innerHTML = `<div class="iv-set">
     <h3 class="iv-title">${esc(iv.title)}</h3>
-    <p class="iv-intro">${esc(iv.intro)}${state.cv ? "" : " Anexa o teu CV e as perguntas passam a ser sobre a tua experiência."}</p>
+    <p class="iv-intro">${esc(iv.intro)}${state.cv ? "" : " <span>Anexa o teu CV e as perguntas passam a ser sobre a tua experiência.</span>"}</p>
     <ol class="qs">${qs.map((q, i) => `
       <li class="q${i === 0 ? " open" : ""}">
         <button type="button" class="q-head" aria-expanded="${i === 0}" aria-controls="qb-${id}-${i}">

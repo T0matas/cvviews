@@ -1,5 +1,5 @@
 import { gate } from "../lib/plan.js";
-import { HUMAN_STYLE, blankUnknownNumbers, cvTextBlocks, friendlyError, readCv, readJson, sendJson, structured } from "../lib/ai.js";
+import { blankUnknownNumbers, langOf, replyIn, styleFor, cvTextBlocks, friendlyError, readCv, readJson, sendJson, structured } from "../lib/ai.js";
 import { int, list, obj, oneOf, str } from "../lib/schema.js";
 
 export const config = { maxDuration: 120 };
@@ -14,10 +14,12 @@ const TYPES = {
   culture: "Cultura",
 };
 const DIFFICULTY = { warmup: "Aquecimento", medium: "Média", hard: "Difícil" };
+const TYPES_EN = { behavioural: "Behavioural", technical: "Technical", situational: "Situational", motivation: "Motivation", cv: "About your CV", culture: "Culture" };
+const DIFFICULTY_EN = { warmup: "Warm-up", medium: "Medium", hard: "Hard" };
 
 const QUESTIONS_SCHEMA = obj({
   title: str("A short title for this interview set, e.g. 'Senior Frontend Engineer - technical round'."),
-  intro: str("One friendly sentence to the candidate (address them as tu) on how to practise with this set."),
+  intro: str("One friendly sentence to the candidate (addressing them directly) on how to practise with this set."),
   questions: list(obj({
     question: str("The interview question, phrased exactly as an interviewer would ask it."),
     type: oneOf(Object.keys(TYPES), "Question type: behavioural, technical, situational, motivation, cv (probes something on the CV) or culture."),
@@ -36,11 +38,11 @@ const FEEDBACK_SCHEMA = obj({
   stronger_answer: str("A model answer in the candidate's voice and in the same language as their answer, using only facts from their CV or answer; use [placeholders] for unknown specifics. 90-160 words."),
 });
 
-const SYSTEM = `You are the interview coach inside CVviews. You design realistic interview questions the way a seasoned hiring manager would,
+const systemFor = (lang) => `You are the interview coach inside CVviews. You design realistic interview questions the way a seasoned hiring manager would,
 grounded in the candidate's actual CV and the role they're targeting. Probe real claims on the CV, gaps and transitions, and the core skills of the role.
 Be specific; avoid generic filler questions unless asked for warm-ups.
-Write everything in European Portuguese (pt-PT).
-${HUMAN_STYLE}`;
+Write everything in ${replyIn(lang)}.
+${styleFor(lang)}`;
 
 const STYLES = ["Mixed", "Behavioural", "Technical", "Situational", "CV deep-dive"];
 const LEVELS = ["Friendly", "Standard", "Tough"];
@@ -49,8 +51,10 @@ export default async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { error: "Usa POST." });
   try {
     const body = await readJson(req);
+    const lang = langOf(body);
+    const SYSTEM = systemFor(lang);
     const cvText = body.cv ? await readCv(body.cv) : "";
-    const cvContent = body.cv ? cvTextBlocks(cvText, body.cv.name) : [{ type: "text", text: "(Sem CV: baseia as perguntas na vaga.)" }];
+    const cvContent = body.cv ? cvTextBlocks(cvText, body.cv.name) : [{ type: "text", text: lang === "en" ? "(No CV: base the questions on the role.)" : "(Sem CV: baseia as perguntas na vaga.)" }];
     const role = String(body.role || "").trim().slice(0, 4000);
 
     if (body.mode === "feedback") {
@@ -87,8 +91,8 @@ export default async function handler(req, res) {
     });
     interview.questions = (interview.questions || []).map((q) => ({
       ...q,
-      type: TYPES[q.type] || q.type,
-      difficulty: DIFFICULTY[q.difficulty] || q.difficulty,
+      type: (lang === "en" ? TYPES_EN : TYPES)[q.type] || q.type,
+      difficulty: (lang === "en" ? DIFFICULTY_EN : DIFFICULTY)[q.difficulty] || q.difficulty,
     }));
     sendJson(res, 200, { interview });
   } catch (error) {

@@ -1215,3 +1215,9 @@ textarea.field { resize: vertical; min-height: 120px; }
 .cvdoc-blank { padding: 0 2px; border-radius: 3px; background: #fff1b8; color: inherit; font-weight: 700; }
 .rv-p .cvdoc-blank { background: var(--warn-soft); color: var(--warn); }
 @media (max-width: 640px) { .cvdoc { padding: 24px 20px 28px; font-size: 13.5px; } .cvdoc-head h2 { font-size: 22px; } .cvdoc-row { flex-wrap: wrap; } }
+
+/* ---------- Language ---------- */
+.lang-switch { margin-left: 18px; padding: 0; border: 0; background: none; font: inherit; color: inherit; text-decoration: underline; text-decoration-color: var(--line-2); text-underline-offset: 3px; cursor: pointer; }
+.lang-switch:hover { color: var(--ink); text-decoration-color: currentColor; }
+.login-foot .lang-switch { margin-left: 16px; }
+.legal-lang { margin-bottom: 24px; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-2); font-size: 14.5px; color: var(--ink-2); }

@@ -1,5 +1,5 @@
 import { gate } from "../lib/plan.js";
-import { CV_STYLE, HUMAN_STYLE, LANGUAGE_NAMES, blankUnknownNumbers, intoLanguage, languageOf, cvTextBlocks, friendlyError, readCv, readJson, sendJson, structured } from "../lib/ai.js";
+import { CV_STYLE, HUMAN_STYLE, LANGUAGE_NAMES, langOf, replyIn, styleFor, blankUnknownNumbers, intoLanguage, languageOf, cvTextBlocks, friendlyError, readCv, readJson, sendJson, structured } from "../lib/ai.js";
 import { int, list, obj, oneOf, str } from "../lib/schema.js";
 
 export const config = { maxDuration: 120 };
@@ -24,6 +24,16 @@ const SENIORITY = {
   executive: "Executivo",
 };
 
+const CATEGORIES_EN = {
+  impact: "Impact and results",
+  clarity: "Clarity and structure",
+  relevance: "Fit for the role",
+  skills: "Skills and keywords",
+  format: "Formatting and ATS",
+  language: "Language and tone",
+};
+const SENIORITY_EN = { student: "Student", entry: "Entry level", junior: "Junior", mid: "Mid level", senior: "Senior", lead: "Lead / Principal", executive: "Executive" };
+
 const SCHEMA = obj({
   is_cv: { type: "boolean", description: "True if the document is a CV or resume. False if it is something else (an invoice, an essay, a report, a random photo)." },
   not_cv_reason: str("If is_cv is false: one friendly sentence saying what the document seems to be. Otherwise an empty string."),
@@ -34,7 +44,7 @@ const SCHEMA = obj({
     name: str("Candidate's name, or empty string if not found."),
     current_role: str("Most recent or target job title."),
     seniority: oneOf(Object.keys(SENIORITY), "Estimated seniority: student, entry (entry level), junior, mid (mid level), senior, lead (lead or principal) or executive."),
-    years_experience: str("Estimated professional experience, in Portuguese, e.g. '3 a 4 anos'."),
+    years_experience: str("Estimated professional experience, in the language the review is written in, e.g. '3 a 4 anos' or '3 to 4 years'."),
   }),
   scores: list(obj({
     category: oneOf(Object.keys(CATEGORIES), "Scoring category: impact (impact and results), clarity (clarity and structure), relevance (fit for the target role), skills (skills and keywords), format (formatting and ATS) or language (language and tone)."),
@@ -66,14 +76,14 @@ const SCHEMA = obj({
   next_steps: list(str("Action"), "3 to 5 prioritised next steps, each one short sentence."),
 });
 
-const SYSTEM = `You are CVviews, an experienced recruiter and career coach who has screened thousands of CVs.
+const systemFor = (lang) => `You are CVviews, an experienced recruiter and career coach who has screened thousands of CVs.
 Review the candidate's CV honestly and kindly: celebrate what genuinely works and be specific about what doesn't.
 Every point must be grounded in the actual CV - quote it where you can. Never invent experience the candidate does not have.
 If a target role or job description is given, judge relevance against it; otherwise infer the most likely target from the CV.
 If the document is not a CV, set is_cv to false, explain briefly in not_cv_reason, and keep every other field minimal (scores 0, empty lists, empty strings).
-Write every field in European Portuguese (pt-PT), except quotes from the CV and rewritten lines, which stay in the CV's own language: if the CV is in English, "original", "improved" and "short" are in English.
-The Portuguese writing rules below are for your comments only; they never change the language of "original", "improved" or "short".
-${HUMAN_STYLE}`;
+Write every field in ${replyIn(lang)}, except quotes from the CV and rewritten lines, which stay in the CV's own language: if the CV is in English, "original", "improved" and "short" are in English.
+The writing rules below are for your comments only; they never change the language of "original", "improved" or "short".
+${styleFor(lang)}`;
 
 // The whole CV again, with the review applied: what goes is gone, what is weak is rewritten.
 const FULL_SCHEMA = obj({
@@ -130,14 +140,16 @@ async function keepLanguage(full, lang) {
 export default async function handler(req, res) {
   if (req.method !== "POST") return sendJson(res, 405, { error: "Usa POST." });
   try {
-    const { cv, target, mode, review: given } = await readJson(req);
+    const body = await readJson(req);
+    const { cv, target, mode, review: given } = body;
+    const lang = langOf(body);
     if (mode === "full") {
       // Part of a review already counted, so it counts nothing itself.
       await gate(req, {});
       const cvText = await readCv(cv);
-      const lang = languageOf(cvText);
+      const cvLang = languageOf(cvText);
       const full = await structured({
-        system: fullSystem(lang),
+        system: fullSystem(cvLang),
         content: [...cvTextBlocks(cvText, cv.name), { type: "text", text: `A revisão (JSON):\n${JSON.stringify(given || {}).slice(0, 20000)}\n\n${target?.trim() ? `Vaga: ${target.trim().slice(0, 2000)}\n\n` : ""}Escreve o CV todo, já corrigido.` }],
         schema: FULL_SCHEMA,
         maxTokens: 16000,
@@ -149,26 +161,33 @@ export default async function handler(req, res) {
       const applied = (line) => rewrites.find((w) => alike(line, w.original) >= 0.75)?.improved ?? line;
       const fix = (s) => blankUnknownNumbers(applied(s), cvText, target || "");
       full.sections = (full.sections || []).map((s) => ({ ...s, entries: (s.entries || []).map((e) => ({ ...e, dates: String(e.dates || "").replace(/(\d{4}),\s*/g, "$1 - "), lines: (e.lines || []).map(fix) })) }));
-      await keepLanguage(full, lang);
+      await keepLanguage(full, cvLang);
       return sendJson(res, 200, { full });
     }
     await gate(req, { count: "review" });
-    const ask = target?.trim()
+    const ask = lang === "en"
+      ? (target?.trim() ? `Role or job ad:
+<target>
+${target.trim().slice(0, 6000)}
+</target>
+
+Review my CV for this role.` : "Review my CV.")
+      : target?.trim()
       ? `Vaga ou anúncio:\n<target>\n${target.trim().slice(0, 6000)}\n</target>\n\nRevê o meu CV para esta vaga.`
       : "Revê o meu CV.";
     const cvText = await readCv(cv);
-    const lang = languageOf(cvText);
+    const cvLang = languageOf(cvText);
     const review = await structured({
-      system: SYSTEM,
-      content: [...cvTextBlocks(cvText, cv.name), { type: "text", text: ask + languageNote(lang) }],
+      system: systemFor(lang),
+      content: [...cvTextBlocks(cvText, cv.name), { type: "text", text: ask + languageNote(cvLang) }],
       schema: SCHEMA,
     });
-    if (review.profile) review.profile.seniority = SENIORITY[review.profile.seniority] || review.profile.seniority;
-    review.scores = (review.scores || []).map((s) => ({ ...s, category: CATEGORIES[s.category] || s.category }));
+    if (review.profile) review.profile.seniority = (lang === "en" ? SENIORITY_EN : SENIORITY)[review.profile.seniority] || review.profile.seniority;
+    review.scores = (review.scores || []).map((s) => ({ ...s, category: (lang === "en" ? CATEGORIES_EN : CATEGORIES)[s.category] || s.category }));
     // A rewritten line only keeps the figures that are on the CV (or in the job ad); the rest become blanks to fill in.
     review.rewrites = (review.rewrites || []).map((w) => ({ ...w, improved: blankUnknownNumbers(w.improved, cvText, target || ""), short: blankUnknownNumbers(w.short, cvText, target || "") }));
     // Any rewrite that still came back in another language is translated into the CV's.
-    const said = await intoLanguage(review.rewrites.flatMap((w) => [w.improved, w.short]), lang);
+    const said = await intoLanguage(review.rewrites.flatMap((w) => [w.improved, w.short]), cvLang);
     review.rewrites.forEach((w, i) => { w.improved = said[i * 2]; w.short = said[i * 2 + 1]; });
     // The text goes back too, so the page can draw the CV marked up with this review.
     sendJson(res, 200, { review, cvText });

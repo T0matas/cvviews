@@ -2,6 +2,8 @@
 <html lang="pt-PT">
 <head>
   <meta charset="utf-8" />
+  <script>/* the saved language, before anything is drawn (see /i18n.js) */(function(){var d=document.documentElement,l=null;try{l=localStorage.getItem("cvviews:lang")||localStorage.getItem("cvviews:auto-lang")}catch(e){}if(l==="en"){d.lang="en";d.classList.add("i18n-wait")}else if(!l&&!/^pt/i.test(navigator.language||"")){d.classList.add("i18n-wait")}setTimeout(function(){d.classList.remove("i18n-wait")},2500)})();</script>
+  <style>.i18n-wait body{visibility:hidden}</style>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>CVviews | Revisão de CV em português</title>
   <meta name="description" content="Cola ou anexa o teu CV e vê o que um recrutador vai achar dele, com as frases que deves mudar. Também dá para treinar a entrevista." />
@@ -332,7 +334,7 @@
       </div>
       <div class="foot-row">
         <p>CVviews ©2026<a href="/privacidade">Privacidade</a><a href="/cookies">Cookies</a><a href="/termos">Termos</a></p>
-        <p class="foot-now" hidden><span>Portugal</span><time data-clock></time><span class="foot-weather" data-weather hidden></span></p>
+        <p class="foot-now" hidden><span data-place></span><time data-clock></time><span class="foot-weather" data-weather hidden></span></p>
       </div>
     </div>
   </footer>
@@ -342,6 +344,7 @@
   </div>
 
   <script src="/vendor/lenis.min.js" defer></script>
+  <script src="/i18n.js" type="module"></script>
   <script src="/site.js" type="module"></script>
   <script src="/app.js" type="module"></script>
 </body>

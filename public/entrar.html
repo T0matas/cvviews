@@ -2,6 +2,8 @@
 <html lang="pt-PT" class="entering">
 <head>
   <meta charset="utf-8" />
+  <script>/* the saved language, before anything is drawn (see /i18n.js) */(function(){var d=document.documentElement,l=null;try{l=localStorage.getItem("cvviews:lang")||localStorage.getItem("cvviews:auto-lang")}catch(e){}if(l==="en"){d.lang="en";d.classList.add("i18n-wait")}else if(!l&&!/^pt/i.test(navigator.language||"")){d.classList.add("i18n-wait")}setTimeout(function(){d.classList.remove("i18n-wait")},2500)})();</script>
+  <style>.i18n-wait body{visibility:hidden}</style>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Entrar | CVviews</title>
   <meta name="description" content="Entra no CVviews ou cria uma conta." />
@@ -202,6 +204,7 @@
     </aside>
   </main>
 
+  <script src="/i18n.js" type="module"></script>
   <script src="/login.js" type="module"></script>
 </body>
 </html>

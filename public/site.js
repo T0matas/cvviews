@@ -131,45 +131,61 @@ if (!reduceMotion && "IntersectionObserver" in window) {
   $$("[data-reveal]").forEach((el) => revealIo.observe(el));
 }
 
-/* ---------------- Footer: the time and the weather in Portugal ----------------
-   The clock runs on Lisbon time. The weather comes from our own /api/tempo once the footer is near;
-   if it can't be had, the time is enough. */
+/* ---------------- Footer: the visitor's country, the time and the weather there ----------------
+   Our own /api/tempo says roughly where the visit comes from and what the weather is like. Until it answers
+   (and if it can't), the footer uses the browser's own time zone and leaves the weather out. */
 const now = $(".foot-now");
 if (now) {
   const clock = $("[data-clock]", now);
-  const lisbon = new Intl.DateTimeFormat("pt-PT", { timeZone: "Europe/Lisbon", hour: "2-digit", minute: "2-digit" });
-  const tick = () => { const d = new Date(); clock.textContent = lisbon.format(d); clock.dateTime = d.toISOString(); };
-  tick();
-  setInterval(tick, 15000);
-  now.hidden = false;
+  const placeEl = $("[data-place]", now);
+  const lang = document.documentElement.lang.startsWith("en") ? "en" : "pt-PT";
+  let zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const fmt = () => { try { return new Intl.DateTimeFormat(lang, { timeZone: zone, hour: "2-digit", minute: "2-digit" }); } catch { return new Intl.DateTimeFormat(lang, { hour: "2-digit", minute: "2-digit" }); } };
+  let format = fmt();
+  const tick = () => { const d = new Date(); clock.textContent = format.format(d); clock.dateTime = d.toISOString(); };
+  const countryName = (code) => { try { return new Intl.DisplayNames([lang], { type: "region" }).of(code); } catch { return code; } };
 
-  const weatherIo = new IntersectionObserver(async ([en]) => {
-    if (!en.isIntersecting) return;
-    weatherIo.disconnect();
+  // asked once the page has settled, so it never competes with what the visitor came for
+  const load = async () => {
     try {
       const [w, { WEATHER_ICONS }] = await Promise.all([
         fetch("/api/tempo").then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status))))),
         import("/weather-icons.js"),
       ]);
+      if (w.country) { placeEl.textContent = countryName(w.country); try { localStorage.setItem("cvviews:country", w.country); } catch { /* fine */ } }
+      if (w.timezone) { zone = w.timezone; format = fmt(); tick(); }
+      if (typeof w.temp !== "number") return;
       const [icon, words] = weatherLook(w.code, w.day);
       const el = $("[data-weather]", now);
       el.innerHTML = `${w.temp}°C<span class="sr-only">, ${words}</span><svg viewBox="0 0 256 256" aria-hidden="true"><path d="${WEATHER_ICONS[icon]}"/></svg>`;
-      el.title = `Agora em Lisboa: ${words}, ${w.temp}°C`;
+      el.title = `${lang === "en" ? "Now in" : "Agora em"} ${w.city || countryName(w.country)}: ${words}, ${w.temp}°C`;
       el.hidden = false;
-    } catch { /* no weather today */ }
-  }, { rootMargin: "400px 0px" });
-  weatherIo.observe(now);
+    } catch { /* no weather today: the time is enough */ }
+  };
+
+  // a first guess while it waits: the country from last time, or the browser's region
+  let region = "";
+  try { region = localStorage.getItem("cvviews:country") || ""; } catch { /* no storage */ }
+  region ||= (navigator.language.split("-")[1] || "").toUpperCase();
+  placeEl.textContent = /^[A-Z]{2}$/.test(region) ? countryName(region) : "";
+  tick();
+  setInterval(tick, 15000);
+  now.hidden = false;
+  if ("requestIdleCallback" in window) requestIdleCallback(load, { timeout: 3000 });
+  else setTimeout(load, 1500);
 }
 
 // Open-Meteo's weather codes (WMO), as an icon and a few words.
 function weatherLook(code, day) {
-  if (code === 0) return [day ? "sun" : "moon", "céu limpo"];
-  if (code <= 2) return [day ? "cloud-sun" : "cloud-moon", "pouco nublado"];
-  if (code === 3) return ["cloud", "nublado"];
-  if (code === 45 || code === 48) return ["cloud-fog", "nevoeiro"];
-  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return ["cloud-snow", "neve"];
-  if (code >= 95) return ["cloud-lightning", "trovoada"];
-  return ["cloud-rain", "chuva"];
+  const en = document.documentElement.lang.startsWith("en");
+  const say = (pt, eng) => (en ? eng : pt);
+  if (code === 0) return [day ? "sun" : "moon", say("céu limpo", "clear sky")];
+  if (code <= 2) return [day ? "cloud-sun" : "cloud-moon", say("pouco nublado", "partly cloudy")];
+  if (code === 3) return ["cloud", say("nublado", "cloudy")];
+  if (code === 45 || code === 48) return ["cloud-fog", say("nevoeiro", "fog")];
+  if ((code >= 71 && code <= 77) || code === 85 || code === 86) return ["cloud-snow", say("neve", "snow")];
+  if (code >= 95) return ["cloud-lightning", say("trovoada", "thunderstorm")];
+  return ["cloud-rain", say("chuva", "rain")];
 }
 
 /* ---------------- Cookies ----------------

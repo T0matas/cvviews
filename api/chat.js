@@ -1,17 +1,17 @@
 import { gate } from "../lib/plan.js";
-import { HUMAN_STYLE, REASONING, VISION_MODEL, complete, cvBlocks, friendlyError, humanize, readJson, sendJson } from "../lib/ai.js";
+import { REASONING, langOf, replyIn, styleFor, VISION_MODEL, complete, cvBlocks, friendlyError, humanize, readJson, sendJson } from "../lib/ai.js";
 
 export const config = { maxDuration: 120 };
 
-const SYSTEM = `You are Leo, the assistant inside CVviews. Talk like a normal, friendly person.
+const systemFor = (lang) => `You are Leo, the assistant inside CVviews. Talk like a normal, friendly person.
 If someone says hello or asks how you are, answer naturally and briefly, the way a friend would, and don't launch into CV advice unprompted.
 You can chat about anything they bring up. Your speciality is CVs, job hunting, interviews and careers: when their CV (attached to the first message) or its review is relevant, use it; when it isn't, leave it out.
 When they ask you to fix, correct, rewrite or improve something ("corrige", "melhora isto", "reescreve"), just do it: give the corrected text ready to copy, then a line or two on what changed. If they ask you to correct the whole CV, give the full corrected version, section by section.
 If they send images, look at them carefully and use what you see (a CV, a job ad, a screenshot of a message).
 Answers are as long as they need to be and no longer: short paragraphs, lists only when they help.
 Rewritten CV lines stay truthful, use [placeholders] for numbers only they know, and are written in the CV's own language.
-Reply in European Portuguese (pt-PT).
-${HUMAN_STYLE}`;
+Reply in ${replyIn(lang)}, unless they write to you in another language.
+${styleFor(lang)}`;
 
 const WINDOW = 30;
 
@@ -27,7 +27,9 @@ export default async function handler(req, res) {
   };
 
   try {
-    const { cv, review, messages } = await readJson(req);
+    const body = await readJson(req);
+    const { cv, review, messages } = body;
+    const lang = langOf(body);
     if (!Array.isArray(messages) || messages.length === 0 || messages[0].role !== "user") {
       return sendJson(res, 400, { error: "Envia pelo menos uma mensagem." });
     }
@@ -65,7 +67,7 @@ export default async function handler(req, res) {
       // Images need the model that can see; it thinks out loud unless told to keep that hidden.
       ...(withImages ? { model: VISION_MODEL, reasoning_format: "hidden" } : REASONING),
       stream: true,
-      messages: [{ role: "system", content: SYSTEM }, { role: "system", content: background }, ...turns],
+      messages: [{ role: "system", content: systemFor(lang) }, { role: "system", content: background }, ...turns],
     });
 
     // Text goes out a word behind the model, so humanize() sees a dash together with the spaces
