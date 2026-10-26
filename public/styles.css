@@ -948,50 +948,68 @@ textarea.field { resize: vertical; min-height: 120px; }
 .notfound .btn { margin-top: 32px; }
 
 /* ---------- Prices ----------
-   Two plans side by side. Each card has the same four rows (top, button, fine print, what you get),
-   shared through a subgrid, so the prices, buttons and every line of the list sit level across both. */
+   One table: every feature written once, the two plans side by side, the Pro column lit by the green pen. */
 .plans { padding: 112px 0; }
 .plans-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 48px; align-items: end; }
 .plans-sub { max-width: 44ch; justify-self: end; font-size: 18px; line-height: 1.5; color: var(--ink-2); }
-.plans-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, auto); gap: 0 16px; margin-top: 48px; }
-.plan {
-  display: grid; grid-row: span 3; grid-template-rows: subgrid; row-gap: 0;
-  padding: 32px 32px 12px; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-2);
-}
-.plan-pro {
-  border-color: color-mix(in srgb, var(--ins) 45%, var(--line));
-  background: linear-gradient(180deg, color-mix(in srgb, var(--ins) 8%, var(--bg-2)), var(--bg-2) 55%);
-}
+.price-wrap { margin-top: 48px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--bg-2); overflow: hidden; }
+.price { width: 100%; border-collapse: collapse; table-layout: fixed; }
+.price-labels { width: 38%; }
+.price-pro { background: color-mix(in srgb, var(--ins) 6%, transparent); }
+.price :is(th, td) { padding: 0 32px; text-align: left; font-weight: 400; }
+.price thead :is(th, td) { padding-top: 36px; padding-bottom: 32px; vertical-align: top; }
+.price-corner p { max-width: 30ch; font: italic 400 19px/1.45 var(--serif); color: var(--ink-2); }
+.price-plan { display: table-cell; }
+.price-plan > span { display: block; }
+.price-plan > .btn { display: flex; width: 100%; }
+.price-plan .btn { text-align: center; }
+.price-plan.is-pro { box-shadow: inset 0 2px 0 var(--ins); }
 .plan-name { font: 650 15px/1.2 var(--sans); color: var(--ink-2); }
-.plan-pro .plan-name { color: var(--ins); }
-.plan-price { margin-top: 18px; font-size: 15px; color: var(--ink-3); }
+.is-pro .plan-name { color: var(--ins); }
+.plan-price { margin-top: 16px; font-size: 15px; color: var(--ink-3); }
 .plan-price b { font: 400 52px/1 var(--serif); letter-spacing: -.03em; color: var(--ink); margin-right: 6px; }
-.plan-for { margin-top: 14px; max-width: 34ch; font-size: 15.5px; line-height: 1.5; color: var(--ink-2); }
-.plan-cta { padding-top: 28px; }
-.plan-fine { margin-top: 10px; font-size: 13px; color: var(--ink-3); text-align: center; }
-.plan-specs { margin: 28px 0 0; border-top: 1px solid var(--line); }
-.plan-specs > div { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 52px; border-bottom: 1px solid var(--line); }
-.plan-specs > div:last-child { border-bottom: 0; }
-.plan-specs dt { font-size: 15px; color: var(--ink-2); }
-.plan-specs dd { margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); text-align: right; }
-.plan-specs .yes::before { content: "\e182" / ""; font: 400 18px/1 "Phosphor"; color: var(--ink-2); }
-.plan-pro .plan-specs .yes::before { color: var(--ins); }
-.plan-specs .no::before { content: "—" / ""; font-weight: 400; color: var(--ink-3); }
+.plan-for { margin-top: 12px; min-height: 3em; font-size: 15px; line-height: 1.5; color: var(--ink-2); }
+.price-plan .btn { margin-top: 24px; }
+.plan-fine { margin-top: 10px; font-size: 13px; line-height: 1.4; color: var(--ink-3); }
+.price tbody tr { border-top: 1px solid var(--line); }
+.price tbody :is(th, td) { height: 54px; font-size: 15px; }
+.price tbody th { color: var(--ink-2); }
+.price tbody td { font-weight: 600; color: var(--ink); }
+.price-group :is(th, td) { height: auto !important; padding-top: 22px; padding-bottom: 8px; font: 600 12px/1 var(--sans) !important; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3) !important; }
+.price tbody tr.price-group, .price tbody tr.price-group + tr { border-top-color: transparent; }
+.price tbody tr.price-group { border-top: 1px solid var(--line); }
+.price .yes::before { content: "\e182" / ""; font: 400 19px/1 "Phosphor"; color: var(--ink-2); }
+.price td.yes:last-child::before { color: var(--ins); }
+.price .no::before { content: "—" / ""; font-weight: 400; color: var(--ink-3); }
+.price tbody tr:last-child :is(th, td) { padding-bottom: 6px; }
 .plans-note { margin-top: 16px; font-size: 14.5px; color: var(--del); }
 .plans-note:empty { display: none; }
 .err.upsell { display: flex; align-items: center; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; background: var(--ins-soft); }
 @media (max-width: 860px) {
   .plans-head { grid-template-columns: minmax(0, 1fr); }
   .plans-sub { justify-self: start; }
+  .price :is(th, td) { padding: 0 20px; }
+  .price-corner p { font-size: 17px; }
 }
+/* phones: the label sits on its own line above the two values */
 @media (max-width: 700px) {
   .plans { padding: 80px 0; }
-  .plans-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; gap: 14px; margin-top: 36px; }
-  .plan { grid-row: auto; grid-template-rows: none; padding: 24px 22px 6px; }
-  .plan-price b { font-size: 44px; }
-  .plan-cta { padding-top: 22px; }
-  .plan-specs { margin-top: 22px; }
-  .plan-specs > div { min-height: 48px; }
+  .price-wrap { margin-top: 32px; }
+  .price, .price thead, .price tbody { display: block; }
+  .price colgroup { display: none; }
+  .price tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .price :is(th, td) { padding: 0 16px; }
+  .price-corner { display: none; }
+  .price thead :is(th, td) { padding-top: 24px; padding-bottom: 22px; }
+  .price-plan.is-pro, .price tbody td:last-child { background: color-mix(in srgb, var(--ins) 6%, transparent); }
+  .plan-price { white-space: nowrap; font-size: 13px; }
+  .plan-price b { font-size: 32px; margin-right: 4px; }
+  .plan-for { min-height: 4.5em; font-size: 14px; }
+  .price-plan .btn { padding-left: 10px; padding-right: 10px; }
+  .price tbody th { grid-column: 1 / -1; height: auto; padding-top: 14px; padding-bottom: 2px; font-size: 14px; }
+  .price tbody td { height: auto; padding-top: 4px; padding-bottom: 14px; font-size: 14.5px; }
+  .price-group th { padding-top: 22px; }
+  .price-group td { display: none; }
 }
 
 /* ---------- Cookie notice ---------- */
