@@ -34,13 +34,6 @@ export function setLanguage(next) {
 /* ---------------- The words ---------------- */
 const EN = {
   // pages and navigation
-  "Depois da revisão": "After the review",
-  "Podes fazer perguntas sobre o teu CV ou treinar a entrevista com perguntas tiradas dele. Os dois usam o CV que já anexaste.": "You can ask questions about your CV or practise the interview with questions taken from it. Both use the CV you've already attached.",
-  "O Leo já leu o teu CV. Pergunta-lhe o que não sabes bem como pôr: um ano sem trabalhar, uma mudança de área, um emprego que durou pouco.": "Leo has already read your CV. Ask about the things you're not sure how to put: a year out of work, a change of field, a job that didn't last long.",
-  "As perguntas vêm do teu CV. Escreves a resposta como a dirias e recebes uma nota de 1 a 10, com o que correu bem e o que mudar.": "The questions come from your CV. You write your answer the way you'd say it and get a score from 1 to 10, with what went well and what to change.",
-  "Podes usar de graça. O Pro é para quando estás a enviar candidaturas todos os dias.": "You can use it for free. Pro is for when you're sending applications every day.",
-  "A revisão é a mesma nos dois planos. O Pro tem limites mais altos, deixa-te mostrar imagens ao Leo e comenta as tuas respostas de entrevista.": "The review is the same on both plans. Pro has higher limits, lets you show images to Leo and comments on your interview answers.",
-  "Revê o teu CV como um recrutador o leria, e diz-te o que mudar primeiro. Feito em Portugal.": "Reviews your CV the way a recruiter would read it, and tells you what to change first. Made in Portugal.",
   "CVviews | Revisão de CV em português": "CVviews | CV review",
   "Cola ou anexa o teu CV e vê o que um recrutador vai achar dele, com as frases que deves mudar. Também dá para treinar a entrevista.": "Paste or attach your CV and see what a recruiter will think of it, with the lines you should change. You can practise your interview too.",
   "Saltar para a revisão do CV": "Skip to the CV review",

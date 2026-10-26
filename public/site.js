@@ -92,17 +92,43 @@ matchMedia("(min-width: 901px)").addEventListener("change", (e) => { if (e.match
 // Coming back with the browser's back button shouldn't find the menu still open.
 addEventListener("pageshow", () => setMenu(false));
 
-/* ---------------- Marks drawn once in view ----------------
-   The content itself doesn't move as you scroll. Only the pen marks in the Leo and interview examples
-   draw themselves the first time they come into view (the .in class); without JavaScript they are simply there. */
+/* ---------------- Scroll reveals ----------------
+   As each part comes into view, headings rise word by word and blocks fade up. It happens once,
+   and without JavaScript (or with reduced motion) everything is simply there. */
 if (!reduceMotion && "IntersectionObserver" in window) {
+  // Wrap every word of a heading (every letter, for the footer's giant name) so each can rise out of its own line.
+  $$('[data-reveal="words"], [data-reveal="letters"]').forEach((heading) => {
+    const pieces = heading.dataset.reveal === "letters" ? /(\s+|.)/u : /(\s+)/;
+    let n = 0;
+    const wrap = (node) => [...node.childNodes].forEach((child) => {
+      if (child.nodeType === Node.ELEMENT_NODE) { if (!child.matches(".sr-only")) wrap(child); return; }
+      if (child.nodeType !== Node.TEXT_NODE) return;
+      const frag = document.createDocumentFragment();
+      child.textContent.split(pieces).forEach((part) => {
+        if (!part) return;
+        if (/^\s+$/.test(part)) { frag.append(part); return; }
+        const word = document.createElement("span");
+        const inner = document.createElement("span");
+        word.className = "w";
+        inner.textContent = part;
+        inner.style.setProperty("--w", n++);
+        word.append(inner);
+        frag.append(word);
+      });
+      child.replaceWith(frag);
+    });
+    wrap(heading);
+  });
+  // A list comes in one item after another.
+  $$('[data-reveal="list"]').forEach((list) => [...list.children].forEach((item, n) => item.style.setProperty("--n", n)));
+
   document.documentElement.classList.add("can-reveal");
   const revealIo = new IntersectionObserver((entries) => entries.forEach((en) => {
     if (!en.isIntersecting) return;
     en.target.classList.add("in");
     revealIo.unobserve(en.target);
-  }), { threshold: 0.3 });
-  $$(".duo").forEach((el) => revealIo.observe(el));
+  }), { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+  $$("[data-reveal]").forEach((el) => revealIo.observe(el));
 }
 
 /* ---------------- Footer: the visitor's country, the time and the weather there ----------------
