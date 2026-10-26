@@ -125,13 +125,8 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .chip:active { transform: scale(.97); }
 
 /* ---------- Nav ---------- */
-.nav {
-  position: sticky; top: 0; z-index: 40;
-  background: color-mix(in srgb, var(--bg) 86%, transparent);
-  backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
-  border-bottom: 1px solid transparent; transition: border-color .25s;
-}
-.nav.scrolled { border-bottom-color: var(--line); }
+/* The bar has no background of its own: the page shows right through it, with no line underneath. */
+.nav { position: sticky; top: 0; z-index: 40; background: transparent; }
 /* three columns: the name on the left, the links in the exact middle, the account on the right */
 .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: var(--nav-h); display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 24px; }
 .nav-inner > .brand { justify-self: start; }
