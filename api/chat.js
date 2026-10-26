@@ -51,7 +51,7 @@ export default async function handler(req, res) {
         : { role, content: text };
     });
     const withImages = turns.some((t) => Array.isArray(t.content));
-    await gate(req, withImages ? { proOnly: "images" } : { count: "chat" });
+    await gate(req, withImages ? { proOnly: "images", count: "chat" } : { count: "chat" });
     if (turns.length > WINDOW) {
       let recent = turns.slice(-WINDOW + 2);
       if (recent[0].role === "assistant") recent = recent.slice(1);

@@ -1346,23 +1346,49 @@ function untilText(t) {
   if (h >= 48) return `${Math.round(h / 24)} dias`;
   return h ? `${h} h ${m % 60} min` : `${m} min`;
 }
+// "às 01:00" when the reset is within a day, otherwise the day as well.
+function resetText(t) {
+  const d = new Date(t);
+  const time = d.toLocaleTimeString("pt-PT", { hour: "2-digit", minute: "2-digit" });
+  return t - Date.now() < 86400000 ? `às ${time}` : `${d.toLocaleDateString("pt-PT", { weekday: "long" })} às ${time}`;
+}
+const LIMIT_WORDS = { review: ["revisões", "as revisões"], visual: ["CV corrigidos", "os CV corrigidos"], chat: ["mensagens ao Leo", "as mensagens ao Leo"] };
+const limitBar = $("#limitBar");
+function drawLimitBar(pro) {
+  if (!limitBar) return;
+  // the allowance closest to running out, once it passes 80%
+  const near = usage.items.filter((i) => i.used / i.limit >= 0.8).sort((x, y) => y.used / y.limit - x.used / x.limit)[0];
+  const key = near ? `cvviews:aviso:${near.kind}:${near.used >= near.limit ? "fim" : "perto"}:${new Date(near.resets).toISOString().slice(0, 10)}` : "";
+  let closed = false;
+  try { closed = !!key && sessionStorage.getItem(key) === "1"; } catch { /* no storage: always show */ }
+  limitBar.hidden = !near || closed;
+  if (limitBar.hidden) return;
+  const full = near.used >= near.limit;
+  limitBar.classList.toggle("is-full", full);
+  $(".limit-pro", limitBar).hidden = pro;
+  limitBar.style.setProperty("--used", Math.min(1, near.used / near.limit));
+  $(".limit-text", limitBar).innerHTML = `<b>${full ? `Acabaram ${LIMIT_WORDS[near.kind][1]} de hoje` : `Estás perto do limite de ${LIMIT_WORDS[near.kind][0]}`}</b><span>Repõe ${resetText(near.resets)}</span>`;
+  $(".limit-x", limitBar).onclick = () => { try { sessionStorage.setItem(key, "1"); } catch { /* ignore */ } limitBar.hidden = true; };
+}
 function drawUsage() {
   if (!usage || !usageBox) return;
   usageBox.hidden = false;
   const pro = usage.plan === "pro";
-  const review = usage.items.find((i) => i.kind === "review") || usage.items[0];
   const worst = Math.max(...usage.items.map((i) => i.used / i.limit));
-  usageBox.style.setProperty("--used", pro ? 0 : Math.min(1, worst));
-  usageBox.classList.toggle("is-full", !pro && worst >= 1);
-  $(".usage-text", usageBtn).textContent = pro ? "Pro · sem limites" : `Grátis · ${Math.max(0, review.limit - review.used)} de ${review.limit} revisões hoje`;
+  usageBox.style.setProperty("--used", Math.min(1, worst));
+  usageBox.classList.toggle("is-high", worst >= 0.8 && worst < 1);
+  usageBox.classList.toggle("is-full", worst >= 1);
+  $(".usage-text", usageBtn).textContent = pro ? "Pro" : "Plano grátis";
+  usageBtn.title = "Ver os limites do plano";
   $(".usage-plan", usagePanel).textContent = pro ? "Pro" : "Grátis";
-  $(".usage-link", usagePanel).hidden = pro;
-  $(".usage-foot", usagePanel).hidden = pro;
+  const link = $(".usage-link", usagePanel);
+  link.href = pro ? "/entrar" : "/#planos";
+  link.firstChild.textContent = pro ? "A minha conta " : "Ver planos ";
   $(".usage-rows", usagePanel).innerHTML = usage.items.map((i) => {
-    const pct = pro ? 0 : Math.min(100, Math.round((i.used / i.limit) * 100));
-    const right = pro ? "Sem limite" : `Repõe em ${untilText(i.resets)}<b>${i.used}/${i.limit}</b>`;
-    return `<div class="usage-row${pct >= 100 ? " is-full" : pct >= 70 ? " is-high" : ""}"><div class="usage-line"><span>${esc(i.label)}</span><span class="usage-when">${right}</span></div><div class="usage-bar"><i style="width:${pct}%"></i></div></div>`;
+      const pct = Math.min(100, Math.round((i.used / i.limit) * 100));
+    return `<div class="usage-row${pct >= 100 ? " is-full" : pct >= 80 ? " is-high" : ""}"><div class="usage-line"><span>${esc(i.label)}</span><span class="usage-when">Repõe em ${untilText(i.resets)}<b>${i.used}/${i.limit}</b></span></div><div class="usage-bar"><i style="width:${pct}%"></i></div></div>`;
   }).join("");
+  drawLimitBar(pro);
 }
 function refreshUsage() {
   clearTimeout(usageTimer);
