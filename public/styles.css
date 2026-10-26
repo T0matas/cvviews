@@ -383,6 +383,12 @@ html.menu-lock, html.menu-lock body { overflow: hidden; }
 .limit-x { flex: none; width: 32px; height: 32px; display: grid; place-items: center; border: 0; border-radius: 9px; background: transparent; color: var(--ink-3); font-size: 15px; cursor: pointer; }
 .limit-x:hover { background: var(--tint); color: var(--ink); }
 @media (prefers-reduced-motion: reduce) { .usage-panel, .limit-bar { animation: none; } .usage-bar i { transition: none; } }
+@media (max-width: 560px) {
+  .limit-bar { gap: 8px; padding: 5px 4px 5px 12px; font-size: 13px; }
+  .limit-text span { font-size: 12px; }
+  .limit-pro { height: 30px; padding: 0 10px; font-size: 12.5px; }
+  .limit-x { width: 30px; height: 30px; }
+}
 .samples { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin-top: 22px; }
 .samples > span { font-size: 14px; color: var(--ink-3); margin-right: 4px; }
 .fineprint { margin-top: 18px; text-align: center; font-size: 13px; color: var(--ink-3); }
@@ -1115,7 +1121,7 @@ textarea.field { resize: vertical; min-height: 120px; }
 /* ---------- Saved reviews ---------- */
 .saved-note { display: flex; align-items: center; gap: 6px; margin-top: 28px; font-size: 14px; color: var(--ins); }
 .saved-note a { color: var(--ink); margin-left: 4px; }
-/* The account's CVs: a score, the file and the verdict, the day. Newest first. */
+/* The account's CVs, like a list of files: the file's icon, its name, when it was reviewed and the score. Newest first. */
 .saved { display: grid; gap: 10px; margin: 4px 0 2px; }
 .saved-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .saved-h { font: 400 22px/1.2 var(--serif); letter-spacing: -.01em; color: var(--ink); }
@@ -1125,19 +1131,13 @@ textarea.field { resize: vertical; min-height: 120px; }
 .saved-list li + li { border-top: 1px solid var(--line); }
 .saved-list a { flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px; padding: 12px 48px 12px 14px; color: var(--ink); text-decoration: none; transition: background-color .2s; }
 .saved-list a:hover { background: var(--tint); }
-.saved-score {
-  flex: none; width: 38px; height: 38px; border-radius: 99px; display: grid; place-items: center;
-  font: 600 14px/1 var(--sans); font-variant-numeric: tabular-nums; border: 1.5px solid currentColor;
-}
-.saved-score.is-good { color: var(--ins); background: var(--ins-soft); }
-.saved-score.is-mid { color: var(--warn); background: var(--warn-soft); }
-.saved-score.is-low { color: var(--del); background: var(--del-soft); }
+.saved-ic { flex: none; width: 36px; height: 36px; border-radius: 9px; display: grid; place-items: center; background: var(--card); font-size: 19px; color: var(--ink-2); }
+.saved-ic.is-pdf { color: var(--del); }
+.saved-ic.is-doc { color: #8aa8ff; }
 .saved-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
 .saved-text b, .saved-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .saved-text b { font-size: 14.5px; font-weight: 600; }
 .saved-text small { font-size: 13px; color: var(--ink-3); }
-.saved-text small:empty { display: none; }
-.saved-date { flex: none; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
 .saved-del {
   position: absolute; right: 8px; top: 50%; translate: 0 -50%; width: 32px; height: 32px; border: 0; border-radius: 9px;
   background: none; color: var(--ink-3); display: grid; place-items: center; font-size: 15px; opacity: 0; transition: opacity .15s, background-color .2s, color .2s;
@@ -1155,6 +1155,13 @@ textarea.field { resize: vertical; min-height: 120px; }
 .saved-empty-t { font-weight: 600; font-size: 15px; }
 .saved-empty-s { font-size: 13.5px; line-height: 1.5; color: var(--ink-3); max-width: 34ch; }
 .saved-empty .link { margin-top: 6px; }
+@media (max-width: 560px) {
+  .saved-list a { gap: 12px; padding: 12px 42px 12px 12px; }
+  .saved-del { right: 4px; width: 34px; height: 34px; opacity: 1; }
+  .account-head { padding: 14px 16px; }
+  .account-facts { padding: 2px 16px; }
+  .account-facts > div { grid-template-columns: 6.8em minmax(0, 1fr); padding: 9px 0; font-size: 14px; }
+}
 
 /* ---------- Film: a short tour of the site, framed on the meadow ---------- */
 .film { padding: 0 0 96px; }

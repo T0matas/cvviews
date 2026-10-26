@@ -1367,7 +1367,7 @@ function drawLimitBar(pro) {
   limitBar.classList.toggle("is-full", full);
   $(".limit-pro", limitBar).hidden = pro;
   limitBar.style.setProperty("--used", Math.min(1, near.used / near.limit));
-  $(".limit-text", limitBar).innerHTML = `<b>${full ? `Acabaram ${LIMIT_WORDS[near.kind][1]} de hoje` : `Estás perto do limite de ${LIMIT_WORDS[near.kind][0]}`}</b><span>Repõe ${resetText(near.resets)}</span>`;
+  $(".limit-text", limitBar).innerHTML = `<b>${full ? `Acabaram ${LIMIT_WORDS[near.kind][1]} de hoje` : `Quase no limite de ${LIMIT_WORDS[near.kind][0]}`}</b><span>Repõe ${resetText(near.resets)}</span>`;
   $(".limit-x", limitBar).onclick = () => { try { sessionStorage.setItem(key, "1"); } catch { /* ignore */ } limitBar.hidden = true; };
 }
 function drawUsage() {

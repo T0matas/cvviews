@@ -474,9 +474,20 @@ function showAccount(user) {
 
 // The reviews this account has saved, newest first, to open again or delete.
 const firestore = () => import("/vendor/firebase/firebase-firestore-lite.js");
-// "24 out.", with the year only when it isn't this one
-const shortDay = (d) => new Intl.DateTimeFormat("pt-PT", { day: "numeric", month: "short", ...(d.getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}) }).format(d);
-const scoreTone = (n) => (n >= 75 ? "is-good" : n >= 50 ? "is-mid" : "is-low");
+// "26 de outubro", with the year only when it isn't this one
+const longDay = (d) => new Intl.DateTimeFormat("pt-PT", { day: "numeric", month: "long", ...(d.getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}) }).format(d);
+// "two-column_resume.pdf" reads as "Two column resume"
+function cvTitle(name) {
+  const t = String(name || "CV").replace(/.[a-z0-9]{2,5}$/i, "").replace(/[-_]+/g, " ").replace(/s+/g, " ").trim() || "CV";
+  return t[0].toUpperCase() + t.slice(1);
+}
+function cvIcon(name) {
+  const ext = (String(name).match(/.([a-z0-9]+)$/i)?.[1] || "").toLowerCase();
+  if (ext === "pdf") return ["ph-file-pdf", "is-pdf"];
+  if (ext === "doc" || ext === "docx") return ["ph-file-doc", "is-doc"];
+  if (["jpg", "jpeg", "png", "webp", "heic", "heif"].includes(ext)) return ["ph-image", ""];
+  return ["ph-file-text", ""];
+}
 function savedEmpty(title, text) {
   $("[data-saved]").hidden = true;
   $("[data-saved-empty]").hidden = false;
@@ -495,22 +506,22 @@ async function showSaved(user) {
     list.replaceChildren(...snap.docs.map((d) => {
       const r = d.data();
       const score = Math.round(Number(r.score) || 0);
-      const when = r.createdAt?.toDate ? shortDay(r.createdAt.toDate()) : "";
+      const day = r.createdAt?.toDate ? longDay(r.createdAt.toDate()) : "";
+      const [icon, tone] = cvIcon(r.cvName);
       const li = document.createElement("li");
-      const link = Object.assign(document.createElement("a"), { href: `/?revisao=${encodeURIComponent(d.id)}` });
-      link.setAttribute("aria-label", `Abrir a revisão de ${r.cvName}, ${score} em 100, ${when}`);
-      const badge = Object.assign(document.createElement("span"), { className: `saved-score ${scoreTone(score)}`, textContent: score });
+      const link = Object.assign(document.createElement("a"), { href: `/?revisao=${encodeURIComponent(d.id)}`, title: r.cvName || "" });
+      const ic = Object.assign(document.createElement("span"), { className: `saved-ic ${tone}` });
+      ic.innerHTML = `<i class="ph ${icon}" aria-hidden="true"></i>`;
       const text = Object.assign(document.createElement("span"), { className: "saved-text" });
       text.append(
-        Object.assign(document.createElement("b"), { textContent: r.cvName || "CV" }),
-        Object.assign(document.createElement("small"), { textContent: r.verdict || "" }),
+        Object.assign(document.createElement("b"), { textContent: cvTitle(r.cvName) }),
+        Object.assign(document.createElement("small"), { textContent: [day && `Revisto a ${day}`, `${score} em 100`].filter(Boolean).join(" · ") }),
       );
-      const date = Object.assign(document.createElement("span"), { className: "saved-date", textContent: when });
-      link.append(badge, text, date);
+      link.append(ic, text);
       const del = Object.assign(document.createElement("button"), { type: "button", className: "saved-del", title: "Apagar esta revisão" });
       del.dataset.id = d.id;
       del.setAttribute("aria-label", `Apagar a revisão de ${r.cvName}`);
-      del.innerHTML = `<i class="ph ph-trash" aria-hidden="true"></i>`;
+      del.innerHTML = `<i class="ph ph-x" aria-hidden="true"></i>`;
       li.append(link, del);
       return li;
     }));
