@@ -30,6 +30,14 @@ try {
   const who = localStorage.getItem("cvviews:conta");
   const login = $(".nav-login");
   if (who && login) { login.textContent = who; login.title = "A tua conta"; }
+  // the phone menu and the footer say it too
+  if (who) {
+    $$('.menu-card[href="/entrar"]').forEach((card) => card.replaceChildren(
+      Object.assign(document.createElement("span"), { textContent: "A minha conta" }),
+      Object.assign(document.createElement("small"), { textContent: `Olá, ${who}. O teu plano e as revisões` }),
+    ));
+    $$('.footer a[href="/entrar"]').forEach((a) => { a.textContent = "A minha conta"; });
+  }
 } catch { /* storage blocked: the bar just says Entrar */ }
 const sentinel = document.createElement("div");
 sentinel.style.cssText = "position:absolute;top:0;left:0;height:8px;width:1px;pointer-events:none";

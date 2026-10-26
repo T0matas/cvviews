@@ -282,10 +282,13 @@ const MODES = {
   interview: { send: "Criar as perguntas", label: "A vaga para a entrevista" },
 };
 
+// Phones get the short version, so the box stays one line tall under a conversation.
+const narrow = matchMedia("(max-width: 560px)");
 function placeholder() {
-  if (state.mode === "review") return state.cv ? "A que vaga te estás a candidatar? (opcional)" : "Cola aqui o teu CV, ou anexa um PDF, Word ou fotografias";
-  if (state.mode === "ask") return state.cv ? "Escreve ao Leo o que quiseres, ou junta uma imagem" : "Escreve ao Leo o que quiseres";
-  return "Para que vaga é a entrevista? Escreve o cargo ou cola o anúncio";
+  const n = narrow.matches;
+  if (state.mode === "review") return state.cv ? (n ? "Para que vaga? (opcional)" : "A que vaga te estás a candidatar? (opcional)") : "Cola aqui o teu CV, ou anexa um PDF, Word ou fotografias";
+  if (state.mode === "ask") return n ? "Escreve ao Leo" : state.cv ? "Escreve ao Leo o que quiseres, ou junta uma imagem" : "Escreve ao Leo o que quiseres";
+  return n ? "Para que vaga é a entrevista?" : "Para que vaga é a entrevista? Escreve o cargo ou cola o anúncio";
 }
 
 function canSend() {
