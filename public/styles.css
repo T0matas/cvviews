@@ -1097,12 +1097,11 @@ textarea.field { resize: vertical; min-height: 120px; }
   .film { padding-bottom: 72px; }
   .film-stage { margin: 0 var(--gutter); padding: 28px 18px; border-radius: 18px; }
 }
-/* phones: the video runs edge to edge, as large as the screen allows */
+/* phones: the meadow runs edge to edge with a thin border of flowers, so the video stays as large as it can */
 @media (max-width: 640px) {
   .film { padding-bottom: 56px; }
-  .film-stage { margin: 0; padding: 0; border-radius: 0; }
-  .film-scenery, .film-stage::after { display: none; }
-  .film-frame { border-radius: 0; box-shadow: none; }
+  .film-stage { margin: 0; padding: 36px 12px; border-radius: 0; }
+  .film-frame { border-radius: 8px; }
   .film-toggle { right: 8px; bottom: 8px; height: 30px; padding: 0 11px 0 10px; font-size: 12px; }
 }
 
