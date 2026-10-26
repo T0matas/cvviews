@@ -143,11 +143,23 @@
               <div><dt>Plano</dt><dd data-plan></dd></div>
             </dl>
           </section>
-          <a class="btn btn-ink btn-lg btn-block" href="/">Ir para o CVviews</a>
-          <section class="saved" aria-label="As tuas revisões" hidden>
-            <p class="saved-h">As tuas revisões</p>
-            <ul class="saved-list" data-saved></ul>
+          <!-- Every CV reviewed while signed in, newest first -->
+          <section class="saved" aria-labelledby="savedTitle">
+            <div class="saved-top">
+              <h2 class="saved-h" id="savedTitle">Os teus CVs</h2>
+              <span class="saved-count" data-saved-count></span>
+            </div>
+            <ul class="saved-list" data-saved aria-busy="true">
+              <li class="saved-sk" aria-hidden="true"></li><li class="saved-sk" aria-hidden="true"></li><li class="saved-sk" aria-hidden="true"></li>
+            </ul>
+            <div class="saved-empty" data-saved-empty hidden>
+              <i class="ph ph-files" aria-hidden="true"></i>
+              <p class="saved-empty-t" data-saved-empty-t>Ainda não reviste nenhum CV</p>
+              <p class="saved-empty-s" data-saved-empty-s>Cada CV que revês com a sessão iniciada fica guardado aqui, para voltares a ele quando quiseres.</p>
+              <a class="link small" href="/">Rever um CV</a>
+            </div>
           </section>
+          <a class="btn btn-ink btn-lg btn-block" href="/">Ir para o CVviews</a>
           <button type="button" class="btn btn-ghost btn-lg btn-block" id="planBtn" hidden></button>
           <div class="account-actions">
             <button type="button" class="btn btn-ghost" id="changePasswordBtn" hidden>Mudar a palavra-passe</button>

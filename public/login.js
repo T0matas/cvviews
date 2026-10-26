@@ -474,30 +474,50 @@ function showAccount(user) {
 
 // The reviews this account has saved, newest first, to open again or delete.
 const firestore = () => import("/vendor/firebase/firebase-firestore-lite.js");
+// "24 out.", with the year only when it isn't this one
+const shortDay = (d) => new Intl.DateTimeFormat("pt-PT", { day: "numeric", month: "short", ...(d.getFullYear() !== new Date().getFullYear() ? { year: "numeric" } : {}) }).format(d);
+const scoreTone = (n) => (n >= 75 ? "is-good" : n >= 50 ? "is-mid" : "is-low");
+function savedEmpty(title, text) {
+  $("[data-saved]").hidden = true;
+  $("[data-saved-empty]").hidden = false;
+  if (title) $("[data-saved-empty-t]").textContent = title;
+  if (text) $("[data-saved-empty-s]").textContent = text;
+}
 async function showSaved(user) {
-  const section = $(".saved");
   const list = $("[data-saved]");
+  const count = $("[data-saved-count]");
   try {
     const { getFirestore, collection, query, orderBy, limit, getDocs } = await firestore();
-    const snap = await getDocs(query(collection(getFirestore(user.auth?.app || (await firebase).auth.app), "users", user.uid, "reviews"), orderBy("createdAt", "desc"), limit(20)));
+    const snap = await getDocs(query(collection(getFirestore(user.auth?.app || (await firebase).auth.app), "users", user.uid, "reviews"), orderBy("createdAt", "desc"), limit(50)));
+    list.removeAttribute("aria-busy");
+    count.textContent = snap.size ? (snap.size === 50 ? "os 50 mais recentes" : `${snap.size}`) : "";
+    if (snap.empty) return savedEmpty();
     list.replaceChildren(...snap.docs.map((d) => {
       const r = d.data();
+      const score = Math.round(Number(r.score) || 0);
+      const when = r.createdAt?.toDate ? shortDay(r.createdAt.toDate()) : "";
       const li = document.createElement("li");
       const link = Object.assign(document.createElement("a"), { href: `/?revisao=${encodeURIComponent(d.id)}` });
-      const title = Object.assign(document.createElement("b"), { textContent: r.verdict || r.cvName });
-      const meta = Object.assign(document.createElement("span"), { textContent: `${r.cvName} · ${r.createdAt?.toDate ? DAY.format(r.createdAt.toDate()) : ""} · ${r.score} em 100` });
-      link.append(title, meta);
+      link.setAttribute("aria-label", `Abrir a revisão de ${r.cvName}, ${score} em 100, ${when}`);
+      const badge = Object.assign(document.createElement("span"), { className: `saved-score ${scoreTone(score)}`, textContent: score });
+      const text = Object.assign(document.createElement("span"), { className: "saved-text" });
+      text.append(
+        Object.assign(document.createElement("b"), { textContent: r.cvName || "CV" }),
+        Object.assign(document.createElement("small"), { textContent: r.verdict || "" }),
+      );
+      const date = Object.assign(document.createElement("span"), { className: "saved-date", textContent: when });
+      link.append(badge, text, date);
       const del = Object.assign(document.createElement("button"), { type: "button", className: "saved-del", title: "Apagar esta revisão" });
       del.dataset.id = d.id;
-      del.setAttribute("aria-label", `Apagar a revisão ${r.cvName}`);
-      del.innerHTML = `<i class="ph ph-x" aria-hidden="true"></i>`;
+      del.setAttribute("aria-label", `Apagar a revisão de ${r.cvName}`);
+      del.innerHTML = `<i class="ph ph-trash" aria-hidden="true"></i>`;
       li.append(link, del);
       return li;
     }));
-    section.hidden = snap.empty;
   } catch (err) {
     console.warn("[revisões]", err.code || err.message);
-    section.hidden = true;
+    list.removeAttribute("aria-busy");
+    savedEmpty("Não foi possível carregar os teus CVs", "Tenta de novo daqui a pouco. Se continuar, avisa-nos.");
   }
 }
 
@@ -509,7 +529,9 @@ $("[data-saved]").addEventListener("click", async (e) => {
     const { getFirestore, doc, deleteDoc } = await firestore();
     await deleteDoc(doc(getFirestore(auth.app), "users", auth.currentUser.uid, "reviews", button.dataset.id));
     button.closest("li").remove();
-    if (!$("[data-saved] li")) $(".saved").hidden = true;
+    const left = $("[data-saved] li").length;
+    $("[data-saved-count]").textContent = left ? `${left}` : "";
+    if (!left) savedEmpty();
   } catch (err) {
     setError("accountErr", messageFor(err));
   }

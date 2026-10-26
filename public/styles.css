@@ -1115,17 +1115,46 @@ textarea.field { resize: vertical; min-height: 120px; }
 /* ---------- Saved reviews ---------- */
 .saved-note { display: flex; align-items: center; gap: 6px; margin-top: 28px; font-size: 14px; color: var(--ins); }
 .saved-note a { color: var(--ink); margin-left: 4px; }
-.saved:not([hidden]) { display: grid; gap: 8px; }
-.saved-h { font-size: 14px; font-weight: 650; color: var(--ink-2); }
-.saved-list { list-style: none; padding: 0; margin: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-2); }
-.saved-list li { display: flex; align-items: center; gap: 8px; padding: 10px 10px 10px 16px; }
+/* The account's CVs: a score, the file and the verdict, the day. Newest first. */
+.saved { display: grid; gap: 10px; margin: 4px 0 2px; }
+.saved-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.saved-h { font: 400 22px/1.2 var(--serif); letter-spacing: -.01em; color: var(--ink); }
+.saved-count { font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.saved-list { list-style: none; padding: 0; margin: 0; border: 1px solid var(--line); border-radius: var(--r); background: var(--bg-2); overflow: hidden; max-height: 360px; overflow-y: auto; scrollbar-width: thin; }
+.saved-list li { position: relative; display: flex; align-items: center; }
 .saved-list li + li { border-top: 1px solid var(--line); }
-.saved-list a { flex: 1; min-width: 0; display: grid; gap: 2px; color: var(--ink); text-decoration: none; }
-.saved-list a:hover b { text-decoration: underline; text-underline-offset: 3px; }
-.saved-list b { font-weight: 600; font-size: 14.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.saved-list span { font-size: 13px; color: var(--ink-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.saved-del { flex: none; width: 32px; height: 32px; border: 0; border-radius: 999px; background: none; color: var(--ink-3); display: grid; place-items: center; }
-.saved-del:hover { background: var(--tint); color: var(--ink); }
+.saved-list a { flex: 1; min-width: 0; display: flex; align-items: center; gap: 14px; padding: 12px 48px 12px 14px; color: var(--ink); text-decoration: none; transition: background-color .2s; }
+.saved-list a:hover { background: var(--tint); }
+.saved-score {
+  flex: none; width: 38px; height: 38px; border-radius: 99px; display: grid; place-items: center;
+  font: 600 14px/1 var(--sans); font-variant-numeric: tabular-nums; border: 1.5px solid currentColor;
+}
+.saved-score.is-good { color: var(--ins); background: var(--ins-soft); }
+.saved-score.is-mid { color: var(--warn); background: var(--warn-soft); }
+.saved-score.is-low { color: var(--del); background: var(--del-soft); }
+.saved-text { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.saved-text b, .saved-text small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.saved-text b { font-size: 14.5px; font-weight: 600; }
+.saved-text small { font-size: 13px; color: var(--ink-3); }
+.saved-text small:empty { display: none; }
+.saved-date { flex: none; font-size: 12.5px; color: var(--ink-3); white-space: nowrap; }
+.saved-del {
+  position: absolute; right: 8px; top: 50%; translate: 0 -50%; width: 32px; height: 32px; border: 0; border-radius: 9px;
+  background: none; color: var(--ink-3); display: grid; place-items: center; font-size: 15px; opacity: 0; transition: opacity .15s, background-color .2s, color .2s;
+}
+.saved-list li:hover .saved-del, .saved-del:focus-visible { opacity: 1; }
+@media (hover: none) { .saved-del { opacity: 1; } }
+.saved-del:hover { background: var(--del-soft); color: var(--del); }
+/* while the list loads: three quiet rows */
+.saved-sk { height: 62px; background: linear-gradient(90deg, transparent, var(--tint), transparent) 0 0 / 200% 100%; animation: savedSk 1.4s ease-in-out infinite; }
+@keyframes savedSk { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .saved-sk { animation: none; } }
+.saved-empty { display: grid; justify-items: center; gap: 6px; padding: 26px 20px; text-align: center; border: 1px dashed var(--line-2); border-radius: var(--r); }
+.saved-empty[hidden] { display: none; }
+.saved-empty .ph { font-size: 26px; color: var(--ink-3); margin-bottom: 4px; }
+.saved-empty-t { font-weight: 600; font-size: 15px; }
+.saved-empty-s { font-size: 13.5px; line-height: 1.5; color: var(--ink-3); max-width: 34ch; }
+.saved-empty .link { margin-top: 6px; }
 
 /* ---------- Film: a short tour of the site, framed on the meadow ---------- */
 .film { padding: 0 0 96px; }
