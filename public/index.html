@@ -125,6 +125,18 @@
 
         <p class="composer-note" id="composerNote" role="status" aria-live="polite"></p>
 
+        <!-- What's left of the plan, like a meter: a small button that opens the limits -->
+        <div class="usage" id="usage" hidden>
+          <button type="button" class="usage-btn" id="usageBtn" aria-expanded="false" aria-controls="usagePanel">
+            <span class="usage-ring" aria-hidden="true"></span><span class="usage-text">Limites do plano</span>
+          </button>
+          <div class="usage-panel" id="usagePanel" role="dialog" aria-label="Limites do plano" hidden>
+            <div class="usage-head"><p>Limites do plano · <b class="usage-plan">Grátis</b></p><a class="usage-link" href="/#planos">Ver planos <i class="ph ph-arrow-right" aria-hidden="true"></i></a></div>
+            <div class="usage-rows"></div>
+            <p class="usage-foot">Os limites voltam ao zero todos os dias. Com o Pro não há limites.</p>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -219,10 +231,10 @@
             </thead>
             <tbody>
               <tr class="price-group"><th scope="rowgroup">Revisão</th><td aria-hidden="true"></td><td aria-hidden="true"></td></tr>
-              <tr><th scope="row">Revisões do CV</th><td>3 por mês</td><td>Sem limite</td></tr>
-              <tr><th scope="row">CV corrigido no próprio documento</th><td>3 por mês</td><td>Sem limite</td></tr>
+              <tr><th scope="row">Revisões do CV</th><td>5 por dia</td><td>Sem limite</td></tr>
+              <tr><th scope="row">CV corrigido no próprio documento</th><td>5 por dia</td><td>Sem limite</td></tr>
               <tr class="price-group"><th scope="rowgroup">Leo</th><td aria-hidden="true"></td><td aria-hidden="true"></td></tr>
-              <tr><th scope="row">Mensagens ao Leo</th><td>10 por dia</td><td>Sem limite</td></tr>
+              <tr><th scope="row">Mensagens ao Leo</th><td>20 por dia</td><td>Sem limite</td></tr>
               <tr><th scope="row">Mostrar imagens ao Leo</th><td class="no"><span class="sr-only">Não incluído</span></td><td class="yes"><span class="sr-only">Incluído</span></td></tr>
               <tr class="price-group"><th scope="rowgroup">Entrevista</th><td aria-hidden="true"></td><td aria-hidden="true"></td></tr>
               <tr><th scope="row">Perguntas tiradas do teu CV</th><td class="yes"><span class="sr-only">Incluído</span></td><td class="yes"><span class="sr-only">Incluído</span></td></tr>
@@ -257,7 +269,7 @@
           </details>
           <details name="faq">
             <summary>Quanto custa?<i class="ph ph-plus" aria-hidden="true"></i></summary>
-            <div class="faq-a"><p>O plano grátis tem 3 revisões e 3 CV corrigidos em imagem por mês, e 10 mensagens por dia com o Leo. O Pro custa 4,99 € por mês, não tem limites, deixa-te mostrar imagens ao Leo e dá feedback às tuas respostas de entrevista. Cancelas quando quiseres.</p></div>
+            <div class="faq-a"><p>O plano grátis tem, por dia, 5 revisões, 5 CV corrigidos no próprio documento e 20 mensagens com o Leo. O Pro custa 4,99 € por mês, não tem limites, deixa-te mostrar imagens ao Leo e dá feedback às tuas respostas de entrevista. Cancelas quando quiseres.</p></div>
           </details>
           <details name="faq">
             <summary>Posso treinar entrevistas sem CV?<i class="ph ph-plus" aria-hidden="true"></i></summary>

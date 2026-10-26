@@ -143,6 +143,7 @@ async function postJson(url, body, signal) {
   let data = {};
   try { data = await res.json(); } catch { /* non-JSON error page */ }
   if (!res.ok) throw planError(data, res.status);
+  refreshUsage();
   return data;
 }
 
@@ -1162,6 +1163,7 @@ function startAsk(text) {
           try { data = await res.json(); } catch { /* ignore */ }
           throw planError(data, res.status);
         }
+        refreshUsage(); // the message was counted
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         out.classList.add("md");
@@ -1328,6 +1330,66 @@ if (params.has("modo") || params.has("exemplo")) {
     prompt.focus({ preventScroll: true });
   }
   if (SAMPLES[params.get("exemplo")]) runSample(params.get("exemplo"));
+}
+
+/* ---------------- Usage ----------------
+   What's left of each free allowance, as a meter under the composer that opens the plan's limits.
+   The server counts; this only shows it, and asks again after each review or message. */
+const usageBox = $("#usage");
+const usageBtn = $("#usageBtn");
+const usagePanel = $("#usagePanel");
+let usage = null;
+let usageTimer = 0;
+function untilText(t) {
+  const m = Math.max(1, Math.round((t - Date.now()) / 60000));
+  const h = Math.floor(m / 60);
+  if (h >= 48) return `${Math.round(h / 24)} dias`;
+  return h ? `${h} h ${m % 60} min` : `${m} min`;
+}
+function drawUsage() {
+  if (!usage || !usageBox) return;
+  usageBox.hidden = false;
+  const pro = usage.plan === "pro";
+  const review = usage.items.find((i) => i.kind === "review") || usage.items[0];
+  const worst = Math.max(...usage.items.map((i) => i.used / i.limit));
+  usageBox.style.setProperty("--used", pro ? 0 : Math.min(1, worst));
+  usageBox.classList.toggle("is-full", !pro && worst >= 1);
+  $(".usage-text", usageBtn).textContent = pro ? "Pro · sem limites" : `Grátis · ${Math.max(0, review.limit - review.used)} de ${review.limit} revisões hoje`;
+  $(".usage-plan", usagePanel).textContent = pro ? "Pro" : "Grátis";
+  $(".usage-link", usagePanel).hidden = pro;
+  $(".usage-foot", usagePanel).hidden = pro;
+  $(".usage-rows", usagePanel).innerHTML = usage.items.map((i) => {
+    const pct = pro ? 0 : Math.min(100, Math.round((i.used / i.limit) * 100));
+    const right = pro ? "Sem limite" : `Repõe em ${untilText(i.resets)}<b>${i.used}/${i.limit}</b>`;
+    return `<div class="usage-row${pct >= 100 ? " is-full" : pct >= 70 ? " is-high" : ""}"><div class="usage-line"><span>${esc(i.label)}</span><span class="usage-when">${right}</span></div><div class="usage-bar"><i style="width:${pct}%"></i></div></div>`;
+  }).join("");
+}
+function refreshUsage() {
+  clearTimeout(usageTimer);
+  usageTimer = setTimeout(async () => {
+    try {
+      const res = await fetch("/api/billing?action=usage", { headers: await authHeaders() });
+      if (res.ok) { usage = await res.json(); drawUsage(); }
+    } catch { /* offline: the meter just keeps its last numbers */ }
+  }, 400);
+}
+function closeUsage(focus) {
+  if (usagePanel.hidden) return;
+  usagePanel.hidden = true;
+  usageBtn.setAttribute("aria-expanded", "false");
+  if (focus) usageBtn.focus();
+}
+if (usageBox) {
+  usageBtn.addEventListener("click", () => {
+    if (!usagePanel.hidden) return closeUsage();
+    usagePanel.hidden = false;
+    usageBtn.setAttribute("aria-expanded", "true");
+    drawUsage();
+    refreshUsage();
+  });
+  document.addEventListener("click", (e) => { if (!usageBox.contains(e.target)) closeUsage(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeUsage(true); });
+  refreshUsage();
 }
 
 /* ---------------- Plans ----------------

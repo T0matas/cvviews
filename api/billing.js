@@ -1,8 +1,9 @@
 import { readJson, sendJson } from "../lib/http.js";
-import { FREE_LIMITS, PRICE_LABEL, PlanError, forgetPro, gate, limitsOn, paymentsOn, proStatus, stripe, userFrom } from "../lib/plan.js";
+import { FREE_LIMITS, PRICE_LABEL, PlanError, forgetPro, gate, limitsOn, paymentsOn, proStatus, stripe, usageOf, userFrom } from "../lib/plan.js";
 
 // One endpoint for everything about the plan, by ?action=:
 //   GET  status   which plan you're on, and whether payments are switched on
+//   GET  usage    how much of each free allowance is left, and when it starts again
 //   POST checkout a Stripe Checkout page for the Pro subscription (signed in only)
 //   POST portal   Stripe's page to change card or cancel (Pro only)
 //   POST visual   counts one corrected-CV image against the free allowance
@@ -26,6 +27,7 @@ export default async function handler(req, res) {
         counting: limitsOn(),
       });
     }
+    if (req.method === "GET" && action === "usage") return sendJson(res, 200, await usageOf(req));
     if (req.method !== "POST") return sendJson(res, 405, { error: "Pedido inválido." });
     await readJson(req).catch(() => ({}));
 
