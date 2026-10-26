@@ -84,6 +84,7 @@
         <tr><td>Com sessão iniciada: o texto do teu CV e as revisões que fizeres</td><td>Para voltares às tuas revisões mais tarde</td><td>Execução do contrato (art. 6.º, n.º 1, alínea b))</td></tr>
         <tr><td>Se aceitares os cookies de análise: dados da visita (páginas vistas, dispositivo, país aproximado)</td><td>Para percebermos como o site é usado</td><td>Consentimento (art. 6.º, n.º 1, alínea a)), que podes retirar a qualquer momento</td></tr>
         <tr><td>Se criares conta: nome, email e palavra-passe (guardada de forma cifrada, nunca em texto simples), ou o nome e o email da tua conta Google, se entrares com o Google; e as datas em que criaste a conta e entraste pela última vez</td><td>Para criares a conta e iniciares sessão</td><td>Execução do contrato (art. 6.º, n.º 1, alínea b))</td></tr>
+        <tr><td>A localização aproximada da tua ligação (país, cidade e fuso horário), que o nosso fornecedor de alojamento deduz do endereço IP</td><td>Para mostrar o site na tua língua e, no rodapé, a hora e o tempo onde estás. Não fica guardada; para saber o tempo, só as coordenadas aproximadas da cidade são enviadas à Open-Meteo, pelo nosso servidor</td><td>O nosso interesse legítimo em mostrar o site na língua certa (art. 6.º, n.º 1, alínea f))</td></tr>
         <tr><td>Dados técnicos: endereço IP, navegador e hora do pedido</td><td>Para entregar o site e mantê-lo seguro, nos registos do nosso fornecedor de alojamento</td><td>O nosso interesse legítimo em ter um serviço seguro (art. 6.º, n.º 1, alínea f))</td></tr>
       </tbody>
     </table>
@@ -99,6 +100,7 @@
       <li><strong>Google Ireland Limited</strong> (Google Analytics), só se aceitares os cookies de análise: conta as visitas ao site (páginas vistas, tipo de dispositivo e país aproximado). Nunca recebe o teu CV nem as tuas mensagens.</li>
       <li><strong>Google Ireland Limited</strong> (Irlanda), através da Firebase Authentication, gere as contas: guarda o nome, o email e a palavra-passe cifrada de quem cria conta, ou o nome e o email de quem entra com o Google. Guarda também, na Cloud Firestore, um perfil de cada conta com o nome, o email, a forma de entrar e as datas de criação e do último acesso. A Google pode tratar estes dados nos Estados Unidos, através da Google LLC. Vê a <a href="https://firebase.google.com/support/privacy" rel="noopener">privacidade e segurança na Firebase</a>.</li>
       <li><strong>Stripe Payments Europe, Limited</strong> (Irlanda) trata os pagamentos do plano Pro. Os dados do cartão vão diretamente para a Stripe e nunca passam pelo CVviews; nós só sabemos se a tua subscrição está ativa. Vê a <a href="https://stripe.com/pt/privacy" rel="noopener">política de privacidade da Stripe</a>.</li>
+      <li><strong>Open-Meteo</strong> (Suíça) dá-nos o tempo para o rodapé. Recebe do nosso servidor apenas as coordenadas aproximadas da cidade, nunca o teu endereço IP nem outros dados teus.</li>
       <li><strong>Vercel Inc.</strong> (Estados Unidos) aloja o site e guarda registos dos pedidos durante pouco tempo. Vê a <a href="https://vercel.com/legal/privacy-policy" rel="noopener">política de privacidade da Vercel</a>.</li>
     </ul>
     <p>Não vendemos os teus dados nem os partilhamos com mais ninguém. As fontes e os scripts são servidos pelo nosso próprio site, por isso nenhuma outra empresa recebe informação sobre a tua visita enquanto navegas.</p>
@@ -124,6 +126,72 @@
     <h2>10. Alterações a esta política</h2>
     <p>Se mudarmos a forma como tratamos os teus dados, atualizamos esta página e a data no topo antes de a alteração entrar em vigor.</p>
   </main>
+  <!-- The same page in English, put in place of the Portuguese by /i18n.js when the site is in English -->
+  <template id="legal-en">
+    <h1 data-reveal>Privacy policy</h1>
+    <p class="updated" data-reveal style="--i:1">Last updated: 24 October 2026</p>
+
+    <div class="summary" data-reveal style="--i:2">
+      <p><strong>In short.</strong> Without an account, CVviews doesn't keep your CV or your conversations: they stay in your browser tab and disappear when you close or refresh it. When you're signed in, your reviews are saved to your account until you delete them.</p>
+      <p>When you ask for a review, an answer or feedback, the text you gave us is sent to our artificial intelligence provider so it can write the reply. If you create an account, we keep your name, your email and your password (or, if you sign in with Google, the name and email of your Google account) so you can sign in. When you're signed in, we also keep the reviews you do, until you delete them. We only measure visits if you accept analytics cookies, and we never use advertising cookies.</p>
+    </div>
+
+    <h2>1. Who is responsible for your data</h2>
+    <p>The controller of your personal data under the General Data Protection Regulation (GDPR) is Daniel Tomatas, Portugal. You can contact us about anything in this policy at <a href="mailto:danieltomatas0@gmail.com">danieltomatas0@gmail.com</a>.</p>
+
+    <h2>2. What we process and why</h2>
+    <table>
+      <thead><tr><th>What</th><th>What for</th><th>Legal basis</th></tr></thead>
+      <tbody>
+        <tr><td>Your CV (file or pasted text) and any role or job ad you add</td><td>To write the CV review and the interview questions</td><td>Performance of the service you asked for (Art. 6(1)(b) GDPR)</td></tr>
+        <tr><td>Your messages to Leo and your practice answers</td><td>To write Leo's replies and the feedback on your answers</td><td>Performance of the service you asked for (Art. 6(1)(b))</td></tr>
+        <tr><td>When you're signed in: the text of your CV and the reviews you do</td><td>So you can come back to your reviews later</td><td>Performance of the contract (Art. 6(1)(b))</td></tr>
+        <tr><td>If you accept analytics cookies: visit data (pages viewed, device, approximate country)</td><td>To understand how the site is used</td><td>Consent (Art. 6(1)(a)), which you can withdraw at any time</td></tr>
+        <tr><td>If you create an account: name, email and password (stored encrypted, never in plain text), or the name and email of your Google account if you sign in with Google; and the dates you created the account and last signed in</td><td>To create your account and sign you in</td><td>Performance of the contract (Art. 6(1)(b))</td></tr>
+        <tr><td>The approximate location of your connection (country, city and time zone), which our hosting provider works out from your IP address</td><td>To show the site in your language and, in the footer, the time and weather where you are. It isn't stored; to get the weather, only the approximate coordinates of the city are sent to Open-Meteo, by our server</td><td>Our legitimate interest in showing the site in the right language (Art. 6(1)(f))</td></tr>
+        <tr><td>Technical data: IP address, browser and time of the request</td><td>To deliver the site and keep it secure, in our hosting provider's logs</td><td>Our legitimate interest in a secure service (Art. 6(1)(f))</td></tr>
+      </tbody>
+    </table>
+    <p>We collect nothing else. An account keeps the reviews you do (the CV text and the review), but never your conversations with Leo or any images.</p>
+
+    <h2>3. Be careful with what's on your CV</h2>
+    <p>A CV is full of personal data. To get useful feedback you don't need your date of birth, a photo, your full address or ID numbers, so you can remove them first. Don't include sensitive information, such as health data, religion or political opinions, and don't upload someone else's CV without their permission.</p>
+
+    <h2>4. Who else processes your data</h2>
+    <p>We use these service providers, who process data only on our behalf and under contract:</p>
+    <ul>
+      <li><strong>Our artificial intelligence provider</strong> (United States) runs the model that writes the reviews, replies and feedback. It receives the text described in section 2 only when you ask for one of these, and processes it only to write the reply, under contract. If you'd like to know which provider it is, write to us.</li>
+      <li><strong>Google Ireland Limited</strong> (Google Analytics), only if you accept analytics cookies: counts visits to the site (pages viewed, device type and approximate country). It never receives your CV or your messages.</li>
+      <li><strong>Google Ireland Limited</strong> (Ireland), through Firebase Authentication, manages accounts: it stores the name, email and encrypted password of people who create an account, or the name and email of people who sign in with Google. It also stores, in Cloud Firestore, a profile for each account with the name, email, sign-in method and the dates of creation and last sign-in. Google may process this data in the United States, through Google LLC. See <a href="https://firebase.google.com/support/privacy" rel="noopener">privacy and security in Firebase</a>.</li>
+      <li><strong>Stripe Payments Europe, Limited</strong> (Ireland) handles payments for the Pro plan. Card details go straight to Stripe and never pass through CVviews; we only know whether your subscription is active. See <a href="https://stripe.com/privacy" rel="noopener">Stripe's privacy policy</a>.</li>
+      <li><strong>Open-Meteo</strong> (Switzerland) gives us the weather for the footer. It receives from our server only the approximate coordinates of the city, never your IP address or any other data about you.</li>
+      <li><strong>Vercel Inc.</strong> (United States) hosts the site and keeps request logs for a short time. See <a href="https://vercel.com/legal/privacy-policy" rel="noopener">Vercel's privacy policy</a>.</li>
+    </ul>
+    <p>We don't sell your data or share it with anyone else. Fonts and scripts are served from our own site, so no other company receives information about your visit while you browse.</p>
+
+    <p>To apply the plan limits, we count how many reviews, messages and in-document corrections you've used each day. The counter is stored in Cloud Firestore under a code made from your account or, without an account, from your IP address, which can't be traced back to either. Legal basis: our legitimate interest in keeping the free service sustainable (Art. 6(1)(f) GDPR).</p>
+
+    <h2>5. Transfers outside the EU</h2>
+    <p>Some of these providers are based in the United States. Transfers rely on the EU-US Data Privacy Framework, where the provider is certified, and on the European Commission's Standard Contractual Clauses.</p>
+
+    <h2>6. How long we keep data</h2>
+    <p>When you're not signed in, CVviews doesn't keep your CV, your messages or the results: they stay in your browser tab and disappear when you close or refresh it. When you're signed in, each review you do is saved to your account (the CV text and the review, without images) until you delete it or delete your account. Our artificial intelligence provider keeps the text it receives only for the period set in its contract. Account data is kept until you delete your account. Hosting logs are kept by Vercel for a short period, for security and to fix problems.</p>
+
+    <h2>7. Your rights</h2>
+    <p>Under the GDPR, you have the right to access your data, to correct or delete it, to restrict or object to its processing and to receive it in a portable format. To exercise any of these rights, including deleting your account, write to <a href="mailto:danieltomatas0@gmail.com">danieltomatas0@gmail.com</a>. Since we don't keep your CV or your conversations unless you're signed in, in most cases we'll confirm that we only hold your account data, if you have an account.</p>
+    <p>You can also complain to a data protection authority. In Portugal it's the <a href="https://www.cnpd.pt" rel="noopener">Comissão Nacional de Proteção de Dados (CNPD)</a>; elsewhere in the EU, the authority in your country.</p>
+
+    <h2>8. Children</h2>
+    <p>CVviews isn't intended for anyone under 16.</p>
+
+    <h2>9. Security</h2>
+    <p>Everything is sent over an encrypted connection (HTTPS). Passwords are never stored in plain text, and your session stays in your browser until you press Sign out on the Sign in page. The best way to protect your data is not to keep it.</p>
+
+    <h2>10. Changes to this policy</h2>
+    <p>If we change how we handle your data, we update this page and the date at the top before the change takes effect.</p>
+
+    <p class="legal-note">The Portuguese version of this policy is the original. If the two ever differ, the Portuguese one applies.</p>
+  </template>
 
   <footer class="footer">
     <div class="wrap">

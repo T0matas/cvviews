@@ -572,6 +572,10 @@ function walk(node) {
 
 if (lang === "en") {
   document.title = t(document.title);
+  // The policy pages carry their English text in a <template>; it takes the Portuguese text's place.
+  const legal = document.querySelector(".legal");
+  const english = document.getElementById("legal-en");
+  if (legal && english) legal.replaceChildren(english.content.cloneNode(true));
   walk(document.documentElement);
   new MutationObserver((records) => {
     for (const r of records) {
@@ -581,9 +585,6 @@ if (lang === "en") {
     }
   }).observe(document.documentElement, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
   window.cvviewsI18nMissing = missing;
-  // The policy pages are only written in Portuguese for now; say so at the top.
-  const legal = document.querySelector(".legal");
-  if (legal) legal.insertAdjacentHTML("afterbegin", `<p class="legal-lang">This page is only available in Portuguese for now. Your browser can translate it.</p>`);
 }
 if (!deciding) root.classList.remove("i18n-wait");
 

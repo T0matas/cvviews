@@ -113,6 +113,95 @@ Português (nativo), Inglês (C1), Espanhol (B2)`,
   },
 };
 
+// The same three people for visitors who see the site in English, with the same weak spots to find.
+const SAMPLES_EN = {
+  designer: {
+    name: "Example: product designer",
+    target: "Senior Product Designer at a digital health company",
+    text: `MARTA OLIVEIRA
+Product Designer · Lisbon · marta.oliveira@email.com · linkedin.com/in/martaoliveira
+
+PROFILE
+Hard-working, passionate designer who loves creating beautiful experiences. Great team player with excellent communication skills.
+
+EXPERIENCE
+Product Designer, Lumena Health (2022 - present)
+- Responsible for the design of the patient app
+- Worked on the sign-up redesign, which improved completion
+- Helped with the design system
+- Interviewed patients and doctors
+
+Junior UX Designer, Studio Nine (2020 - 2022)
+- Designed websites for various clients
+- Created wireframes and prototypes in Figma
+- Took part in client meetings
+
+EDUCATION
+BA in Communication Design, University of Lisbon (2016 - 2019)
+
+SKILLS
+Figma, Sketch, Adobe CC, prototyping, user research, basic HTML/CSS, Microsoft Office`,
+  },
+  engenheiro: {
+    name: "Example: backend engineer",
+    target: "Senior Backend Engineer (Go)",
+    text: `TIAGO FERREIRA
+Software Engineer | tiago.ferreira@email.com | github.com/tferreira | Porto
+
+SUMMARY
+Backend engineer with 4 years of experience building APIs in Python and Go.
+
+EXPERIENCE
+Backend Engineer, Parcelo Logistics, March 2022 - present
+• Built a route optimisation service in Go that cut average delivery time by 18%
+• Migrated endpoints from the monolith to microservices
+• On-call rotations, bug fixing, code reviews
+• Mentored 2 interns
+
+Developer, Banco Litoral, July 2020 - February 2022
+• Maintained internal Django applications
+• Wrote unit tests
+• Worked in an agile team
+
+2019 - 2020: Travel and freelance work
+
+EDUCATION
+MSc in Computer Engineering, University of Porto, 2019
+
+TECHNOLOGIES
+Python, Go, Django, FastAPI, PostgreSQL, Redis, Docker, Kubernetes, AWS, Git, Linux`,
+  },
+  "recem-licenciada": {
+    name: "Example: recent graduate",
+    target: "Junior Data Analyst",
+    text: `INÊS CARVALHO
+Coimbra · ines.carvalho@email.com · linkedin.com/in/inescarvalho
+
+ABOUT ME
+Recent graduate looking for an opportunity to grow in a dynamic company. Fast learner, motivated and organised.
+
+EDUCATION
+BSc in Management, University of Coimbra (2021 - 2024). Final grade 15/20
+Erasmus semester, Universidad de Salamanca (2023)
+Thesis: why customers leave a mobile operator, using data from a survey of 300 customers
+
+EXPERIENCE
+Summer internship, finance team, Lúmen Retail Group (July to September 2023)
+- Helped the team with monthly reports
+- Updated Excel files
+- Took part in meetings
+
+Waitress, Café Aliados (2020 - 2022, part-time)
+- Customer service
+- Payments and closing the till
+
+SKILLS
+Excel, PowerPoint, SPSS, basic Python
+Portuguese (native), English (C1), Spanish (B2)`,
+  },
+};
+const sampleFor = (key) => (lang === "en" ? SAMPLES_EN : SAMPLES)[key];
+
 /* ---------------- Helpers ---------------- */
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
@@ -562,7 +651,7 @@ addEventListener("drop", (e) => {
 
 /* ---------------- Samples ---------------- */
 function runSample(key) {
-  const s = SAMPLES[key];
+  const s = sampleFor(key);
   if (!s) return;
   setMode("review");
   setCv({ kind: "text", text: s.text, name: s.name, source: "sample" });
@@ -578,7 +667,9 @@ function transition(apply) {
   if (!document.startViewTransition || reduceMotion || document.hidden) { apply(); return Promise.resolve(); }
   const t = document.startViewTransition(apply);
   t.ready.catch(() => {}); // a skipped animation is fine, the update still ran
-  return t.updateCallbackDone;
+  // The animation waits for the next frame; if none comes soon (a busy or background tab), change without it.
+  // apply() only sets state, so running it twice is harmless.
+  return Promise.race([t.updateCallbackDone, new Promise((done) => setTimeout(() => { apply(); done(); }, 800))]);
 }
 
 function enterThread() {
