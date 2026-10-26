@@ -963,13 +963,30 @@ function printImages(srcs, name) {
     frame.contentWindow.focus(); frame.contentWindow.print(); setTimeout(() => frame.remove(), 2000);
   });
 }
+// Builds the PDF file and saves it straight away; the print window opens only if that fails.
+async function downloadPdf(button, build, name, fallback) {
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = "A preparar o PDF…";
+  try {
+    const m = await import("/pdf.js");
+    m.savePdf(await build(m), name);
+  } catch (err) {
+    console.warn("[pdf]", err);
+    announce("Não foi possível criar o PDF. Abre-se a janela de impressão para o guardares.");
+    fallback();
+  } finally {
+    button.disabled = false;
+    button.textContent = label;
+  }
+}
 function showFixed(slot, srcs, cv) {
   const many = srcs.length > 1;
   const base = (cv.name || "CV").replace(/.[a-z0-9]+$/i, "");
   slot.innerHTML = `${srcs.map((src, i) => `<figure class="cvshot-page appear" style="--k:${i}"><img src="${src}" alt="${many ? `Página ${i + 1} do` : "O"} teu CV, já corrigido"></figure>`).join("")}
     <p class="cvmark-act">${srcs.map((src, i) => `<a class="text-act" href="${src}" download="${esc(base)}-corrigido${many ? `-${i + 1}` : ""}.jpg">Descarregar${many ? ` a página ${i + 1}` : " o CV corrigido"}</a>`).join("")}
     <button type="button" class="text-act" data-print-fixed>Descarregar em PDF</button></p>`;
-  $("[data-print-fixed]", slot).addEventListener("click", () => printImages(srcs, `${base} corrigido`));
+  $("[data-print-fixed]", slot).addEventListener("click", (e) => downloadPdf(e.currentTarget, (m) => m.imagesPdf(srcs), `${base} corrigido`, () => printImages(srcs, `${base} corrigido`)));
 }
 async function fullCv(slot, r, cv) {
   try {
@@ -978,7 +995,7 @@ async function fullCv(slot, r, cv) {
     slot.innerHTML = `<article class="cvdoc appear">${cvDocHtml(full)}</article>
       <p class="cvmark-act"><button type="button" class="text-act" data-print>Descarregar em PDF</button>
       <button type="button" class="text-act" data-copy="${esc(cvDocText(full))}">Copiar o texto</button></p>`;
-    $("[data-print]", slot).addEventListener("click", () => printCv(full));
+    $("[data-print]", slot).addEventListener("click", (e) => downloadPdf(e.currentTarget, (m) => m.textPdf(full), `${full.name || "CV"} - CV`, () => printCv(full)));
   } catch (err) {
     slot.innerHTML = `<p class="rv-p">Não foi possível escrever o CV corrigido agora. ${esc(err.message)}</p>`;
   }
