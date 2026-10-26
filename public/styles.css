@@ -1097,10 +1097,10 @@ textarea.field { resize: vertical; min-height: 120px; }
   .film { padding-bottom: 72px; }
   .film-stage { margin: 0 var(--gutter); padding: 28px 18px; border-radius: 18px; }
 }
-/* phones: the meadow runs edge to edge with a thin border of flowers, so the video stays as large as it can */
+/* phones: the same framed meadow as on a computer, rounded, with room around it */
 @media (max-width: 640px) {
   .film { padding-bottom: 56px; }
-  .film-stage { margin: 0; padding: 36px 12px; border-radius: 0; }
+  .film-stage { margin: 0 16px; padding: 26px 16px; border-radius: 18px; }
   .film-frame { border-radius: 8px; }
   .film-toggle { right: 8px; bottom: 8px; height: 30px; padding: 0 11px 0 10px; font-size: 12px; }
 }
