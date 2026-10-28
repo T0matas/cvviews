@@ -1,4 +1,4 @@
-import { readJson, sendJson } from "../lib/http.js";
+import { readJson, sameOrigin, sendJson } from "../lib/http.js";
 import { FREE_LIMITS, PRICE_LABEL, PlanError, forgetPro, gate, limitsOn, paymentsOn, proStatus, stripe, usageOf, userFrom } from "../lib/plan.js";
 
 // One endpoint for everything about the plan, by ?action=:
@@ -29,6 +29,7 @@ export default async function handler(req, res) {
     }
     if (req.method === "GET" && action === "usage") return sendJson(res, 200, await usageOf(req));
     if (req.method !== "POST") return sendJson(res, 405, { error: "Pedido inválido." });
+    if (!sameOrigin(req)) return sendJson(res, 403, { error: "Pedido recusado." });
     await readJson(req).catch(() => ({}));
 
     if (action === "visual") {

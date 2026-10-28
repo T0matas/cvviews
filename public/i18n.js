@@ -342,6 +342,10 @@ const EN = {
   "Ainda não tens nenhuma subscrição.": "You don't have a subscription yet.",
   "Os pagamentos não responderam. Tenta de novo daqui a pouco.": "Payments didn't respond. Try again shortly.",
   "Pedido inválido.": "Invalid request.",
+  "Pedido recusado.": "Request refused.",
+  "O serviço não está disponível neste momento. Tenta de novo daqui a pouco.": "The service isn't available right now. Try again shortly.",
+  "Algo correu mal do nosso lado. Tenta de novo.": "Something went wrong on our side. Try again.",
+  "Não foi possível ler fotografias neste momento. Experimenta um PDF ou cola o texto.": "Couldn't read photos right now. Try a PDF or paste the text.",
 
   // cookie notice
   "Só contamos visitas": "We only count visits",
