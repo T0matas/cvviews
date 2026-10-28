@@ -32,7 +32,7 @@ const routes = {
 
 // Old addresses, sent where they live now (the same redirects as vercel.json).
 const redirects = {
-  "/como-funciona": "/#como-funciona",
+  "/como-funciona": "/",
   "/entrevistas": "/#entrevistas",
   "/perguntas": "/#perguntas",
   "/privacy": "/privacidade",

@@ -3,7 +3,7 @@
   "outputDirectory": "public",
   "cleanUrls": true,
   "redirects": [
-    { "source": "/como-funciona", "destination": "/#como-funciona", "permanent": false },
+    { "source": "/como-funciona", "destination": "/", "permanent": false },
     { "source": "/entrevistas", "destination": "/#entrevistas", "permanent": false },
     { "source": "/perguntas", "destination": "/#perguntas", "permanent": false },
     { "source": "/privacy", "destination": "/privacidade", "permanent": true },
